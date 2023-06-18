@@ -37,7 +37,7 @@ export default function Details(props:{post:any, userId:string, setOpen:(value:b
         try {
           axios({
             method:'GET',
-            url: `http://localhost:3000/api/handlers/findMyComment`,
+            url: `https://slide-n-rate-app.vercel.app/api/handlers/findMyComment`,
             params: {
                 postId: props.post.id,
                 userId: props.userId

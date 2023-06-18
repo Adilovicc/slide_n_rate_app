@@ -31,7 +31,7 @@ export default function CreatePost(){
                  image=downloadUrl;
                  
                  axios({
-                    url:'http://localhost:3000/api/handlers/publishPost',
+                    url:'https://slide-n-rate-app.vercel.app/api/handlers/publishPost',
                     data:{
                      imageUrl: image,
                      //@ts-ignore
