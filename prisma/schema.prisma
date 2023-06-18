@@ -86,4 +86,6 @@ model Recension {
 
    ratedBy User @relation(fields: [userId], references:[id], onDelete:Cascade)
    forPost Post @relation(fields: [postId], references: [id], onDelete: Cascade)  
+
+   @@unique([postId, userId])
 }
