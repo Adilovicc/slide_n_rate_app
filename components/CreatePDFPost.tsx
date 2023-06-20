@@ -1,4 +1,3 @@
-
 import {storage} from '../lib/firebase'
 import {useState, useEffect} from 'react'
 import {ref, getDownloadURL, uploadBytes, deleteObject} from 'firebase/storage'
@@ -8,9 +7,9 @@ import axios from 'axios'
 import { useSession } from 'next-auth/react'
 import Swal from 'sweetalert2'
 import {useRouter} from 'next/router'
-import {XCircleIcon} from '@heroicons/react/24/solid'
+import { XCircleIcon } from '@heroicons/react/24/solid'
 
-export default function CreatePost(props:{setImageDisplay:any}){
+export default function CreatePDFPost(props:{setPDFDisplay:any}){
     
     const session = useSession();
     const router = useRouter();
@@ -25,19 +24,19 @@ export default function CreatePost(props:{setImageDisplay:any}){
       setLoading(true);
       let image;
       if(currentRef) deleteObject(currentRef);
-       const lokacija = ref(storage,`images/${pickedImage.name+v4()}`);
+       const lokacija = ref(storage,`pdf/${pickedImage.name+v4()}`);
        setCurrentRef(lokacija);
        const uploadImageVar = uploadBytes(lokacija, pickedImage).then((res)=>{
            getDownloadURL(lokacija).then((downloadUrl)=>{
                  image=downloadUrl;
                  
                  axios({
-                    url:'https://slide-n-rate-app.vercel.app/api/handlers/publishPost',
+                    url:'https://slide-n-rate-app.vercel.app/handlers/publishPost',
                     data:{
                      imageUrl: image,
                      //@ts-ignore
                      session: JSON.stringify(session),
-                     type:'image'
+                     type:'pdf'
                     },
                     method:'POST'
                   }).then((res)=>{
@@ -72,9 +71,8 @@ export default function CreatePost(props:{setImageDisplay:any}){
         if(!value) return alert('You have to select picture!');
         setPickedImage(value);
     }
-
-    const handleClose= ()=>{
-        props.setImageDisplay(false);
+    const handleClose=()=>{
+      props.setPDFDisplay(false);
     }
 
      return(
@@ -84,11 +82,11 @@ export default function CreatePost(props:{setImageDisplay:any}){
               </div>
               <label
                     //@ts-ignore 
-                    htmlFor='imageUploadButton' className="w-[80%] cursor-pointer transition duration-300 flex items-center 
+                    htmlFor='pdfUploadButton' className="w-[80%] cursor-pointer transition duration-300 flex items-center 
                     justify-center py-2 text-[20px] bg-[#24a0ed] font-serif">
                    {!loading ? 
                     <span className="flex items-center">
-                       Add image <ArrowUpTrayIcon className="brightness-100 h-6 w-6 ml-2"></ArrowUpTrayIcon> 
+                       Add PDF file <ArrowUpTrayIcon className="brightness-100 h-6 w-6 ml-2"></ArrowUpTrayIcon> 
                     </span>
                     :
                      <img className="h-7 w-7 animate-spin" src='spinner.svg'></img>}
@@ -99,8 +97,8 @@ export default function CreatePost(props:{setImageDisplay:any}){
                    //@ts-ignore
                    onChange={(e)=>{selectImage(e.target.files[0]); console.log(e.target.files[0])}}  
                    type='file'
-                   accept="image/*"
-                   id='imageUploadButton' />
+                   accept="application/pdf"
+                   id='pdfUploadButton' />
               <button onClick={()=>uploadImage()} className={`${loading ? 'bg-black/10 cursor-default' : !pickedImage ? 'bg-black/10 cursor-default' : 'bg-black/90 cursor-pointer'} 
                  w-[40%] font-serif py-2 transition duration-300 rounded-md mt-5 flex justify-center`}>
                 {!loading ? <span>Publish</span>: <img className="h-7 w-7 animate-spin" src='spinner.svg'></img>}

@@ -23,10 +23,10 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
   const starsChangeColors = (broj:number) =>{
     let updatedStarsColors = {...starColor};
     for(var i=1; i<6; i++){
-        if(i<=broj){
+        if(i==broj){
             updatedStarsColors[i as keyof typeof starColor]='fill-yellow-400';     
         }
-        if(i>broj){
+        if(i!=broj){
             updatedStarsColors[i as keyof typeof starColor]='';          
         }
      }
@@ -52,7 +52,7 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
          return Swal.fire({
             position: 'center',
             icon: 'success',
-            title: 'Recension has been added!',
+            title: 'Your answer has been submitted!',
             showConfirmButton: false,
             timer: 2500
           });
@@ -71,6 +71,8 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
    }
   
 
+  
+
 
   return (
        <form onSubmit={handleSubmit(reviewPost)} className="relative bg-slate-50 w-[80%] lg:w-[70%] flex items-center justify-center flex-col py-10">
@@ -84,13 +86,13 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
             {/* <input value={gradeInputValue} readOnly {...register("grade",{pattern:{value:/^[1-9]\d*$/, message:"Moraš odabrati ocjenu (zvijezde 1-5)"}})}/> */}
              {errors.grade && <p className="text-red-800">You must select grade!</p>}
            </div>
-           <span className="font-serif">
+           <span className="font-serif font-bold text-[25px]">
                             {gradeInputValue == 1 ?
-                            <div>Terrible! Dont like this at all.</div> : gradeInputValue == 2 ?
-                            <div>Not to bad</div> : gradeInputValue == 3 ?
-                            <div>Hmm... Fine</div> : gradeInputValue == 4 ?
-                            <div>Very good</div> : 
-                            <div>Perfection!</div>}
+                            <div>Sinus</div> : gradeInputValue == 2 ?
+                            <div>Afib</div> : gradeInputValue == 3 ?
+                            <div>AFL</div> : gradeInputValue == 4 ?
+                            <div>Other</div> : gradeInputValue == 5 ?
+                            <div>Poor record quality</div> : ''}
                          </span>
            <div className="flex items-center justify-between">
              <button className="bg-blue-500 mt-5 hover:bg-blue-700 text-white font-bold

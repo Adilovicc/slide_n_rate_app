@@ -4,7 +4,7 @@ import prisma from "../../../lib/prismadb";
 
 
 export default async function PublishPost(req:NextApiRequest,res:NextApiResponse){
-    const {imageUrl, session, type} = req.body;
+    const {imageUrl, session} = req.body;
   
     const sess = JSON.parse(session);
   
@@ -16,18 +16,19 @@ export default async function PublishPost(req:NextApiRequest,res:NextApiResponse
             email: sess.data.user.email
         }
     })
-    if(user?.role!='admin') return res.status(500);
+    if(!user) return res.status(500);
 
     try {
-      const record= await prisma.post.create({
+      const record= await prisma.user.update({
+            where:{
+                id:user.id
+            },
             data:{
-                fileUrl:imageUrl,
-                creatorId:user.id,
-                type:type
+                image:String(imageUrl),
             }
         })
      
-        return res.status(200).json({message:'Post created'});
+        return res.status(200).json(record);
         
     } catch (error) {
         return res.status(500).json({message:'Something went wrong'});

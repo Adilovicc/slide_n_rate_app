@@ -5,11 +5,12 @@ import Comment from './Comment';
 import axios from 'axios'
 
 
-export default function Details(props:{post:any, userId:string, setOpen:(value:boolean)=>void}){
+export default function Details(props:{post:any, userId:string, user:any, setOpen:(value:boolean)=>void}){
     const [commentSectionActive, setCmtSecAct] = useState(false);
     const stars = [1,2,3,4,5];
     const threeElements = [1,2,3];
     const [currentBatch, setCrtBatch] =useState(0);
+    const [myAnswer, setMyAnswer] = useState(0);
     
 
     const {reviews, isMore, loading, numberOfReviews} = useLoadRecensions(currentBatch, props.post.id);
@@ -31,20 +32,21 @@ export default function Details(props:{post:any, userId:string, setOpen:(value:b
      }, [loading, isMore]);
    
      const [exists,setExists] = useState(true);
-
+     const [clickNumber,setClickNumber] = useState(0);
      useEffect(()=>{
         let cancel: () => void = () => {};
         try {
           axios({
             method:'GET',
-            url: `https://slide-n-rate-app.vercel.app/api/handlers/findMyComment`,
+            url: `https://slide-n-rate-app.vercel.app/handlers/findMyComment`,
             params: {
                 postId: props.post.id,
                 userId: props.userId
             },
             cancelToken: new axios.CancelToken(c=>cancel=c)
           }).then(res => {
-            if(!res.data) setExists(false);
+            if(!res.data){ setExists(false); if(clickNumber!=0) props.setOpen(true)}
+            else{ setMyAnswer(res.data[0].grade); setExists(true)};
           }).catch(
             err=> {
                 if(axios.isCancel(err)) return
@@ -56,63 +58,43 @@ export default function Details(props:{post:any, userId:string, setOpen:(value:b
         }
       
      return ()=> cancel(); 
-    }, [])
+    },[clickNumber])
 
     
     return(
         <div className={`coverScr ${commentSectionActive ? 'coverActive' : ''}`}>
-        <div className={`${commentSectionActive && 'pt-5'} w-full relative items-center flex px-3 h-[53px] justify-between py-2 transition-all duration-300 
+        <div className={`${commentSectionActive && 'pt-5'} w-full z-20 relative items-center flex px-3 h-[53px] justify-center py-2 transition-all duration-300 
          delay-700 shadow-md border-[0.5px] bg-[#faf0e670] backdrop-blur-md border-black/40`}>
         
-         {exists ? <span className="absolute left-[50%]">{props.post.numberOfReviews}</span> : <ClipboardDocumentCheckIcon onClick={()=>{props.setOpen(true)}} className={`h-6 w-6 absolute left-[50%]`}></ClipboardDocumentCheckIcon>}
+         {!exists ? 
+               <div className="flex items-center">
+                  <span onClick={()=>{setClickNumber(prevClickNumber=>prevClickNumber+1)}}  className='font-semibold cursor-pointer'>Please submit your answer</span>
+                  <ClipboardDocumentCheckIcon onClick={()=>{setClickNumber(prevClickNumber=>prevClickNumber+1)}} className={`h-6 w-6 cursor-pointer`}></ClipboardDocumentCheckIcon>
+                 </div> : 
+                 <div className="flex items-center">
+                    <span className="mr-2">Your submitted answer: </span>
+                    
+                    <span className="font-semibold">
+                     {myAnswer == 1 ? 'Sinus' : myAnswer == 2 ? 'Afib' : myAnswer == 3 ? 'AFL' : myAnswer == 4 ? 'Other' : myAnswer == 5 ? 'Poor record quality' : 'No answer yet'}
+                     </span>
+                 </div>
+                 }
         
        {/* ---------------------THIS WHOLE PART IS FOR DISPLAYING STARS----------------------- */}
-       
+         
+          
+      
 
-       {props.post.numberOfReviews>0 ? <div className="flex">
-            { 
-            stars.map((item,i)=>{
-               if(props.post.avgRating){  
-                return(
-                 
-               (item<=Number(props.post.avgRating)) ? 
-               (
-                <svg key={i} xmlns="http://www.w3.org/2000/svg" fill="#FFD700" viewBox="0 0 24 24" strokeWidth="0.4" stroke="currentColor" className="w-6 h-6">
-                   <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
-                </svg>
-               ) 
-               :
-               (
-               (item-Number(props.post.avgRating)<1) && 
-               <svg key={i} viewBox="0 0 24 24" width="24" height="24" >
-                <defs>
-                  <clipPath id="half-star" clipPathUnits="objectBoundingBox">
-                    <rect x="0" y="0" width={`${(1-item+Number(props.post.avgRating))}`} height="1" />
-                  </clipPath>
-                </defs>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="#FFD700" viewBox="0 0 24 24" strokeWidth="0.4" stroke="currentColor" className="w-6 h-6" clipPath="url(#half-star)">   
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
-                </svg>
-               </svg>
-               ) 
-              )
-            }
-          })
-          } 
-         <div className="text-md font-semibold hidden xsm:inline text-zinc-600">{props.post.avgRating}</div>
-         </div> 
-           : <div className="font-semibold">No reviews yet</div>
-          }
-
-             {props.post.numberOfReviews!=0 && <div onClick={()=>setCmtSecAct(prevToggle=>!prevToggle)} className={`h-9 w-9 rounded-full flex items-center justify-center
+             {props.post.numberOfReviews!=0 && props.user.role=='admin' && <div onClick={()=>setCmtSecAct(prevToggle=>!prevToggle)} className={`h-9 w-9 rounded-full ml-5 flex items-center justify-center
                      hover:bg-[rgba(18,18,18,0.2)] transition duration-300`}>
                        {commentSectionActive?<BarsArrowDownIcon className="w-6 h-6"></BarsArrowDownIcon> :<BarsArrowUpIcon className="w-6 h-6"></BarsArrowUpIcon>}
                     </div> }
-                </div> 
+        </div> 
 
 
                 <div className={`${commentSectionActive ? 'h-full' : ''} relative w-full flex z-50 h-full justify-center backdrop-blur-sm  border-black/40`}>
                         <div id="scrollbarTarget" style={{overflow:'overlay'}} className="bg-white w-[90%] h-full p-2 pb-20">
+                           
                             {reviews.map((rev, i)=>(
                                 reviews.length==i+1 ?
                                 <div ref={lastElementView} key={i}><Comment review={rev}></Comment></div>
