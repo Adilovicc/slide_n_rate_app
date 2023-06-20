@@ -1,11 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../../lib/prismadb";
+//import prisma from "../../../lib/prismadb";
+import { PrismaClient } from "@prisma/client";
 
 
 
 export default async function PublishPost(req:NextApiRequest,res:NextApiResponse){
     const {imageUrl, session, type} = req.body;
-  
+    const prisma= new PrismaClient();
     const sess = JSON.parse(session);
   
     if(!sess){

@@ -1,8 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../../lib/prismadb";
+import { PrismaClient } from "@prisma/client";
+//import prisma from "../../../lib/prismadb";
+
+
+
 
 
 export default async function findMyComment(req:NextApiRequest, res:NextApiResponse){
+    const prisma = new PrismaClient();
     const {postId, userId} = req.query;
     try {
         const records = await prisma.recension.findFirst({
