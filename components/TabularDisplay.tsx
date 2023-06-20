@@ -20,7 +20,7 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
                   <div key={post.id} className="flex">
                      {(idxP==0) && <span className="mr-5 font-semibold">{user.name}</span>}
                         {recensions.map((recension:any, idxR:number)=>(
-                             <div className="flex">
+                             <div key={recension.id} className="flex">
                                 {user.id == recension.userId && post.id==recension.postId && <span className="mr-2">Post{idxP+1}:<span className="ml-2">{recension.grade}</span></span>}
                              </div>
                         ))}
