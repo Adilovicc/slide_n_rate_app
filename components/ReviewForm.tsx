@@ -81,7 +81,7 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
            <div className="mb-4">
              <div className="flex flex-col items-center justify-center">
              {stars.map((star,i)=>(
-                <div className="flex items-center w-[100%] max-w-[300px] justify-start">
+                <div key={i} className="flex items-center w-[100%] max-w-[300px] justify-start">
                   <div className='p-1'><div key={star} className={`h-10 w-10 cursor-pointer border-[2px] border-black ${starColor[star as keyof typeof starColor]}`} onClick={()=>starsChangeColors(star)}></div></div>
                   <div className='font-semibold text-[18px]'>
                   {i == 0 ?
