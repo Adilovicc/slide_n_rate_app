@@ -11,12 +11,13 @@ export default function Comment(props:{review:any}){
                             {props.review.ratedBy.name ? props.review.ratedBy.name : props.review.ratedBy.email}
                          </span>
                          <span className="font-serif">
+                              
                             {props.review.grade == 1 ?
-                            <div>Terrible! Dont like this at all.</div> : props.review.grade == 2 ?
-                            <div>Not to bad</div> : props.review.grade == 3 ?
-                            <div>Hmm... Fine</div> : props.review.grade == 4 ?
-                            <div>Very good</div> : 
-                            <div>Perfection!</div>}
+                            <div>Sinus</div> : props.review.grade == 2 ?
+                            <div>Afib</div> : props.review.grade == 3 ?
+                            <div>AFL</div> : props.review.grade == 4 ?
+                            <div>Other</div> : 
+                            <div>Poor record quality!</div>}
                          </span>
                      </div>
                </section>

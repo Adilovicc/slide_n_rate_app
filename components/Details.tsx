@@ -63,7 +63,7 @@ export default function Details(props:{post:any, userId:string, user:any, setOpe
     
     return(
         <div className={`coverScr ${commentSectionActive ? 'coverActive' : ''}`}>
-        <div className={`${commentSectionActive && 'pt-5'} w-full z-20 relative items-center flex px-3 h-[53px] justify-center py-2 transition-all duration-300 
+        <div className={`${commentSectionActive && 'pt-5'} w-full z-20 relative items-center flex px-3 h-[53px] justify-evenly py-2 transition-all duration-300 
          delay-700 shadow-md border-[0.5px] bg-[#faf0e670] backdrop-blur-md border-black/40`}>
         
          {!exists ? 
