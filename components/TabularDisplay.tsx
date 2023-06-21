@@ -37,20 +37,20 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
         setLoading(true);
         axios({
             method:'GET',
-            url: `https://slide-n-rate-app.vercel.project/api/completeview/getUsers`
+            url: `https://slide-n-rate-project.vercel.app/api/completeview/getUsers`
           }).then(res => {
              //@ts-ignore 
             setUsers(res.data);
             axios({
                 method:'GET',
-               url: `https://slide-n-rate-app.vercel.project/api/completeview/getPosts`
+               url: `https://slide-n-rate-project.vercel.app/api/completeview/getPosts`
            }).then(res => {
                //@ts-ignore 
               setPosts(res.data);
               
               axios({
                 method:'GET',
-                url: `https://slide-n-rate-app.vercel.project/api/completeview/getRecensions`
+                url: `https://slide-n-rate-project.vercel.app/api/completeview/getRecensions`
               }).then(res => {
                  //@ts-ignore 
                 setRecensions(res.data);

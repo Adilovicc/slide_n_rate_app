@@ -15,7 +15,7 @@ export default function useLoadPost(currentBatch: number){
             try {
               axios({
                 method:'GET',
-                url: `https://slide-n-rate-app.vercel.project/api/handlers/loadPosts`,
+                url: `https://slide-n-rate-project.vercel.app/api/handlers/loadPosts`,
                 params: {
                     startAt: currentBatch,
                 },

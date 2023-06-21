@@ -18,7 +18,7 @@ export default function Slide(props:{post:any, currentPost:number, user:any, use
     }
     const processDelete =()=>{
         axios({
-            url:'https://slide-n-rate-app.vercel.project/api/handlers/deletePost',
+            url:'https://slide-n-rate-project.vercel.app/api/handlers/deletePost',
             data:{
                 postId:props.post.id
              },
