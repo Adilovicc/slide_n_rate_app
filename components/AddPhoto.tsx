@@ -31,7 +31,7 @@ export default function AddPhoto(props:{setAPS:any}){
                  image=downloadUrl;
                  
                  axios({
-                    url:'https://slide-n-rate-app.vercel.app/api/handlers/addPhoto',
+                    url:'https://slide-n-rate-project.vercel.project/api/handlers/addPhoto',
                     data:{
                      imageUrl: image,
                      //@ts-ignore

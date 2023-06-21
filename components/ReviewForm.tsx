@@ -40,7 +40,7 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
         return alert("Moras unijeti zvijezdu");
       }
        axios({
-         url:'https://slide-n-rate-app.vercel.app/api/handlers/addRecension',
+         url:'https://slide-n-rate-app.vercel.project/api/handlers/addRecension',
          data:{
             grade: gradeInputValue,  
             userId: props.userId,

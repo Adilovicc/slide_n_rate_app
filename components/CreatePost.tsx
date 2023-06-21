@@ -32,7 +32,7 @@ export default function CreatePost(props:{setImageDisplay:any}){
                  image=downloadUrl;
                  
                  axios({
-                    url:'https://slide-n-rate-app.vercel.app/api/handlers/publishPost',
+                    url:'https://slide-n-rate-app.vercel.project/api/handlers/publishPost',
                     data:{
                      imageUrl: image,
                      //@ts-ignore

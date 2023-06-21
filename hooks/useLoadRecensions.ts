@@ -15,7 +15,7 @@ export default function useLoadRecensions(currentBatch: number, postId: string){
             try {
               axios({
                 method:'GET',
-                url: `https://slide-n-rate-app.vercel.app/api/handlers/loadRecensions`,
+                url: `https://slide-n-rate-app.vercel.project/api/handlers/loadRecensions`,
                 params: {
                     startAt: currentBatch,
                     postId: postId

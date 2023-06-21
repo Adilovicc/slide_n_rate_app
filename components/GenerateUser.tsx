@@ -18,7 +18,7 @@ export default function GenerateUser(props:{setGenerateScreen:any}) {
             try {
               axios({
                 method:'GET',
-                url:'https://slide-n-rate-app.vercel.app/api/handlers/generateUser',
+                url:'https://slide-n-rate-app.vercel.project/api/handlers/generateUser',
                 params: {
                     username:data.text,
                     emailBase:inputModified,
