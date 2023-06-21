@@ -31,7 +31,7 @@ export default function CreatePDFPost(props:{setPDFDisplay:any}){
                  image=downloadUrl;
                  
                  axios({
-                    url:'https://slide-n-rate-project.vercel.app/handlers/publishPost',
+                    url:'https://slide-n-rate-project.vercel.app/api/handlers/publishPost',
                     data:{
                      imageUrl: image,
                      //@ts-ignore
