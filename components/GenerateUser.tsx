@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { XCircleIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import {baseUrl} from '../baseUrl'
 
 export default function GenerateUser(props:{setGenerateScreen:any}) {
   const { register, handleSubmit, formState: { errors }, setValue} = useForm();
@@ -18,7 +19,7 @@ export default function GenerateUser(props:{setGenerateScreen:any}) {
             try {
               axios({
                 method:'GET',
-                url:'https://slide-n-rate-project.vercel.app/api/handlers/generateUser',
+                url:baseUrl+'api/handlers/generateUser',
                 params: {
                     username:data.text,
                     emailBase:inputModified,

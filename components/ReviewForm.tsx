@@ -6,6 +6,7 @@ import {useForm} from 'react-hook-form'
 import axios from 'axios'
 import {useRouter} from 'next/router'
 import Swal from 'sweetalert2'
+import {baseUrl} from '../baseUrl'
 
 
 
@@ -24,7 +25,7 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
     let updatedStarsColors = {...starColor};
     for(var i=1; i<6; i++){
         if(i==broj){
-            updatedStarsColors[i as keyof typeof starColor]='fill-yellow-400';     
+            updatedStarsColors[i as keyof typeof starColor]='bg-black/90';     
         }
         if(i!=broj){
             updatedStarsColors[i as keyof typeof starColor]='';          
@@ -37,10 +38,10 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
   
   const reviewPost = () =>{
       if(gradeInputValue<1 || gradeInputValue>5){
-        return alert("Moras unijeti zvijezdu");
+        return alert("You have to select the answer");
       }
        axios({
-         url:'https://slide-n-rate-project.vercel.app/api/handlers/addRecension',
+         url:baseUrl+'api/handlers/addRecension',
          data:{
             grade: gradeInputValue,  
             userId: props.userId,
@@ -75,25 +76,28 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
 
 
   return (
-       <form onSubmit={handleSubmit(reviewPost)} className="relative bg-slate-50 w-[80%] lg:w-[70%] flex items-center justify-center flex-col py-10">
+       <form onSubmit={handleSubmit(reviewPost)} className="relative bg-slate-50 w-[80%] lg:w-[70%] border-[0.5px] border-black/30 flex items-center justify-center flex-col py-10">
            <XMarkIcon className="absolute top-2 right-2 h-8" onClick={()=>{props.setOpen(false)}}></XMarkIcon>
            <div className="mb-4">
-             <div className="flex">
-             {stars.map((star)=>(
-                <StarIcon key={star} className={`h-10 ${starColor[star as keyof typeof starColor]}`} onMouseEnter={()=>starsChangeColors(star)}/>
+             <div className="flex flex-col items-center justify-center">
+             {stars.map((star,i)=>(
+                <div className="flex items-center w-[100%] max-w-[300px] justify-start">
+                  <div className='p-1'><div key={star} className={`h-10 w-10 cursor-pointer border-[2px] border-black ${starColor[star as keyof typeof starColor]}`} onClick={()=>starsChangeColors(star)}></div></div>
+                  <div className='font-semibold text-[18px]'>
+                  {i == 0 ?
+                            <div>Sinus</div> : i == 1 ?
+                            <div>Afib</div> : i == 2 ?
+                            <div>AFL</div> : i == 3 ?
+                            <div>Other</div> : 
+                            <div>Poor record quality</div> }
+                  </div>
+                </div>
              ))}
              </div>
             {/* <input value={gradeInputValue} readOnly {...register("grade",{pattern:{value:/^[1-9]\d*$/, message:"Moraš odabrati ocjenu (zvijezde 1-5)"}})}/> */}
              {errors.grade && <p className="text-red-800">You must select grade!</p>}
            </div>
-           <span className="font-serif font-bold text-[25px]">
-                            {gradeInputValue == 1 ?
-                            <div>Sinus</div> : gradeInputValue == 2 ?
-                            <div>Afib</div> : gradeInputValue == 3 ?
-                            <div>AFL</div> : gradeInputValue == 4 ?
-                            <div>Other</div> : gradeInputValue == 5 ?
-                            <div>Poor record quality</div> : ''}
-                         </span>
+
            <div className="flex items-center justify-between">
              <button className="bg-blue-500 mt-5 hover:bg-blue-700 text-white font-bold
               py-2 px-10 rounded focus:outline-none focus:shadow-outline" type="submit">

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
-
+import {baseUrl} from '../baseUrl'
 
 export default function useLoadPost(currentBatch: number){
     const [posts, setPosts] = useState([]);
@@ -15,7 +15,7 @@ export default function useLoadPost(currentBatch: number){
             try {
               axios({
                 method:'GET',
-                url: `https://slide-n-rate-project.vercel.app/api/handlers/loadPosts`,
+                url: baseUrl+'api/handlers/loadPosts',
                 params: {
                     startAt: currentBatch,
                 },

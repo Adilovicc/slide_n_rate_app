@@ -1,7 +1,7 @@
 import {useState} from 'react'
 import axios from 'axios';
 import { XCircleIcon } from '@heroicons/react/24/outline';
-
+import {baseUrl} from '../baseUrl'
 
 export default function TabularDisplay(props:{tabularDisplayState:any}){
      const [users, setUsers] = useState<any>([]);
@@ -37,20 +37,20 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
         setLoading(true);
         axios({
             method:'GET',
-            url: `https://slide-n-rate-project.vercel.app/api/completeview/getUsers`
+            url:baseUrl+'api/completeview/getUsers'
           }).then(res => {
              //@ts-ignore 
             setUsers(res.data);
             axios({
                 method:'GET',
-               url: `https://slide-n-rate-project.vercel.app/api/completeview/getPosts`
+               url: baseUrl+'api/completeview/getPosts'
            }).then(res => {
                //@ts-ignore 
               setPosts(res.data);
               
               axios({
                 method:'GET',
-                url: `https://slide-n-rate-project.vercel.app/api/completeview/getRecensions`
+                url: baseUrl+'api/completeview/getRecensions'
               }).then(res => {
                  //@ts-ignore 
                 setRecensions(res.data);

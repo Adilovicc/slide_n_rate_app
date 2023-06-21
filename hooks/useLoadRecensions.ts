@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
-
+import {baseUrl} from '../baseUrl'
 
 export default function useLoadRecensions(currentBatch: number, postId: string){
     const [reviews, setReviews] = useState([]);
@@ -15,7 +15,7 @@ export default function useLoadRecensions(currentBatch: number, postId: string){
             try {
               axios({
                 method:'GET',
-                url: `https://slide-n-rate-project.vercel.app/api/handlers/loadRecensions`,
+                url: baseUrl+'api/handlers/loadRecensions',
                 params: {
                     startAt: currentBatch,
                     postId: postId

@@ -3,7 +3,7 @@ import { BarsArrowDownIcon, BarsArrowUpIcon,ClipboardDocumentCheckIcon } from '@
 import useLoadRecensions from '@/hooks/useLoadRecensions';
 import Comment from './Comment';
 import axios from 'axios'
-
+import {baseUrl} from '../baseUrl'
 
 export default function Details(props:{post:any, userId:string, user:any, setOpen:(value:boolean)=>void}){
     const [commentSectionActive, setCmtSecAct] = useState(false);
@@ -38,7 +38,7 @@ export default function Details(props:{post:any, userId:string, user:any, setOpe
         try {
           axios({
             method:'GET',
-            url: `https://slide-n-rate-project.vercel.app/api/handlers/findMyComment`,
+            url: baseUrl+'api/handlers/findMyComment',
             params: {
                 postId: props.post.id,
                 userId: props.userId

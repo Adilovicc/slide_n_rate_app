@@ -8,6 +8,7 @@ import { useSession } from 'next-auth/react'
 import Swal from 'sweetalert2'
 import {useRouter} from 'next/router'
 import { XCircleIcon } from '@heroicons/react/24/solid'
+import {baseUrl} from '../baseUrl'
 
 export default function CreatePDFPost(props:{setPDFDisplay:any}){
     
@@ -31,7 +32,7 @@ export default function CreatePDFPost(props:{setPDFDisplay:any}){
                  image=downloadUrl;
                  
                  axios({
-                    url:'https://slide-n-rate-project.vercel.app/api/handlers/publishPost',
+                    url:baseUrl+'api/handlers/publishPost',
                     data:{
                      imageUrl: image,
                      //@ts-ignore

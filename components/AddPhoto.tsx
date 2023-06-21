@@ -8,6 +8,7 @@ import { useSession } from 'next-auth/react'
 import Swal from 'sweetalert2'
 import {useRouter} from 'next/router'
 import { XCircleIcon } from '@heroicons/react/24/solid'
+import {baseUrl} from '../baseUrl'
 
 export default function AddPhoto(props:{setAPS:any}){
     
@@ -31,7 +32,7 @@ export default function AddPhoto(props:{setAPS:any}){
                  image=downloadUrl;
                  
                  axios({
-                    url:'https://slide-n-rate-project.vercel.app/api/handlers/addPhoto',
+                    url:baseUrl+'api/handlers/addPhoto',
                     data:{
                      imageUrl: image,
                      //@ts-ignore

@@ -7,7 +7,9 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import Swal from "sweetalert2";
 import {useRouter} from "next/router";
-
+import {baseUrl} from '../baseUrl'
+import {Document, Page, pdfjs} from 'react-pdf'
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 export default function Slide(props:{post:any, currentPost:number, user:any, userId:string}){
     const [showReviewScr, setShowRevScr] = useState(false);
@@ -18,7 +20,7 @@ export default function Slide(props:{post:any, currentPost:number, user:any, use
     }
     const processDelete =()=>{
         axios({
-            url:'https://slide-n-rate-project.vercel.app/api/handlers/deletePost',
+            url:baseUrl+'api/handlers/deletePost',
             data:{
                 postId:props.post.id
              },
@@ -54,8 +56,16 @@ export default function Slide(props:{post:any, currentPost:number, user:any, use
             <div onClick={()=>handleDeletePost()} className="absolute top-5 right-5 h-10 w-10 rounded-full bg-[rgba(244,238,238,0.8)] border-[1px] border-black z-10 flex justify-center items-center">
                 <TrashIcon className=" h-6 w-6 cursor-pointer"></TrashIcon>
             </div>}
-           <div className="relative w-full h-full bg-black/30">
-               {props.post.type=='pdf' ? <iframe className="w-full h-full"  src={`${props.post.fileUrl}`}></iframe> : <Image fill src={`${props.post.fileUrl}`} alt='post_img'></Image>}
+           <div className={`relative w-full flex flex-col items-center h-full bg-black/30`}>
+               {props.post.type=='pdf' ?
+                //<iframe className="w-full h-full"  src={`${props.post.fileUrl}`}></iframe> 
+                <div className="w-full h-full flex flex-col items-center overflow-y-auto">
+                <Document  file={`${props.post.fileUrl}`}>
+                <Page className={'scale-[1.15]'} pageNumber={1} />
+                </Document>
+                </div>
+                : 
+                <Image fill src={`${props.post.fileUrl}`} alt='post_img'></Image>}
            </div>
            <Details userId={props.userId} user={props.user} post={props.post} setOpen={setShowRevScr}></Details>
            <div className={`${showReviewScr ? 'fixed' : 'hidden'} flex justify-center items-center top-0 right-0 left-0 bottom-0 z-50 backdrop-blur-md`}>
