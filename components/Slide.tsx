@@ -14,6 +14,8 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 export default function Slide(props:{post:any, currentPost:number, user:any, userId:string}){
     const [showReviewScr, setShowRevScr] = useState(false);
     const [deletePost,setDeletePost] = useState(false);
+    const pageWidth = useRef();
+    const [isOpen, setOpen] = useState(false);
     const router = useRouter();
     const handleDeletePost =()=>{
        setDeletePost(prevPost=>!prevPost);
@@ -51,25 +53,30 @@ export default function Slide(props:{post:any, currentPost:number, user:any, use
 
     return(
       <div style={{transform:`translateX(-${props.currentPost*100}%)`}} 
-        className={`relative w-full max-w-[1200px]  transition-transform duration-1000 ease-out h-[540px] flex-shrink-0 `}>
+        className={`relative w-full max-w-[1400px] transition-transform overflow-hidden overflow-x-auto duration-1000 ease-out h-full bg-gray-200 pb-5 flex-shrink-0 `}>
             {props.user.role == 'admin' && 
             <div onClick={()=>handleDeletePost()} className="absolute top-5 right-5 h-10 w-10 rounded-full bg-[rgba(244,238,238,0.8)] border-[1px] border-black z-10 flex justify-center items-center">
                 <TrashIcon className=" h-6 w-6 cursor-pointer"></TrashIcon>
             </div>}
-           <div className={`relative w-full flex flex-col items-center h-full bg-black/30`}>
-               {props.post.type=='pdf' ?
-                //<iframe className="w-full h-full"  src={`${props.post.fileUrl}`}></iframe> 
-                <div className="w-full h-full flex flex-col items-center overflow-y-auto">
-                <Document  file={`${props.post.fileUrl}`}>
-                <Page className={'scale-[1.15]'} pageNumber={1} />
-                </Document>
-                </div>
+           <div className={`relative w-full flex items-center h-full bg-black/30 ${props.post.type=='pdf' ? 'px-16' : ''}`}>
+               {props.post.type=='pdf' ?  <div className="h-full w-[83%] overflow-hidden overflow-x-auto">
+                 <Document className="w-full h-full" file={props.post.fileUrl}>
+                  <Page width={1050} className="h-full overflow-hidden overflow-y-auto" pageNumber={1}></Page>
+                 </Document>
+               </div>
+              
+             
+            
                 : 
-                <Image fill src={`${props.post.fileUrl}`} alt='post_img'></Image>}
+                <div className="h-full w-[83%] relative"><Image fill src={`${props.post.fileUrl}`} alt='post_img'></Image></div>
+                }
+                <div className="grow">
+                  <ReviewForm userId={props.userId} postId={props.post.id} setOpen={setOpen}></ReviewForm>
+                </div>
            </div>
-           <Details userId={props.userId} user={props.user} post={props.post} setOpen={setShowRevScr}></Details>
+           {props.user.role == 'admin' && <Details userId={props.userId} user={props.user} post={props.post} setOpen={setShowRevScr}></Details>}
            <div className={`${showReviewScr ? 'fixed' : 'hidden'} flex justify-center items-center top-0 right-0 left-0 bottom-0 z-50 backdrop-blur-md`}>
-             <ReviewForm userId={props.userId} postId={props.post.id} setOpen={setShowRevScr}></ReviewForm>
+            
           </div>
           <div className={`${deletePost ? 'fixed' : 'hidden'} flex justify-center items-center top-0 right-0 left-0 bottom-0 z-50 backdrop-blur-md`}>
              <div className="h-[30%] w-[80%] min-h-[40px] min-w-[140px] flex items-center justify-center">

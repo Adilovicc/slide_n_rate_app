@@ -7,6 +7,8 @@ import axios from 'axios'
 import {useRouter} from 'next/router'
 import Swal from 'sweetalert2'
 import {baseUrl} from '../baseUrl'
+import spinner from '../public/spinner.svg'
+import Image from 'next/image'
 
 
 
@@ -14,6 +16,9 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
   const gradeInput = useRef(null);
   const stars = [1,2,3,4,5];
   const {register, setValue, handleSubmit, formState:{errors}} = useForm();
+  const [answered,setAnswered] = useState(false);
+  const [myAnswer, setMyAnswer] = useState(0);
+  const [loading,setLoading] = useState(true);
 
 
   const [starColor, setStarColor] = useState({1:'',2:'',3:'',4:'',5:''});
@@ -35,11 +40,43 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
      setValue('grade',gradeInputValue)
      setStarColor(updatedStarsColors);
   }
+
+  const [trigger, setTrigger] = useState(false);
+
+  useEffect(()=>{
+    let cancel: () => void = () => {};
+    setLoading(true);
+    try {
+      axios({
+        method:'GET',
+        url: baseUrl+'api/handlers/findMyComment',
+        params: {
+            postId: props.postId,
+            userId: props.userId
+        },
+        cancelToken: new axios.CancelToken(c=>cancel=c)
+      }).then(res => {
+        if(!res.data){ setAnswered(false); }
+        else{ setMyAnswer(res.data[0].grade); setAnswered(true) };
+        setLoading(false)
+      }).catch(
+        err=> {
+            if(axios.isCancel(err)) return
+        }
+      )
+      
+    } catch (error) {
+     
+    }
+  
+ return ()=> cancel(); 
+},[trigger])
   
   const reviewPost = () =>{
       if(gradeInputValue<1 || gradeInputValue>5){
         return alert("You have to select the answer");
       }
+       setLoading(true);
        axios({
          url:baseUrl+'api/handlers/addRecension',
          data:{
@@ -50,6 +87,7 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
          method:'POST'
        }).then((response)=>{
          props.setOpen(false);
+         setTrigger(prevTrig => !prevTrig);
          return Swal.fire({
             position: 'center',
             icon: 'success',
@@ -76,8 +114,12 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
 
 
   return (
-       <form onSubmit={handleSubmit(reviewPost)} className="relative bg-slate-50 w-[80%] lg:w-[70%] border-[0.5px] border-black/30 flex items-center justify-center flex-col py-10">
-           <XMarkIcon className="absolute top-2 right-2 h-8" onClick={()=>{props.setOpen(false)}}></XMarkIcon>
+       <div className="relative h-full bg-slate-50 overflow-auto min-w-[200px] w-[100%] max-w-[500px] lg:w-[100%] border-[0.5px] border-black/30 flex items-center justify-center flex-col py-10">
+          {/*XMarkIcon className="absolute top-2 right-2 h-8" onClick={()=>{props.setOpen(false)}}></XMarkIcon>*/}
+       {
+       (!answered && !loading) ?
+       <form onSubmit={handleSubmit(reviewPost)} className="relative w-full h-full flex items-center justify-center flex-col ">
+          
            <div className="mb-4">
              <div className="flex flex-col items-center justify-center">
              {stars.map((star,i)=>(
@@ -101,10 +143,24 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
            <div className="flex items-center justify-between">
              <button className="bg-blue-500 mt-5 hover:bg-blue-700 text-white font-bold
               py-2 px-10 rounded focus:outline-none focus:shadow-outline" type="submit">
-                Publish
+                Answer
              </button>
            </div>
-       </form>
+       </form> : (answered && !loading) ? 
+       <div>
+          <div className='font-bold flex flex-col justify-center items-center text-[18px]'>
+                   <span className="font-normal">Your answer:</span>
+                  {myAnswer == 1 ?
+                            <div>Sinus</div> : myAnswer == 2 ?
+                            <div>Afib</div> : myAnswer == 3 ?
+                            <div>AFL</div> : myAnswer == 4 ?
+                            <div>Other</div> : 
+                            <div>Poor record quality</div> }
+                  </div>
+          </div> :
+        <div className="w-14 h-14 relative"><Image className="animate-spin" fill src={spinner} alt='spinner-img'></Image></div>
+       }
+       </div>
   )
 }
 

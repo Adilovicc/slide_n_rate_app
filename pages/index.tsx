@@ -5,7 +5,7 @@ import CreatePost from '@/components/CreatePost';
 import CreatePDFPost from '@/components/CreatePDFPost';
 import { getSession, signOut } from 'next-auth/react';
 import prisma from '../lib/prismadb';
-import { ArrowLeftOnRectangleIcon, ChevronLeftIcon, ChevronRightIcon, TableCellsIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftOnRectangleIcon, ChevronLeftIcon, ChevronRightIcon, TableCellsIcon, Bars3Icon, BookmarkSquareIcon } from '@heroicons/react/24/outline';
 import useLoadPost from '../hooks/useLoadPost';
 import axios from 'axios';
 import {ArrowUpTrayIcon, UserPlusIcon, CameraIcon} from '@heroicons/react/24/outline';
@@ -13,16 +13,21 @@ import Image from 'next/image';
 import AddPhoto from '../components/AddPhoto'
 import GenerateUser from '../components/GenerateUser'
 import TabularDisplay from '@/components/TabularDisplay';
+import { baseUrl } from '../baseUrl';
+import Swal from 'sweetalert2';
 
 
 export default function Home({session, user}:any){
      const [currentBatch, setCrtBatch] = useState(0);
-     const {posts, numberOfPosts, isMore, loading}= useLoadPost(currentBatch);
-     const [currentPost,setCurrentPost] = useState(0);
+     const [take, setTake] = useState(user.currentPost+1);
+     const [currentPost,setCurrentPost] = useState<number>(user.currentPost);
+     const {posts, numberOfPosts, isMore, loading}= useLoadPost(currentBatch,take);
 
      useEffect(()=>{
-        if(currentPost==posts.length-1 && isMore) setCrtBatch(prevBatch=>prevBatch+3);
-     }, [currentPost])
+        if(currentPost==posts.length-1 && isMore){
+           setCrtBatch(prevBatch=>prevBatch+3);
+        }
+     }, [currentPost,posts])
      
 
      const handleSlideLeft=()=>{
@@ -64,9 +69,38 @@ export default function Home({session, user}:any){
      }
 
     
+     const handleSaveProgress = () =>{
+      axios({
+        url:baseUrl+'api/handlers/saveProgress',
+        data:{
+         currentPost: currentPost,
+         userId: user.id
+        },
+        method:'POST'
+      }).then((res)=>{
+            if(res){
+              Swal.fire({
+                position: 'bottom-right',
+                icon: 'success',
+                title: 'Progress saved!',
+                showConfirmButton: false,
+                timer: 3000
+             });  
+            }
+      }).catch((err)=>{
+        Swal.fire({
+          position: 'bottom-right',
+          icon: 'error',
+          title: 'Error',
+          showConfirmButton: false,
+          timer: 3000
+       });  
+      });
+     }
+    
 
      return(
-        <div style={{overflow:'hidden'}} className="w-full relative h-screen flex flex-col">
+        <div style={{overflow:'hidden'}} className="w-full pt-20 relative h-screen bg-gray-200">
              <div className={`${addPhotoScreen ? 'fixed' : 'hidden'} top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black/30 z-40 backdrop-blur-sm`}>
                    <AddPhoto setAPS={setAddPhotoScreen}></AddPhoto>
              </div>
@@ -76,39 +110,43 @@ export default function Home({session, user}:any){
              <div className={`${tabularDisplay ? 'fixed' : 'hidden'} top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black/30 z-40 backdrop-blur-sm`}>
                    <TabularDisplay tabularDisplayState={setTabularDisplay}></TabularDisplay>
              </div>
-            <div className={`${showDropdownMenu ? 'absolute' : 'hidden'} top-[55px] right-[32px] md:right-[80px] ${user.role=='admin' ? 'h-[160px]' : 'h-[120px]'} w-[140px] z-10
+            <div className={`${showDropdownMenu ? 'absolute' : 'hidden'} top-[55px] right-[32px] md:right-[80px] ${user.role=='admin' ? 'h-[200px]' : 'h-[90px]'} w-[140px] z-10
                    bg-white rounded-md border-[0.5px] border-black text-sm font-serif px-1`}>
                   <button onClick={()=>signOut()} className="w-full flex items-center py-2 hover:scale-105 rounded-t-md">
                    <ArrowLeftOnRectangleIcon className="h-6 w-6"></ArrowLeftOnRectangleIcon> Log out
                   </button>    
+                 { <button onClick={()=>handleSaveProgress()} className="w-full flex items-center py-2 hover:scale-105 rounded-t-md truncate">
+                   <BookmarkSquareIcon className="h-6 w-6"></BookmarkSquareIcon> Save progress
+                  </button>}
                  {user.role == 'admin' && <button  onClick={()=>handleGenUserScr()}  className="w-full flex items-center py-2 hover:scale-105  rounded-t-md truncate">
                    <UserPlusIcon className="h-6 w-6"></UserPlusIcon> Generate user
                    </button> }   
-                  <button onClick={()=>handleAddPhoto()} className="w-full flex items-center py-2 hover:scale-105 rounded-t-md truncate">
+                  {user.role == 'admin' && <button onClick={()=>handleAddPhoto()} className="w-full flex items-center py-2 hover:scale-105 rounded-t-md truncate">
                    <CameraIcon className="h-6 w-6"></CameraIcon> Add photo
-                  </button>  
+                  </button>}  
                  {user.role == 'admin' && <button onClick={()=>handleTabularDisplay()} className="w-full flex items-center py-2 hover:scale-105 rounded-t-md truncate">
                    <TableCellsIcon className="h-6 w-6"></TableCellsIcon> Tabular display
                   </button>  }
             </div>
-        <section className="w-full relative h-16 bg-[rgb(15,15,15)] px-8 md:px-20 flex items-center justify-between text-white">
-               <span className="text-white text-[20px] font-semibold font-serif">Slide&Rate</span>
-               <div className='flex items-center'>
-                  {user.role=='admin' && <button onClick={()=>setShowPublishImage(true)} className="px-4 py-1 border-[1px] border-white mx-3">Publish</button>}
-                  {user.role=='admin' && <button onClick={()=>setShowPublishPDFImage(true)} className="px-4 py-1 border-[1px] border-white mx-3 truncate">Publish PDF</button>}
-                
-                  {user.image ? <div onClick={()=>handleShowDropdown()} className="relative w-10 h-10 rounded-full"><Image className="rounded-full" src={user.image} fill alt='userImg'></Image></div> : 
-                  <div onClick={()=>handleShowDropdown()} className="h-8 w-8 bg-white rounded-full"></div>}
-               </div>
-        </section>
-        <section style={{overflow:'overlay'}} className="w-full relative bg-gray-200 flex grow justify-center items-center">
-             <div className={`${showPublishImage ? 'fixed flex' : 'hidden'} top-0 right-0 left-0 bottom-0 justify-center items-center bg-black/20 backdrop-blur-lg z-20`}>
+            <div className={`${showPublishImage ? 'fixed flex' : 'hidden'} top-0 right-0 left-0 bottom-0 justify-center items-center bg-black/20 backdrop-blur-lg z-20`}>
                 <CreatePost  setImageDisplay={setShowPublishImage}></CreatePost>
              </div>
              <div className={`${showPublishPDFImage ? 'fixed flex' : 'hidden'} top-0 right-0 left-0 bottom-0 justify-center items-center bg-black/20 backdrop-blur-lg z-20`}>
                 <CreatePDFPost setPDFDisplay={setShowPublishPDFImage}></CreatePDFPost>
              </div>
-             <div className="relative w-full max-w-[1200px]  bg-white flex overflow-hidden items-center justify-between">
+        <section className="w-full fixed top-0  h-16 bg-[rgb(15,15,15)] px-8 md:px-20 flex items-center justify-between text-white">
+               <span className="text-white text-[20px] font-semibold font-serif">Slide&Rate</span>
+               <div className='flex items-center'>
+                  {user.role=='admin' && <button onClick={()=>setShowPublishImage(true)} className="px-4 py-1 border-[1px] border-white mx-3">Publish</button>}
+                  {user.role=='admin' && <button onClick={()=>setShowPublishPDFImage(true)} className="px-4 py-1 border-[1px] border-white mx-3 truncate">Publish PDF</button>}
+                
+                  {user.role == 'admin' ? user.image ? <div onClick={()=>handleShowDropdown()} className="relative w-10 h-10 rounded-full"><Image className="rounded-full" src={user.image} fill alt='userImg'></Image></div> : 
+                  <div onClick={()=>handleShowDropdown()} className="h-10 w-10 bg-white rounded-full"></div> : 
+                  <div onClick={()=>handleShowDropdown()} className="w-10 h-10"><Bars3Icon className="w-10 h-10"></Bars3Icon></div>}
+               </div>
+        </section>
+        <section style={{overflow:'overlay'}} className="w-full relative bg-gray-200 h-full flex justify-center items-center">
+             <div className="relative w-full  h-full max-w-[1400px] bg-white flex overflow-hidden items-center justify-between">
                <div onClick={()=>handleSlideLeft()} className={`absolute transition ${currentPost==0 ? 'hidden' : 'flex'} flex justify-center items-center
                 duration-300 h-[45px] w-[45px] z-10 rounded-full bg-white/40 left-[14px] hover:bg-white/60`}>
                          <ChevronLeftIcon className="w-8 h-8"></ChevronLeftIcon>

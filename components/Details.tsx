@@ -66,7 +66,7 @@ export default function Details(props:{post:any, userId:string, user:any, setOpe
         <div className={`${commentSectionActive && 'pt-5'} w-full z-20 relative items-center flex px-3 h-[53px] justify-evenly py-2 transition-all duration-300 
          delay-700 shadow-md border-[0.5px] bg-[#faf0e670] backdrop-blur-md border-black/40`}>
         
-         {!exists ? 
+         {/*  !exists ? 
                <div className="flex items-center">
                   <span onClick={()=>{setClickNumber(prevClickNumber=>prevClickNumber+1)}}  className='font-semibold cursor-pointer'>Please submit your answer</span>
                   <ClipboardDocumentCheckIcon onClick={()=>{setClickNumber(prevClickNumber=>prevClickNumber+1)}} className={`h-6 w-6 cursor-pointer`}></ClipboardDocumentCheckIcon>
@@ -78,7 +78,7 @@ export default function Details(props:{post:any, userId:string, user:any, setOpe
                      {myAnswer == 1 ? 'Sinus' : myAnswer == 2 ? 'Afib' : myAnswer == 3 ? 'AFL' : myAnswer == 4 ? 'Other' : myAnswer == 5 ? 'Poor record quality' : 'No answer yet'}
                      </span>
                  </div>
-                 }
+           */}
         
        {/* ---------------------THIS WHOLE PART IS FOR DISPLAYING STARS----------------------- */}
          
@@ -88,6 +88,10 @@ export default function Details(props:{post:any, userId:string, user:any, setOpe
              {props.post.numberOfReviews!=0 && props.user.role=='admin' && <div onClick={()=>setCmtSecAct(prevToggle=>!prevToggle)} className={`h-9 w-9 rounded-full ml-5 flex items-center justify-center
                      hover:bg-[rgba(18,18,18,0.2)] transition duration-300`}>
                        {commentSectionActive?<BarsArrowDownIcon className="w-6 h-6"></BarsArrowDownIcon> :<BarsArrowUpIcon className="w-6 h-6"></BarsArrowUpIcon>}
+                    </div> }
+                    {props.post.numberOfReviews==0 && props.user.role=='admin' && <div onClick={()=>setCmtSecAct(prevToggle=>!prevToggle)} className={`h-9 w-full rounded-full ml-5 flex items-center justify-center
+                     hover:bg-[rgba(18,18,18,0.2)] transition duration-300`}>
+                       <span>No comments for this post yet</span>
                     </div> }
         </div> 
 

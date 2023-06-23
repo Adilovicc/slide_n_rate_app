@@ -2,12 +2,12 @@ import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../lib/prismadb";
 
 export default async function LoadPosts(req:NextApiRequest, res:NextApiResponse){
-     const {startAt} = req.query;
+     const {startAt,take} = req.query;
      
      try {
         const records = await prisma.post.findMany({
             skip: Number(startAt),
-            take: 3
+            take: Number(take)
         })
         return res.json(records);
     } catch (error) {
