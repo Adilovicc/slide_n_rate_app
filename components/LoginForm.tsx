@@ -66,7 +66,7 @@ export default function Signin(){
                 label="Password"
             />
            </FormControl>
-           <div className="w-full flex text-sm pl-1 text-[rgb(22,51,81)]"><label className="cursor-pointer">Forgot password?</label></div>
+           <div className="w-full hidden text-sm pl-1 text-[rgb(22,51,81)]"><label className="cursor-pointer">Forgot password?</label></div>
            <button type="submit" className="w-[80%] mt-8 h-10 bg-[rgb(49,188,230)] text-white text-lg font-semibold rounded-md">
                 Login
            </button>

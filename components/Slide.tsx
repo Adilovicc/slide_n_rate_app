@@ -1,6 +1,6 @@
 import Details from "./Details";
 import Image from "next/image";
-import { useState, useRef } from "react";
+import { useState, useRef, useLayoutEffect,useEffect } from "react";
 import ReviewForm from "./ReviewForm";
 import { userAgent } from "next/server";
 import { TrashIcon } from "@heroicons/react/24/outline";
@@ -11,12 +11,13 @@ import {baseUrl} from '../baseUrl'
 import {Document, Page, pdfjs} from 'react-pdf'
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-export default function Slide(props:{post:any, currentPost:number, user:any, userId:string}){
+export default function Slide(props:{post:any, currentPost:number, user:any, userId:string, setCurrent:()=>void}){
     const [showReviewScr, setShowRevScr] = useState(false);
     const [deletePost,setDeletePost] = useState(false);
-    const pageWidth = useRef();
+    const pageWidthRef = useRef(null);
     const [isOpen, setOpen] = useState(false);
     const router = useRouter();
+    const [pageWidth, setPageWidth] = useState(600);
     const handleDeletePost =()=>{
        setDeletePost(prevPost=>!prevPost);
     }
@@ -51,27 +52,39 @@ export default function Slide(props:{post:any, currentPost:number, user:any, use
         
     }
 
+    useLayoutEffect(() => {
+      console.log("HERE!");
+      //@ts-ignore
+      setPageWidth(pageWidthRef.current.offsetWidth-pageWidthRef.current.offsetWidth*0.14-128);
+      const resizeHandler = ()=>{
+         //@ts-ignore
+         setPageWidth(pageWidthRef.current.offsetWidth-pageWidthRef.current.offsetWidth*0.14-128);
+      }
+      addEventListener('resize', resizeHandler);
+      return()=>removeEventListener('resize', resizeHandler);
+    }, []);
+
     return(
       <div style={{transform:`translateX(-${props.currentPost*100}%)`}} 
-        className={`relative w-full max-w-[1400px] transition-transform overflow-hidden overflow-x-auto duration-1000 ease-out h-full bg-gray-200 pb-5 flex-shrink-0 `}>
+        className={`relative w-full transition-transform overflow-hidden flex justify-center overflow-x-auto duration-1000 ease-out h-full bg-black/50 flex-shrink-0 `}>
             {props.user.role == 'admin' && 
             <div onClick={()=>handleDeletePost()} className="absolute top-5 right-5 h-10 w-10 rounded-full bg-[rgba(244,238,238,0.8)] border-[1px] border-black z-10 flex justify-center items-center">
                 <TrashIcon className=" h-6 w-6 cursor-pointer"></TrashIcon>
             </div>}
-           <div className={`relative w-full flex items-center h-full bg-black/30 ${props.post.type=='pdf' ? 'px-16' : ''}`}>
-               {props.post.type=='pdf' ?  <div className="h-full w-[83%] overflow-hidden overflow-x-auto">
+           <div ref={pageWidthRef} className={`relative w-full max-w-[1160px] flex items-center h-full  ${props.post.type=='pdf' ? 'px-16' : ''}`}>
+               {props.post.type=='pdf' ?  <div className="h-full w-[86%] overflow-hidden overflow-x-auto">
                  <Document className="w-full h-full" file={props.post.fileUrl}>
-                  <Page width={1050} className="h-full overflow-hidden overflow-y-auto" pageNumber={1}></Page>
+                  <Page width={pageWidth} className="h-full overflow-hidden overflow-y-auto" pageNumber={1}></Page>
                  </Document>
                </div>
               
              
             
                 : 
-                <div className="h-full w-[83%] relative"><Image fill src={`${props.post.fileUrl}`} alt='post_img'></Image></div>
+                <div className="h-full w-[86%] relative"><Image fill src={`${props.post.fileUrl}`} alt='post_img'></Image></div>
                 }
-                <div className="grow">
-                  <ReviewForm userId={props.userId} postId={props.post.id} setOpen={setOpen}></ReviewForm>
+                <div className="grow h-full">
+                  <ReviewForm userId={props.userId} postId={props.post.id} setOpen={setOpen} setCurrent={props.setCurrent}></ReviewForm>
                 </div>
            </div>
            {props.user.role == 'admin' && <Details userId={props.userId} user={props.user} post={props.post} setOpen={setShowRevScr}></Details>}

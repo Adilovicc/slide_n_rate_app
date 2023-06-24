@@ -12,7 +12,7 @@ import Image from 'next/image'
 
 
 
-export default function ReviewForm(props:{userId:any, postId:string, setOpen:(value:boolean)=>void}) {
+export default function ReviewForm(props:{userId:any, postId:string, setOpen:(value:boolean)=>void, setCurrent:()=>void}) {
   const gradeInput = useRef(null);
   const stars = [1,2,3,4,5];
   const {register, setValue, handleSubmit, formState:{errors}} = useForm();
@@ -57,7 +57,7 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
         cancelToken: new axios.CancelToken(c=>cancel=c)
       }).then(res => {
         if(!res.data){ setAnswered(false); }
-        else{ setMyAnswer(res.data[0].grade); setAnswered(true) };
+        else{ setMyAnswer(res.data[0].grade); setAnswered(true); props.setCurrent(); };
         setLoading(false)
       }).catch(
         err=> {
@@ -88,6 +88,7 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
        }).then((response)=>{
          props.setOpen(false);
          setTrigger(prevTrig => !prevTrig);
+         
          return Swal.fire({
             position: 'center',
             icon: 'success',
@@ -114,7 +115,7 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
 
 
   return (
-       <div className="relative h-full bg-slate-50 overflow-auto min-w-[200px] w-[100%] max-w-[500px] lg:w-[100%] border-[0.5px] border-black/30 flex items-center justify-center flex-col py-10">
+       <div className="relative h-full bg-slate-50 overflow-auto w-[100%] border-[0.5px] border-black/30 flex items-center justify-center flex-col">
           {/*XMarkIcon className="absolute top-2 right-2 h-8" onClick={()=>{props.setOpen(false)}}></XMarkIcon>*/}
        {
        (!answered && !loading) ?
@@ -123,15 +124,15 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
            <div className="mb-4">
              <div className="flex flex-col items-center justify-center">
              {stars.map((star,i)=>(
-                <div key={i} className="flex items-center w-[100%] max-w-[300px] justify-start">
-                  <div className='p-1'><div key={star} className={`h-10 w-10 cursor-pointer border-[2px] border-black ${starColor[star as keyof typeof starColor]}`} onClick={()=>starsChangeColors(star)}></div></div>
+                <div key={i} className="flex flex-col items-center w-[100%] max-w-[300px] justify-start mb-2">
+                  <div className='p-1'><div key={star} className={`h-8 w-8  cursor-pointer border-[2px] border-black ${starColor[star as keyof typeof starColor]}`} onClick={()=>starsChangeColors(star)}></div></div>
                   <div className='font-semibold text-[18px]'>
                   {i == 0 ?
-                            <div>Sinus</div> : i == 1 ?
-                            <div>Afib</div> : i == 2 ?
-                            <div>AFL</div> : i == 3 ?
-                            <div>Other</div> : 
-                            <div>Poor record quality</div> }
+                            <div>1. Sinus</div> : i == 1 ?
+                            <div>2. Afib</div> : i == 2 ?
+                            <div>3. AFL</div> : i == 3 ?
+                            <div>4. Other</div> : 
+                            <div>5. Unreadable</div> }
                   </div>
                 </div>
              ))}
@@ -142,8 +143,8 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
 
            <div className="flex items-center justify-between">
              <button className="bg-blue-500 mt-5 hover:bg-blue-700 text-white font-bold
-              py-2 px-10 rounded focus:outline-none focus:shadow-outline" type="submit">
-                Answer
+              py-2 px-10 mx-1 rounded focus:outline-none focus:shadow-outline" type="submit">
+                Next
              </button>
            </div>
        </form> : (answered && !loading) ? 
@@ -155,7 +156,7 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
                             <div>Afib</div> : myAnswer == 3 ?
                             <div>AFL</div> : myAnswer == 4 ?
                             <div>Other</div> : 
-                            <div>Poor record quality</div> }
+                            <div>Unreadable</div> }
                   </div>
           </div> :
         <div className="w-14 h-14 relative"><Image className="animate-spin" fill src={spinner} alt='spinner-img'></Image></div>

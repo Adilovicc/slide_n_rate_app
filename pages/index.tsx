@@ -100,7 +100,7 @@ export default function Home({session, user}:any){
     
 
      return(
-        <div style={{overflow:'hidden'}} className="w-full pt-20 relative h-screen bg-gray-200">
+        <div style={{overflow:'hidden'}} className="w-full pt-16 relative h-screen bg-gray-200">
              <div className={`${addPhotoScreen ? 'fixed' : 'hidden'} top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black/30 z-40 backdrop-blur-sm`}>
                    <AddPhoto setAPS={setAddPhotoScreen}></AddPhoto>
              </div>
@@ -135,7 +135,7 @@ export default function Home({session, user}:any){
                 <CreatePDFPost setPDFDisplay={setShowPublishPDFImage}></CreatePDFPost>
              </div>
         <section className="w-full fixed top-0  h-16 bg-[rgb(15,15,15)] px-8 md:px-20 flex items-center justify-between text-white">
-               <span className="text-white text-[20px] font-semibold font-serif">Slide&Rate</span>
+               <span className="text-white text-[20px] font-semibold font-serif">Answer&Slide</span>
                <div className='flex items-center'>
                   {user.role=='admin' && <button onClick={()=>setShowPublishImage(true)} className="px-4 py-1 border-[1px] border-white mx-3">Publish</button>}
                   {user.role=='admin' && <button onClick={()=>setShowPublishPDFImage(true)} className="px-4 py-1 border-[1px] border-white mx-3 truncate">Publish PDF</button>}
@@ -146,7 +146,7 @@ export default function Home({session, user}:any){
                </div>
         </section>
         <section style={{overflow:'overlay'}} className="w-full relative bg-gray-200 h-full flex justify-center items-center">
-             <div className="relative w-full  h-full max-w-[1400px] bg-white flex overflow-hidden items-center justify-between">
+             <div className="relative w-full  h-full bg-white flex overflow-hidden items-center justify-between">
                <div onClick={()=>handleSlideLeft()} className={`absolute transition ${currentPost==0 ? 'hidden' : 'flex'} flex justify-center items-center
                 duration-300 h-[45px] w-[45px] z-10 rounded-full bg-white/40 left-[14px] hover:bg-white/60`}>
                          <ChevronLeftIcon className="w-8 h-8"></ChevronLeftIcon>
@@ -157,7 +157,7 @@ export default function Home({session, user}:any){
                  </div>
                 {
                     posts.map((post, id)=>(
-                        <Slide key={id} post={post} currentPost={currentPost} userId={user.id} user={user}></Slide> 
+                        <Slide key={id} post={post} currentPost={currentPost} userId={user.id} user={user} setCurrent={handleSlideRight}></Slide> 
                     ))
                 }           
              </div>
