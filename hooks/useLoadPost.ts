@@ -14,7 +14,7 @@ export default function useLoadPost(currentBatch: number, take: number){
     }
 
     useEffect(()=>{
-            console.log("TAKE JE: "+take);
+   
             if(!isMore) return;
             let cancel: () => void = () => {};
             setLoading(true);

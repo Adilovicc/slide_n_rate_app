@@ -1,0 +1,44 @@
+CREATE OR REPLACE FUNCTION update_average_rating()
+RETURNS TRIGGER AS $update_average_rating_trigger$
+BEGIN
+  UPDATE "Post" 
+  SET "avgRating" = CAST((CAST("sumOfReviews" as float)/"numberOfReviews") as decimal(32,1))
+  WHERE "sumOfReviews"!=0 AND "id"=NEW."id";
+  RETURN NEW;
+END;
+$update_average_rating_trigger$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_average_rating_trigger
+AFTER UPDATE OF "sumOfReviews" ON "Post"
+FOR EACH ROW
+EXECUTE PROCEDURE update_average_rating(); 
+
+
+//-------------------YOU WILL NEED THIS ONE BELOW!!!!---------------------------
+
+
+CREATE OR REPLACE FUNCTION tracking_review_numbers()
+  RETURNS TRIGGER AS $tracking_review_numbers_trigger$
+BEGIN
+  IF TG_OP = 'UPDATE' THEN
+      UPDATE "Post"
+      SET "sumOfReviews" = "sumOfReviews" - OLD.grade + NEW.grade
+      WHERE id = OLD."postId";
+  ELSIF TG_OP = 'INSERT' THEN
+    UPDATE "Post"
+    SET "sumOfReviews" = "sumOfReviews" + NEW.grade, "numberOfReviews" = "numberOfReviews"+1
+    WHERE id = NEW."postId";
+  ELSIF TG_OP = 'DELETE' THEN
+    UPDATE "Post"
+    SET "sumOfReviews" = "sumOfReviews" - OLD.grade, "numberOfReviews" = "numberOfReviews" - 1
+    WHERE id = OLD."postId";
+  END IF;
+
+  RETURN NEW;
+END;
+$tracking_review_numbers_trigger$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER tracking_review_numbers_trigger
+AFTER INSERT OR DELETE OR UPDATE OF "grade", "postId" ON "Recension"
+FOR EACH ROW
+EXECUTE PROCEDURE tracking_review_numbers();

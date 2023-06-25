@@ -11,8 +11,8 @@ export default function GenerateUser(props:{setGenerateScreen:any}) {
   const [loading, setLoading] = useState(false);
 
   const onSubmit = (data:any) => {
-    console.log(data);
-    console.log(inputModified);
+    
+  
     
         let cancel: () => void = () => {};
             setLoading(true);
@@ -26,7 +26,7 @@ export default function GenerateUser(props:{setGenerateScreen:any}) {
                 },
                 cancelToken: new axios.CancelToken(c=>cancel=c)
               }).then(res => {
-                console.log(res.data);
+             
                 props.setGenerateScreen(false);
                 const emailCred = `Email: ${res.data.email}`;
                 const pwCred = `Password: ${res.data.password}`;
@@ -64,7 +64,6 @@ export default function GenerateUser(props:{setGenerateScreen:any}) {
     const fieldValue = e.target.value;
     const convertedValue = fieldValue.replace(/\s/g, '').toLowerCase();
     setInputModified(convertedValue);
-    console.log(inputModified);
     setValue(fieldName, fieldValue);
   };
 
