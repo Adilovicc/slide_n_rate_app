@@ -22,6 +22,8 @@ export default function Home({session, user}:any){
      const [take, setTake] = useState(user.currentPost+1);
      const [currentPost,setCurrentPost] = useState<number>(user.currentPost);
      const {posts, numberOfPosts, isMore, loading}= useLoadPost(currentBatch,take);
+     const [nextPage, setNextPage] = useState(false);
+
 
      useEffect(()=>{
         if(currentPost==posts.length-1 && isMore){
@@ -35,9 +37,9 @@ export default function Home({session, user}:any){
                 setCurrentPost(prevPost => prevPost-1);
               }
      }
-     const handleSlideRight=()=>{
+     const handleSlideRight= ()=>{
              if(currentPost!=posts.length-1){
-                setCurrentPost(prevPost=>prevPost+1)
+               setCurrentPost(prevPost=>prevPost+1)
              }
      }
 

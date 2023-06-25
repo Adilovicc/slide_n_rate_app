@@ -15,9 +15,15 @@ export default function Slide(props:{post:any, currentPost:number, user:any, use
     const [showReviewScr, setShowRevScr] = useState(false);
     const [deletePost,setDeletePost] = useState(false);
     const pageWidthRef = useRef(null);
+    const screenHeightRef = useState(null);
     const [isOpen, setOpen] = useState(false);
     const router = useRouter();
+    const [maxWidth, setMaxWidth] = useState(Math.round(window.innerHeight*1.62));
     const [pageWidth, setPageWidth] = useState(600);
+    const [screenHeight, setScreenHeight] = useState(1000);
+
+    const [checker, setChecker] = useState(false);
+
     const handleDeletePost =()=>{
        setDeletePost(prevPost=>!prevPost);
     }
@@ -53,12 +59,22 @@ export default function Slide(props:{post:any, currentPost:number, user:any, use
     }
 
     useLayoutEffect(() => {
-      console.log("HERE!");
       //@ts-ignore
       setPageWidth(pageWidthRef.current.offsetWidth-pageWidthRef.current.offsetWidth*0.14-128);
       const resizeHandler = ()=>{
+         setMaxWidth(Math.round(window.innerHeight*1.6));
          //@ts-ignore
          setPageWidth(pageWidthRef.current.offsetWidth-pageWidthRef.current.offsetWidth*0.14-128);
+      }
+      addEventListener('resize', resizeHandler);
+      return()=>removeEventListener('resize', resizeHandler);
+    }, [maxWidth]);
+
+    useLayoutEffect(() => {
+     
+      const resizeHandler = ()=>{
+         setMaxWidth(Math.round(window.innerHeight*1.6));
+         //@ts-ignore
       }
       addEventListener('resize', resizeHandler);
       return()=>removeEventListener('resize', resizeHandler);
@@ -71,7 +87,7 @@ export default function Slide(props:{post:any, currentPost:number, user:any, use
             <div onClick={()=>handleDeletePost()} className="absolute top-5 right-5 h-10 w-10 rounded-full bg-[rgba(244,238,238,0.8)] border-[1px] border-black z-10 flex justify-center items-center">
                 <TrashIcon className=" h-6 w-6 cursor-pointer"></TrashIcon>
             </div>}
-           <div ref={pageWidthRef} className={`relative w-full max-w-[1160px] flex items-center h-full  ${props.post.type=='pdf' ? 'px-16' : ''}`}>
+           <div  style={{maxWidth:`${maxWidth}px`}} ref={pageWidthRef} className={`relative w-full flex items-center h-full  ${props.post.type=='pdf' ? 'px-16' : ''}`}>
                {props.post.type=='pdf' ?  <div className="h-full w-[86%] overflow-hidden overflow-x-auto">
                  <Document className="w-full h-full" file={props.post.fileUrl}>
                   <Page width={pageWidth} className="h-full overflow-hidden overflow-y-auto" pageNumber={1}></Page>

@@ -56,8 +56,8 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
         },
         cancelToken: new axios.CancelToken(c=>cancel=c)
       }).then(res => {
-        if(!res.data){ setAnswered(false); }
-        else{ setMyAnswer(res.data[0].grade); setAnswered(true); props.setCurrent(); };
+        if(!res.data){ setAnswered(false);}
+        else{ setMyAnswer(res.data[0].grade); setAnswered(true);};
         setLoading(false)
       }).catch(
         err=> {
@@ -88,13 +88,13 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
        }).then((response)=>{
          props.setOpen(false);
          setTrigger(prevTrig => !prevTrig);
-         
+         props.setCurrent();
          return Swal.fire({
             position: 'center',
             icon: 'success',
             title: 'Your answer has been submitted!',
             showConfirmButton: false,
-            timer: 2500
+            timer: 2000
           });
          }
        ).catch((err)=>{
