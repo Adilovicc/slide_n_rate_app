@@ -4,7 +4,9 @@ import prisma from "../../../lib/prismadb";
 export default async function getPosts(req:NextApiRequest, res:NextApiResponse){
      try {
         const records = await prisma.post.findMany({
-
+                orderBy:{
+                    createdAt:'asc'
+                }
         })
         return res.json(records);
     } catch (error) {
