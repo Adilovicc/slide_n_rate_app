@@ -48,10 +48,36 @@ model User {
   updatedAt     DateTime  @updatedAt
   role          String    @default("regular")
   currentPost   Int       @default(0)
+  userExam      UserExam[]
   accounts      Account[]
   sessions      Session[]
   posts         Post[]
+  exams         Exam[]
   recensions     Recension[]
+}
+
+model Exam{
+  id String @id @default(cuid())
+  title String @default("No name")
+  createdAt DateTime @default(now())
+  createdBy String 
+  posts Post[]
+  userExam UserExam[]
+  postsTotal Int @default(0)
+  membersTotal Int @default(0)
+  offeredAnswers String[]
+  creator User @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+}
+
+model UserExam{
+    id String @id @default(cuid())
+    examId String
+    exam Exam @relation(fields:[examId], references:[id], onDelete:Cascade)
+    userId String
+    user User @relation(fields:[userId],references:[id],onDelete: Cascade)
+    userAddedTime DateTime @default(now())
+
+    @@unique([examId,userId])
 }
 
 model VerificationRequest {
@@ -71,6 +97,7 @@ model Post {
     type String?
     createdAt DateTime @default(now())
     creatorId String
+    examId String
     recensions Recension[]
 
     //this part is maintained by the database trigger functions
@@ -78,6 +105,7 @@ model Post {
     sumOfReviews    Int @default(0)
     avgRating       Float @default(0.00)
 
+    exam Exam @relation(fields: [examId], references:[id], onDelete: Cascade)
     creator User @relation(fields: [creatorId], references: [id], onDelete: Cascade)
 }
 

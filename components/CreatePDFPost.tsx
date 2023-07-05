@@ -2,13 +2,14 @@ import {storage} from '../lib/firebase'
 import {useState, useEffect} from 'react'
 import {ref, getDownloadURL, uploadBytes, deleteObject} from 'firebase/storage'
 import {v4} from 'uuid'
-import {ArrowUpTrayIcon} from '@heroicons/react/24/outline'
+import {ArrowUpTrayIcon, ArrowsUpDownIcon, ChevronUpDownIcon} from '@heroicons/react/24/outline'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
 import Swal from 'sweetalert2'
 import {useRouter} from 'next/router'
 import { XCircleIcon } from '@heroicons/react/24/solid'
 import {baseUrl} from '../baseUrl'
+
 
 export default function CreatePDFPost(props:{setPDFDisplay:any}){
     
@@ -18,9 +19,25 @@ export default function CreatePDFPost(props:{setPDFDisplay:any}){
     const [currentRef, setCurrentRef] = useState<any>();
     const [pickedImage, setPickedImage] = useState<any>();
     const [loading, setLoading] = useState(false);
+    const [examsList, setExamsList] = useState<any>();
+    const [selectedExam, setSelectedExam] = useState<any>();
+    useEffect(()=>{
+        if(!examsList) axios({
+          url:baseUrl+'api/examHandlers/getExamsList',
+          method:'GET'
+        }).then((res)=>{
+             setExamsList([...res.data]);
+             setSelectedExam(res.data[0]);
+             console.log(res.data[0]);
+        }).catch((err)=>{
+          console.log(err);
+        })
+
+    })
    
     const uploadImage = async ()=>{
       if(loading) return;
+      if(!selectedExam) return;
       if(!pickedImage) return;
       setLoading(true);
       let image;
@@ -37,7 +54,8 @@ export default function CreatePDFPost(props:{setPDFDisplay:any}){
                      imageUrl: image,
                      //@ts-ignore
                      session: JSON.stringify(session),
-                     type:'pdf'
+                     type:'pdf',
+                     examId:selectedExam.id
                     },
                     method:'POST'
                   }).then((res)=>{
@@ -75,12 +93,37 @@ export default function CreatePDFPost(props:{setPDFDisplay:any}){
     const handleClose=()=>{
       props.setPDFDisplay(false);
     }
+    const [dropDownMenu, setDropDownMenu] = useState(false);
+    
+    const handleSelectExam=(item:any)=>{
+        setSelectedExam(item);
+        setDropDownMenu(false);
+    }
+
+    const handleDropDownMenu=()=>{
+      setDropDownMenu(prevDD=>!prevDD);
+    }
+    
+    
 
      return(
-         <div className="w-[90%] relative max-w-[400px] rounded-xl px-5 py-10 flex bg-white flex-col justify-center items-center z-20 text-white">
+         <div className="w-[90%] relative max-w-[400px] h-[350px] rounded-xl px-5 py-10 flex bg-white flex-col items-center z-20 text-white">
+            <div id="examListInPDF" className={`h-full ${dropDownMenu? 'absolute' : 'hidden'} z-20 top-20 px-3 py-2 w-[80%] bg-gray-500 backdrop-blur-md text-black`}>
+                  {
+                    examsList && examsList.map((item:any, idx:number)=>(
+                      <div key={idx} onClick={()=>handleSelectExam(item)}  className="text-[20px] font-medium flex items-center truncate 
+                     h-12 w-full transion duration-200 cursor-pointer rounded-lg hover:bg-slate-50 px-2">
+                        <p className='truncate'>{item.title}</p>
+                     </div> 
+                    ))
+                  }
+            </div>
             <div className="absolute top-1 right-1 flex items-center justify-center cursor-pointer " onClick={()=>handleClose()}>
                 <XCircleIcon className="w-8 h-8 brightness-0"></XCircleIcon>
               </div>
+             {selectedExam && <div className="text-black/80 w-full mb-10 px-10 text-[21px] font-bold flex items-center">{selectedExam.title}
+               <ChevronUpDownIcon onClick={()=>handleDropDownMenu()} className="w-8 h-8 cursor-pointer"></ChevronUpDownIcon>
+             </div>}
               <label
                     //@ts-ignore 
                     htmlFor='pdfUploadButton' className="w-[80%] cursor-pointer transition duration-300 flex items-center 

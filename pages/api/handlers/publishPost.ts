@@ -5,7 +5,7 @@ import { PrismaClient } from "@prisma/client";
 
 
 export default async function PublishPost(req:NextApiRequest,res:NextApiResponse){
-    const {imageUrl, session, type} = req.body;
+    const {imageUrl, session, type, examId} = req.body;
     const sess = JSON.parse(session);
   
     if(!sess){
@@ -23,7 +23,8 @@ export default async function PublishPost(req:NextApiRequest,res:NextApiResponse
             data:{
                 fileUrl:imageUrl,
                 creatorId:user.id,
-                type:type
+                type:type,
+                examId: examId
             }
         })
      

@@ -1,11 +1,11 @@
 
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useRef} from 'react'
 import Slide from '../components/Slide'
 import CreatePost from '@/components/CreatePost';
 import CreatePDFPost from '@/components/CreatePDFPost';
 import { getSession, signOut } from 'next-auth/react';
 import prisma from '../lib/prismadb';
-import { ArrowLeftOnRectangleIcon, ChevronLeftIcon, ChevronRightIcon, TableCellsIcon, Bars3Icon, BookmarkSquareIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftOnRectangleIcon, ChevronLeftIcon, ChevronRightIcon, TableCellsIcon, Bars3Icon, BookmarkSquareIcon, WrenchIcon } from '@heroicons/react/24/outline';
 import useLoadPost from '../hooks/useLoadPost';
 import axios from 'axios';
 import {ArrowUpTrayIcon, UserPlusIcon, CameraIcon} from '@heroicons/react/24/outline';
@@ -15,15 +15,26 @@ import GenerateUser from '../components/GenerateUser'
 import TabularDisplay from '@/components/TabularDisplay';
 import { baseUrl } from '../baseUrl';
 import Swal from 'sweetalert2';
+import { ChevronUpDownIcon } from '@heroicons/react/24/solid';
+import { useRouter } from 'next/router';
 
-
-export default function Home({session, user}:any){
+export default function Home({session, user, examsParticipation}:any){
+     
+     const router = useRouter();
+   
      const [currentBatch, setCrtBatch] = useState(0);
+     const [currentExam, setCurrentExam] = useState({title:'', id:''});
      const [take, setTake] = useState(user.currentPost+1);
      const [currentPost,setCurrentPost] = useState<number>(user.currentPost);
-     const {posts, numberOfPosts, isMore, loading}= useLoadPost(currentBatch,take);
+     const {posts, numberOfPosts, isMore, loading, setNumberOfPosts, setIsMore, setPosts}= useLoadPost(currentBatch,take,currentExam);
      const [nextPage, setNextPage] = useState(false);
+       
 
+     useEffect(()=>{
+      setNumberOfPosts(0);
+      setPosts([]);
+      setIsMore(true);
+     },[currentExam])
 
      useEffect(()=>{
         if(currentPost==posts.length-1 && isMore){
@@ -53,9 +64,14 @@ export default function Home({session, user}:any){
      const [addPhotoScreen, setAddPhotoScreen] = useState(false);
      const [generateUserScreen, setGUS] = useState(false);
      const [tabularDisplay, setTabularDisplay] = useState(false);
+     const [examDropDown, setExamDropDown] = useState(false);
      
      const handleShowDropdown = ()=>{
          setShowDDM(prev=>!prev)
+     }
+
+     const handleExamDropDown = ()=>{
+         setExamDropDown(prev=>!prev)
      }
 
      const handleAddPhoto = () =>{
@@ -69,6 +85,31 @@ export default function Home({session, user}:any){
      const handleTabularDisplay = ()=>{
           setTabularDisplay(true);
      }
+     
+    const distance = useRef(400);
+    const [distanceNow, setDistanceNow] = useState('500');
+     useEffect(()=>{
+         console.log(distanceNow);
+     }, [distanceNow])
+
+     useEffect(()=>{
+      const object = document.getElementById('updown-icon');
+      const windowWidth = window.innerWidth;
+    //@ts-ignore
+      setDistanceNow(String(Math.floor(windowWidth - object.getBoundingClientRect().right))+'px');
+      const handleDistance = ()=>{
+        console.log("ovdje!");
+        const object = document.getElementById('updown-icon');
+        const windowWidth = window.innerWidth;
+      //@ts-ignore
+        setDistanceNow(String(Math.floor(windowWidth - object.getBoundingClientRect().right))+'px');
+      }
+      
+      addEventListener('resize', handleDistance);
+
+      return() => removeEventListener('resize', handleDistance); 
+
+     })
 
     
      const handleSaveProgress = () =>{
@@ -92,14 +133,16 @@ export default function Home({session, user}:any){
       }).catch((err)=>{
         Swal.fire({
           position: 'bottom-right',
-          icon: 'error',
           title: 'Error',
           showConfirmButton: false,
           timer: 3000
        });  
       });
      }
-    
+     const handleSetCurrentExam=(title:string, examId:string)=>{
+          setCurrentExam((prevExam)=>({...prevExam, title:title, id:examId}));
+          setExamDropDown(false);
+     }    
 
      return(
         <div style={{overflow:'hidden'}} className="w-full pt-16 relative h-screen bg-gray-200">
@@ -112,7 +155,18 @@ export default function Home({session, user}:any){
              <div className={`${tabularDisplay ? 'fixed' : 'hidden'} top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black/30 z-40 backdrop-blur-sm`}>
                    <TabularDisplay tabularDisplayState={setTabularDisplay}></TabularDisplay>
              </div>
-            <div className={`${showDropdownMenu ? 'absolute' : 'hidden'} top-[55px] right-[32px] md:right-[80px] ${user.role=='admin' ? 'h-[200px]' : 'h-[90px]'} w-[140px] z-10
+             <div id="examDropdown" style={{right:`${distanceNow}`}} className={`${examDropDown? 'fixed' : 'hidden'}
+              rounded-md bg-[rgba(222,222,222)] px-2 py-2 top-[50px] w-[350px] h-[350px] z-10`}>
+                  {examsParticipation && examsParticipation.map((item:any, idx:number)=>(
+                     <div key={idx} onClick={()=>handleSetCurrentExam(item.exam.title, item.examId)} className="text-[20px] font-medium flex items-center truncate 
+                     h-12 w-full transion duration-200 cursor-pointer rounded-lg hover:bg-slate-50 px-2">
+                        <p className='truncate'>{item.exam.title}</p>
+                     </div> 
+                  ))
+                
+                  }
+              </div>
+            <div className={`${showDropdownMenu ? 'absolute' : 'hidden'} top-[55px] right-[32px] md:right-[80px] ${user.role=='admin' ? 'h-[240px]' : 'h-[90px]'} w-[160px] z-10
                    bg-white rounded-md border-[0.5px] border-black text-sm font-serif px-1`}>
                   <button onClick={()=>signOut()} className="w-full flex items-center py-2 hover:scale-105 rounded-t-md">
                    <ArrowLeftOnRectangleIcon className="h-6 w-6"></ArrowLeftOnRectangleIcon> Log out
@@ -129,6 +183,9 @@ export default function Home({session, user}:any){
                  {user.role == 'admin' && <button onClick={()=>handleTabularDisplay()} className="w-full flex items-center py-2 hover:scale-105 rounded-t-md truncate">
                    <TableCellsIcon className="h-6 w-6"></TableCellsIcon> Tabular display
                   </button>  }
+                  {user.role == 'admin' && <button onClick={()=>router.push('/exams')} className="w-full flex items-center py-2 hover:scale-105 rounded-t-md truncate">
+                  <WrenchIcon className="w-6 h-6"></WrenchIcon> Exam maintenance
+                  </button>  }
             </div>
             <div className={`${showPublishImage ? 'fixed flex' : 'hidden'} top-0 right-0 left-0 bottom-0 justify-center items-center bg-black/20 backdrop-blur-lg z-20`}>
                 <CreatePost  setImageDisplay={setShowPublishImage}></CreatePost>
@@ -137,8 +194,11 @@ export default function Home({session, user}:any){
                 <CreatePDFPost setPDFDisplay={setShowPublishPDFImage}></CreatePDFPost>
              </div>
         <section className="w-full fixed top-0  h-16 bg-[rgb(15,15,15)] px-8 md:px-20 flex items-center justify-between text-white">
-               <span className="text-white text-[20px] font-semibold font-serif">Answer&Slide</span>
-               <div className='flex items-center'>
+               <span className="text-white text-[20px] font-bold font-serif">Answer&Slide</span>
+               <div className='relative flex items-center'>
+                  <div className='text-[20px] font-semibold font-serif'>{currentExam.title}</div>
+                   <ChevronUpDownIcon id="updown-icon" className="w-8 h-8 mr-10 relative cursor-pointer"onClick={()=>handleExamDropDown()}>
+                   </ChevronUpDownIcon>
                   {user.role=='admin' && <button onClick={()=>setShowPublishImage(true)} className="px-4 py-1 border-[1px] border-white mx-3">Publish</button>}
                   {user.role=='admin' && <button onClick={()=>setShowPublishPDFImage(true)} className="px-4 py-1 border-[1px] border-white mx-3 truncate">Publish PDF</button>}
                 
@@ -189,11 +249,26 @@ export const getServerSideProps = async (context:any) => {
           email: session.user?.email
       }
     })
+
+    const examsParticipation  = await prisma.userExam.findMany({
+         select:{
+             exam:{
+              select:{
+                 title:true
+              }
+             },
+             examId:true
+         },
+         where:{
+           userId:user?.id
+         }
+    })
     
     return {
       props:{
         session,
-        user:JSON.parse(JSON.stringify(user)) || null
+        user:JSON.parse(JSON.stringify(user)) || null,
+        examsParticipation: JSON.parse(JSON.stringify(examsParticipation)) || null
       },
     };
 };

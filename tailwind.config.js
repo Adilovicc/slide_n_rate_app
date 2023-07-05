@@ -14,8 +14,11 @@ module.exports = {
         'image':'14/10'
       },
       animation:{
-        'pulse-slow':'pulse 2s infinite',
-        'ping-slow':'ping 2s infinite'
+        'pulse-slow':'pulse 2.6s infinite',
+        'pulse-mid':'pulse 2.3s infinite',
+        'ping-slow':'ping 2s infinite',
+        'pulse-faster':'pulse 1.6s infinite',
+        'pulse-fast':'pulse 1.2s infinite',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
