@@ -65,7 +65,7 @@ export default function CreatePDFPost(props:{setPDFDisplay:any}){
                             icon: 'success',
                             title: 'New post has been added!',
                             showConfirmButton: true,
-                            timer: 4000
+                            timer: 1000
                          }).then(router.reload);  
                         }
                   }).catch((err)=>{
@@ -108,7 +108,7 @@ export default function CreatePDFPost(props:{setPDFDisplay:any}){
 
      return(
          <div className="w-[90%] relative max-w-[400px] h-[350px] rounded-xl px-5 py-10 flex bg-white flex-col items-center z-20 text-white">
-            <div id="examListInPDF" className={`h-full ${dropDownMenu? 'absolute' : 'hidden'} z-20 top-20 px-3 py-2 w-[80%] bg-gray-500 backdrop-blur-md text-black`}>
+            <div id="examListInPDF" className={`h-full ${dropDownMenu? 'absolute' : 'hidden'} z-20 top-20 px-3 py-2 w-[80%] bg-[#eae3e3] backdrop-blur-md text-black/70`}>
                   {
                     examsList && examsList.map((item:any, idx:number)=>(
                       <div key={idx} onClick={()=>handleSelectExam(item)}  className="text-[20px] font-medium flex items-center truncate 

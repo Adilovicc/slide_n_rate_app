@@ -54,6 +54,7 @@ model User {
   posts         Post[]
   exams         Exam[]
   recensions     Recension[]
+  notes         Note[]
 }
 
 model Exam{
@@ -99,7 +100,7 @@ model Post {
     creatorId String
     examId String
     recensions Recension[]
-
+    notes Note[]
     //this part is maintained by the database trigger functions
     numberOfReviews Int @default(0)
     sumOfReviews    Int @default(0)
@@ -107,6 +108,21 @@ model Post {
 
     exam Exam @relation(fields: [examId], references:[id], onDelete: Cascade)
     creator User @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+}
+
+model Note{
+   id String @id @default(cuid())
+   text String
+   currentPost Int
+   postName String?
+   userId String
+   postId String
+   examId String
+   userEmail String
+   user User @relation(fields:[userId], references: [id], onDelete: Cascade)
+   post Post @relation(fields:[postId], references: [id], onDelete: Cascade)
+
+   @@unique([userId,postId])
 }
 
 model Recension {

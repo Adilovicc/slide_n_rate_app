@@ -7,7 +7,9 @@ import { ReceiptRefundIcon } from '@heroicons/react/24/outline';
 export default function ExamDetails({exam}:any){
       const [userQuery, setUserQuery] = useState<string>('');
       const [currentNumber, setCurrentNumber] = useState(0);
-      const [loadingEls] = useState([1,2,3])
+      const [loadingEls] = useState([1,2,3]);
+      const [loadingNotes, setLoadingNotes] = useState(false);
+      const [notes, setNotes] = useState([]);
        
       useEffect(()=>{setCurrentNumber(0)},[exam])
 
@@ -98,6 +100,20 @@ export default function ExamDetails({exam}:any){
         if(objArray) setParticipants(objArray);
      }
      
+     const handleClickNotes=()=>{
+        setCurrentList('notes');
+        setLoadingNotes(true);
+        axios({
+            url:baseUrl+'api/examHandlers/getNotes',
+            method:'GET',
+            params:{
+                examId:exam.id,
+            }
+        }).then((res)=>{
+            console.log(res.data);
+            setNotes(res.data);
+        }).catch((err)=>alert('Something went wrong!')).finally(()=>setLoadingNotes(false));
+     }
 
     return(
         <div id='examDetailsForm' className="bg-[rgb(34,34,34)] text-white flex flex-col items-center rounded-lg 
@@ -132,7 +148,7 @@ export default function ExamDetails({exam}:any){
             <div className="w-full flex">
                <div onClick={()=>setCurrentList('members')} className={`px-2 py-1 transition duration-300 mt-5 mr-2 text-[18px] my-2 cursor-pointer border-[1px] border-black
                  w-40 font-semibold ${currentList!=='members'? 'bg-black border-[1px] border-white text-white': 'text-black bg-white/80'}`}>Examinees list</div>
-               <div onClick={()=>setCurrentList('notes')} className={`px-2 py-1 transition duration-300 mt-5 text-[18px] my-2 cursor-pointer border-[1px] border-black
+               <div onClick={()=>handleClickNotes()} className={`px-2 py-1 transition duration-300 mt-5 text-[18px] my-2 cursor-pointer border-[1px] border-black
                  w-40 font-semibold ${currentList=='members'? 'bg-black border-[1px] border-white text-white': 'text-black bg-white/80'}`}>Examinees notes</div>
              </div>
             {currentList == 'members' &&
@@ -144,7 +160,7 @@ export default function ExamDetails({exam}:any){
                           {participants.map((item:any, idx:number)=>(
                                idx==participants.length-1 ? <div ref={lastElementView} key={item.forTracking} className={`w-full px-2 mt-1 h-12 border-[0.5px] ${item.userExam[0] && item.userExam[0].id ? 'bg-green-700/40' : 'bg-white/10'} border-white flex items-center`}>
                                     <div className="w-[35%] truncate flex items-center">{item.name}</div>
-                                    <div className="w-[40%] truncate flex items-center">{item.email} <div>{item.forTracking}</div></div>
+                                    <div className="w-[40%] truncate flex items-center">{item.email}</div>
                                     <div className="w-[25%] h-[80%] truncate flex items-center justify-end">
                                         {item.userExam[0] && item.userExam[0].id? 
                                         <button disabled={handlingInProcess} onClick={()=>handleRemoveUser(item, idx)} className="rounded-full h-[80%] w-[100%] max-w-[85px] items-center 
@@ -155,7 +171,7 @@ export default function ExamDetails({exam}:any){
                                 </div> : 
                                 <div key={item.forTracking} className={`w-full px-2 mt-1 h-12 border-[0.5px] ${item.userExam[0] && item.userExam[0].id ? 'bg-green-700/40' : 'bg-white/10'} border-white flex items-center`}>
                                 <div className="w-[35%] truncate flex items-center">{item.name}</div>
-                                <div className="w-[40%] truncate flex items-center">{item.email} <div>{item.forTracking}</div></div>
+                                <div className="w-[40%] truncate flex items-center">{item.email}</div>
                                 <div className="w-[25%] h-[80%] truncate flex items-center justify-end">
                                     {item.userExam[0] && item.userExam[0].id? 
                                     <button disabled={handlingInProcess} onClick={()=>handleRemoveUser(item, idx)} className="rounded-full h-[80%] w-[100%] max-w-[85px] items-center 
@@ -174,6 +190,20 @@ export default function ExamDetails({exam}:any){
                                 </div>
                           ))}
                     </div>
+            </div>}
+            {currentList=='notes' && <div className="w-full h-[350px] overflow-auto p-1 border-[2px] border-white">
+               {loadingNotes && <div className="h-full w-full flex justify-center items-center">
+                   <img className="w-12 h-12 animate-spin" src='/spinner.svg'></img>
+                </div>}   
+                {!loadingNotes && notes && notes.map((item:any, idx:number)=>(
+                    <div key={idx}  className={`w-full px-2 mt-1 min-h-[48px] border-[0.5px]
+                      bg-white/10 border-white
+                      flex items-center`}>
+                         <div className="w-[20%] truncate">{item.postName}</div>
+                         <div className="w-[35%] truncate">{item.userEmail}</div>
+                         <div className="w-[45%]">{item.text}</div>
+                      </div>
+                ))} 
             </div>}
         </div>
     )

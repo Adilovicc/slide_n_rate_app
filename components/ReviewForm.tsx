@@ -1,6 +1,6 @@
 import React, {useState,useRef,useEffect} from 'react'
 import { XMarkIcon } from '@heroicons/react/24/solid'
-import {StarIcon} from '@heroicons/react/24/outline'
+import {StarIcon, PencilSquareIcon} from '@heroicons/react/24/outline'
 import { Type } from 'typescript'
 import {useForm} from 'react-hook-form'
 import axios from 'axios'
@@ -12,34 +12,30 @@ import Image from 'next/image'
 
 
 
-export default function ReviewForm(props:{userId:any, postId:string, setOpen:(value:boolean)=>void, setCurrent:()=>void}) {
+export default function ReviewForm(props:{userId:any, offeredAnswers:any, postId:string, setOpen:(value:boolean)=>void, setCurrent:()=>void, handleOpenComplaintForm:()=>void}) {
   const gradeInput = useRef(null);
   const stars = [1,2,3,4,5];
   const {register, setValue, handleSubmit, formState:{errors}} = useForm();
   const [answered,setAnswered] = useState(false);
   const [myAnswer, setMyAnswer] = useState(0);
   const [loading,setLoading] = useState(true);
+  
 
-
-  const [starColor, setStarColor] = useState({1:'',2:'',3:'',4:'',5:''});
   const [gradeInputValue, setGradeInputValue] = useState(0);
   const [commentInputValue, setCommentInputValue] = useState('');
   const router = useRouter();
 
+  const [currentAnswerIndex, setCrtAnsIdx] = useState(-1);
+
   const starsChangeColors = (broj:number) =>{
-    let updatedStarsColors = {...starColor};
-    for(var i=1; i<6; i++){
-        if(i==broj){
-            updatedStarsColors[i as keyof typeof starColor]='bg-black/90';     
-        }
-        if(i!=broj){
-            updatedStarsColors[i as keyof typeof starColor]='';          
-        }
-     }
+     setCrtAnsIdx(broj-1);
      setGradeInputValue(broj);
-     setValue('grade',gradeInputValue)
-     setStarColor(updatedStarsColors);
   }
+  
+  useEffect(()=>{
+    console.log("Pon odgs...")
+    console.log(props.offeredAnswers);
+  })
 
   const [trigger, setTrigger] = useState(false);
 
@@ -73,7 +69,7 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
 },[trigger])
   
   const reviewPost = () =>{
-      if(gradeInputValue<1 || gradeInputValue>5){
+      if(gradeInputValue<1 || gradeInputValue>props.offeredAnswers.length){
         return alert("You have to select the answer");
       }
        setLoading(true);
@@ -115,24 +111,23 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
 
 
   return (
-       <div className="relative h-full bg-slate-50 overflow-auto w-[100%] border-[0.5px] border-black/30 flex items-center justify-center flex-col">
+       <div className="relative h-full bg-slate-50 max-w-[200px] w-[100%] pb-10 pt-10 border-[0.5px] border-black/30 flex items-center justify-center flex-col">
           {/*XMarkIcon className="absolute top-2 right-2 h-8" onClick={()=>{props.setOpen(false)}}></XMarkIcon>*/}
+          <PencilSquareIcon onClick={()=>props.handleOpenComplaintForm()} className="absolute top-0 w-8 h-8 z-20"></PencilSquareIcon>
        {
+        
        (!answered && !loading) ?
        <form onSubmit={handleSubmit(reviewPost)} className="relative w-full h-full flex items-center justify-center flex-col ">
-          
-           <div className="mb-4">
+           <div className="mb-4 overflow-auto ">
              <div className="flex flex-col items-center justify-center">
-             {stars.map((star,i)=>(
+             {props.offeredAnswers.map((answer:any,i:number)=>(
                 <div key={i} className="flex flex-col items-center w-[100%] max-w-[300px] justify-start mb-2">
-                  <div className='p-1'><div key={star} className={`h-8 w-8  cursor-pointer border-[2px] border-black ${starColor[star as keyof typeof starColor]}`} onClick={()=>starsChangeColors(star)}></div></div>
+                  <div className='p-1'>
+                    <div key={answer} className={`h-8 w-8  cursor-pointer border-[2px]
+                   border-black ${currentAnswerIndex == i ? 'bg-black/90' : ''} `} onClick={()=>starsChangeColors(i+1)}></div>
+                   </div>
                   <div className='font-semibold text-[18px]'>
-                  {i == 0 ?
-                            <div>1. Sinus</div> : i == 1 ?
-                            <div>2. Afib</div> : i == 2 ?
-                            <div>3. AFL</div> : i == 3 ?
-                            <div>4. Other</div> : 
-                            <div>5. Unreadable</div> }
+                  {answer}
                   </div>
                 </div>
              ))}
@@ -151,12 +146,7 @@ export default function ReviewForm(props:{userId:any, postId:string, setOpen:(va
        <div>
           <div className='font-bold flex flex-col justify-center items-center text-[18px]'>
                    <span className="font-normal">Your answer:</span>
-                  {myAnswer == 1 ?
-                            <div>Sinus</div> : myAnswer == 2 ?
-                            <div>Afib</div> : myAnswer == 3 ?
-                            <div>AFL</div> : myAnswer == 4 ?
-                            <div>Other</div> : 
-                            <div>Unreadable</div> }
+                  {props.offeredAnswers[myAnswer-1]}
                   </div>
           </div> :
         <div className="w-14 h-14 relative"><Image className="animate-spin" fill src={spinner} alt='spinner-img'></Image></div>

@@ -4,24 +4,27 @@ import {baseUrl} from '../baseUrl'
 
 export default function useLoadPost(currentBatch: number, take: number, currentExam:any){
     const [posts, setPosts] = useState([]);
-    const [isMore, setIsMore] = useState(true);
+    const [isMore, setIsMore] = useState(false);
     const [numberOfPosts, setNumberOfPosts] = useState(0);
     const [loading, setLoading] =useState(false);
-    const [initialLoading, setInitialLoading] = useState(true);
 
-    if(!initialLoading || take<3){
-          take=3;       
-    }
+    const [check, setCheck] = useState(false);
+
+
+    useEffect(()=>{
+      setPosts([]);
+      setIsMore(true);
+      setNumberOfPosts(0);
+      setLoading(false);
+      setCheck(prevCheck=>!prevCheck)
+    },[currentExam])
     
 
     useEffect(()=>{
-            console.log("TU SMO!");
             console.log(currentExam);
             console.log(currentExam.id);
             console.log(isMore);
-            if(currentExam.id=='') return setPosts([]);
             if(!isMore) return;
-            console.log("TOJETO!!!");
             let cancel: () => void = () => {};
             setLoading(true);
             try {
@@ -31,19 +34,18 @@ export default function useLoadPost(currentBatch: number, take: number, currentE
                 params: {
                     startAt: numberOfPosts,
                     examId: currentExam.id,
-                    take: take
+                    take: 3
                 },
                 cancelToken: new axios.CancelToken(c=>cancel=c)
               }).then(res => {
                 console.log("EVO SAD OVDJE!")
                 console.log(res.data);
-                if(res.data.length<take) setIsMore(false);
+                if(res.data.length<3) setIsMore(false);
                 // setStartAt(startLoadingAt+res.data.length);
                 setNumberOfPosts(numberOfPosts+res.data.length);
                 //@ts-ignore 
                 setPosts(prevData=>[...prevData,...res.data]);
                 setLoading(false);
-                if(initialLoading) {setInitialLoading(false)};
               }).catch(
                 err=> {
                     if(axios.isCancel(err)) return
@@ -55,6 +57,6 @@ export default function useLoadPost(currentBatch: number, take: number, currentE
             }
           
          return ()=> cancel(); 
-    }, [currentBatch, currentExam])
+    }, [currentBatch, isMore, check])
     return {posts, loading, isMore, numberOfPosts, setNumberOfPosts, setIsMore, setPosts}
 }

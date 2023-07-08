@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useState, useRef, useLayoutEffect,useEffect } from "react";
 import ReviewForm from "./ReviewForm";
 import { userAgent } from "next/server";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { TrashIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import Swal from "sweetalert2";
 import {useRouter} from "next/router";
@@ -21,8 +21,12 @@ export default function Slide(props:{post:any, currentPost:number, user:any, use
     const [maxWidth, setMaxWidth] = useState(Math.round(window.innerHeight*1.62));
     const [pageWidth, setPageWidth] = useState(600);
     const [screenHeight, setScreenHeight] = useState(1000);
+    const [showComplaintForm, setShowComplaintForm] = useState(false);
+    const [commentCreatingLoading, setCCL] = useState(false);
 
     const [checker, setChecker] = useState(false);
+    
+    const [commentInputValue, setCIV] = useState('');
 
     const handleDeletePost =()=>{
        setDeletePost(prevPost=>!prevPost);
@@ -31,7 +35,8 @@ export default function Slide(props:{post:any, currentPost:number, user:any, use
         axios({
             url:baseUrl+'api/handlers/deletePost',
             data:{
-                postId:props.post.id
+                postId:props.post.id,
+                examId:props.post.examId
              },
              method:'POST'
            }).then((response)=>{
@@ -80,15 +85,61 @@ export default function Slide(props:{post:any, currentPost:number, user:any, use
       return()=>removeEventListener('resize', resizeHandler);
     }, []);
 
+    const handleSendComment=()=>{
+      if(commentInputValue.length==0) return alert('You have to write something'); 
+      if(commentInputValue.length>300) return alert('Max of 300 characters allowed');
+      if(commentCreatingLoading==true) return alert('commenting loading!');
+      setCCL(true);
+      axios({
+        url:baseUrl+'api/handlers/addNote',
+        method:'POST',
+        data:{
+          userId: props.userId,
+          userEmail: props.user.email,
+          currentPost: props.currentPost+1,
+          postId: props.post.id,
+          examId: props.post.examId,
+          text: commentInputValue
+        }
+      }).then((res)=>{
+          setShowComplaintForm(false);
+          setCIV('');
+          setCCL(false);
+          return alert('Your note has been sent')
+      }).catch((err)=>{
+          return alert ('You have already sent your note');
+      })
+    }
+
+    const handleOpenComplaintForm = ()=>{
+      setShowComplaintForm(true);
+    }
+
     return(
       <div style={{transform:`translateX(-${props.currentPost*100}%)`}} 
-        className={`relative w-full transition-transform overflow-hidden flex justify-center overflow-x-auto duration-1000 ease-out h-full bg-black/50 flex-shrink-0 `}>
+        className={`relative w-full transition-transform overflow-hidden flex justify-center overflow-x-auto 
+        duration-1000 ease-out h-full bg-black/50 flex-shrink-0 `}>
+
             {props.user.role == 'admin' && 
             <div onClick={()=>handleDeletePost()} className="absolute top-5 right-5 h-10 w-10 rounded-full bg-[rgba(244,238,238,0.8)] border-[1px] border-black z-10 flex justify-center items-center">
                 <TrashIcon className=" h-6 w-6 cursor-pointer"></TrashIcon>
             </div>}
            <div  style={{maxWidth:`${maxWidth}px`}} ref={pageWidthRef} className={`relative w-full flex items-center h-full  ${props.post.type=='pdf' ? 'px-16' : ''}`}>
-               {props.post.type=='pdf' ?  <div className="h-full w-[86%] overflow-hidden overflow-x-auto">
+               {props.post.type=='pdf' ? 
+                <div className="h-full w-[86%] relative overflow-hidden overflow-x-auto">
+                  <div className={`${showComplaintForm? 'absolute' : 'hidden'} w-full z-30 h-full flex flex-col justify-center items-center bg-white/40 backdrop-blur-md`}>
+                       <div className="bg-black/20 relative flex flex-col p-3">
+                        <XCircleIcon className="top-1 right-1 w-6 h-6" onClick={()=>setShowComplaintForm(false)}></XCircleIcon>
+                        <div className="bg-white rounded-md border-black/40 resize-none border-[0.5px]">
+                        <textarea value={commentInputValue} placeholder="Type your note/complaint here..." onChange={(e)=>setCIV(e.target.value)} maxLength={300} 
+                        className="w-[500px] h-[200px] resize-none p-2 outline-none bg-white rounded-md">
+                             
+                        </textarea>
+                        <div className="text-black p-2">{commentInputValue.length}/300</div>
+                        </div>
+                        <button onClick={()=>handleSendComment()} className="w-[180px] h-[40px] text-white mt-2 font-bold bg-[#328ed8]">Send</button>
+                       </div>
+                  </div>
                  <Document className="w-full h-full" file={props.post.fileUrl}>
                   <Page width={pageWidth} className="h-full overflow-hidden overflow-y-auto" pageNumber={1}></Page>
                  </Document>
@@ -99,8 +150,9 @@ export default function Slide(props:{post:any, currentPost:number, user:any, use
                 : 
                 <div className="h-full w-[86%] relative"><Image fill src={`${props.post.fileUrl}`} alt='post_img'></Image></div>
                 }
-                <div className="grow h-full">
-                  <ReviewForm userId={props.userId} postId={props.post.id} setOpen={setOpen} setCurrent={props.setCurrent}></ReviewForm>
+                <div className="grow max-w-[14%] h-full">
+                  <ReviewForm offeredAnswers={props.post.exam.offeredAnswers} userId={props.userId} 
+                  postId={props.post.id} setOpen={setOpen} setCurrent={props.setCurrent} handleOpenComplaintForm={handleOpenComplaintForm}></ReviewForm>
                 </div>
            </div>
            {props.user.role == 'admin' && <Details userId={props.userId} user={props.user} post={props.post} setOpen={setShowRevScr}></Details>}

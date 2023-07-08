@@ -23,25 +23,30 @@ export default function Home({session, user, examsParticipation}:any){
      const router = useRouter();
    
      const [currentBatch, setCrtBatch] = useState(0);
-     const [currentExam, setCurrentExam] = useState({title:'', id:''});
+     const [currentExam, setCurrentExam] = useState({title:'', id:'', postsTotal:0});
      const [take, setTake] = useState(user.currentPost+1);
-     const [currentPost,setCurrentPost] = useState<number>(user.currentPost);
+     const [currentPost,setCurrentPost] = useState<number>(0);
      const {posts, numberOfPosts, isMore, loading, setNumberOfPosts, setIsMore, setPosts}= useLoadPost(currentBatch,take,currentExam);
      const [nextPage, setNextPage] = useState(false);
        
+     useEffect(()=>{
+         if(examsParticipation[0]){
+           setCurrentExam({title:examsParticipation[0].exam.title, id:examsParticipation[0].examId, postsTotal:examsParticipation[0].exam.postsTotal});
+         }
+     },[])
 
      useEffect(()=>{
-      setNumberOfPosts(0);
-      setPosts([]);
-      setIsMore(true);
-     },[currentExam])
-
-     useEffect(()=>{
-        if(currentPost==posts.length-1 && isMore){
-           setCrtBatch(prevBatch=>prevBatch+3);
+        
+        if(currentPost==posts.length-1 && isMore && currentPost!==0){
+           
+           setCrtBatch(prevBatch=>prevBatch+1);
         }
-     }, [currentPost,posts])
-     
+     }, [currentPost])
+
+     useEffect(()=>{
+        setCurrentPost(0);
+     },[currentExam])
+    
 
      const handleSlideLeft=()=>{
               if(currentPost!=0){
@@ -49,6 +54,7 @@ export default function Home({session, user, examsParticipation}:any){
               }
      }
      const handleSlideRight= ()=>{
+             console.log('currentPOST!!!!'+ currentPost);
              if(currentPost!=posts.length-1){
                setCurrentPost(prevPost=>prevPost+1)
              }
@@ -139,8 +145,8 @@ export default function Home({session, user, examsParticipation}:any){
        });  
       });
      }
-     const handleSetCurrentExam=(title:string, examId:string)=>{
-          setCurrentExam((prevExam)=>({...prevExam, title:title, id:examId}));
+     const handleSetCurrentExam=(title:string, examId:string, postsTotal:number)=>{
+          setCurrentExam((prevExam)=>({...prevExam, title:title, id:examId, postsTotal:postsTotal}));
           setExamDropDown(false);
      }    
 
@@ -156,10 +162,11 @@ export default function Home({session, user, examsParticipation}:any){
                    <TabularDisplay tabularDisplayState={setTabularDisplay}></TabularDisplay>
              </div>
              <div id="examDropdown" style={{right:`${distanceNow}`}} className={`${examDropDown? 'fixed' : 'hidden'}
-              rounded-md bg-[rgba(222,222,222)] px-2 py-2 top-[50px] w-[350px] h-[350px] z-10`}>
+              rounded-md bg-[#4d4a4a] px-2 py-2 top-[50px] w-[350px] max-h-[350px] text-white z-10`}>
                   {examsParticipation && examsParticipation.map((item:any, idx:number)=>(
-                     <div key={idx} onClick={()=>handleSetCurrentExam(item.exam.title, item.examId)} className="text-[20px] font-medium flex items-center truncate 
-                     h-12 w-full transion duration-200 cursor-pointer rounded-lg hover:bg-slate-50 px-2">
+                     <div key={idx} onClick={()=>handleSetCurrentExam(item.exam.title, item.examId, item.exam.postsTotal)} className="text-[20px] font-medium flex 
+                     items-center truncate 
+                     h-12 w-full transion duration-200 cursor-pointer rounded-lg hover:bg-white/40 px-2">
                         <p className='truncate'>{item.exam.title}</p>
                      </div> 
                   ))
@@ -197,7 +204,7 @@ export default function Home({session, user, examsParticipation}:any){
                <span className="text-white text-[20px] font-bold font-serif">Answer&Slide</span>
                <div className='relative flex items-center'>
                   <div className='text-[20px] font-semibold font-serif'>{currentExam.title}</div>
-                   <ChevronUpDownIcon id="updown-icon" className="w-8 h-8 mr-10 relative cursor-pointer"onClick={()=>handleExamDropDown()}>
+                   <ChevronUpDownIcon id="updown-icon" className="w-8 h-8 mr-10 relative cursor-pointer" onClick={()=>handleExamDropDown()}>
                    </ChevronUpDownIcon>
                   {user.role=='admin' && <button onClick={()=>setShowPublishImage(true)} className="px-4 py-1 border-[1px] border-white mx-3">Publish</button>}
                   {user.role=='admin' && <button onClick={()=>setShowPublishPDFImage(true)} className="px-4 py-1 border-[1px] border-white mx-3 truncate">Publish PDF</button>}
@@ -209,14 +216,15 @@ export default function Home({session, user, examsParticipation}:any){
         </section>
         <section style={{overflow:'overlay'}} className="w-full relative bg-gray-200 h-full flex justify-center items-center">
              <div className="relative w-full  h-full bg-white flex overflow-hidden items-center justify-between">
-               <div onClick={()=>handleSlideLeft()} className={`absolute transition ${currentPost==0 ? 'hidden' : 'flex'} flex justify-center items-center
+               {currentExam && (currentExam.postsTotal !== 0) && <div className="absolute right-[50%] z-20 top-0 p-3 bg-white/60 text-[22px] font-bold text-black">{currentPost+1}/{currentExam.postsTotal}</div>}
+              {posts && posts.length>0 && <div onClick={()=>handleSlideLeft()} className={`absolute transition ${currentPost==0 ? 'hidden' : 'flex'} flex justify-center items-center
                 duration-300 h-[45px] w-[45px] z-10 rounded-full bg-white/40 left-[14px] hover:bg-white/60`}>
                          <ChevronLeftIcon className="w-8 h-8"></ChevronLeftIcon>
-                </div>
-                <div onClick={()=>handleSlideRight()} className={`${currentPost==posts.length-1 ? 'hidden' : 'flex' } absolute transition duration-300 justify-center items-center
+                </div>}
+               { posts && posts.length>0 &&  <div onClick={()=>handleSlideRight()} className={`${currentPost==posts.length-1 ? 'hidden' : 'flex' } absolute transition duration-300 justify-center items-center
                  h-[45px] w-[45px] z-10 rounded-full bg-white/40 right-[14px] hover:bg-white/60`}>
                          <ChevronRightIcon className="w-8 h-8"></ChevronRightIcon>
-                 </div>
+                 </div> }
                 {
                     posts.map((post, id)=>(
                         <Slide key={id} post={post} currentPost={currentPost} userId={user.id} user={user} setCurrent={handleSlideRight}></Slide> 
@@ -254,13 +262,17 @@ export const getServerSideProps = async (context:any) => {
          select:{
              exam:{
               select:{
-                 title:true
+                 title:true,
+                 postsTotal:true,
               }
              },
              examId:true
          },
          where:{
            userId:user?.id
+         },
+         orderBy:{
+          userAddedTime:'desc'
          }
     })
     

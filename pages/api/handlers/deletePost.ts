@@ -4,13 +4,24 @@ import prisma from "../../../lib/prismadb";
 
 
 export default async function deletePost(req:NextApiRequest,res:NextApiResponse){
-    const {postId} = req.body;
-  
+    const {postId, examId} = req.body;
+    console.log("ExamId je: ");
+    console.log(examId);
 
     try {
       const record= await prisma.post.delete({
             where:{
                 id:postId
+            }
+        })
+        if(record) await prisma.exam.update({
+            where:{
+                id:examId,
+            },
+            data:{
+                postsTotal:{
+                    decrement:1
+                }
             }
         })
      

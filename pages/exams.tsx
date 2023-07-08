@@ -94,7 +94,7 @@ export default function Exams({user, session}:any){
                <div id='examDetailsScreen' className="fixed z-10 hidden h-full top-0 right-0 left-0 bottom-0 bg-white/30 backdrop-blur-md justify-center items-center">
                    {currentExam && <ExamDetails exam={currentExam}></ExamDetails>}
                </div>
-               <div className="w-full flex items-center justify-between px-6 md:px-16 lg:px-20 min-h-[100px] h-[100px] bg-gray-800">
+               <div className="w-full flex items-center justify-between px-6 md:px-16 lg:px-20 min-h-[80px] h-[80px] bg-gray-800">
                      <div onClick={()=>router.push('/')} className="aspect-square h-[60%] p-1 rounded-full bg-white/40 hover:bg-white/60 cursor-pointer"><ChevronLeftIcon className="w-full h-full"></ChevronLeftIcon></div>
                      <span className="hidden sm:inline-block text-white text-[36px] font-semibold font-serif">Exam maintenance</span>
                      <div onClick={()=>handleCreateExamDisplay()} className="aspect-square h-[60%] p-1 rounded-full bg-white/40 hover:bg-white/60 cursor-pointer"><PlusIcon className="w-full h-full"></PlusIcon></div>
@@ -108,7 +108,9 @@ export default function Exams({user, session}:any){
                    <div id='examsList' className="flex w-full flex-wrap">
                       { 
                          examList.map((item:any,idx:number)=>(
-                            <div className="w-1/5 relative min-w-[345px] p-2 aspect-video" key={idx} onClick={()=>handleShowExamDetails(item)}><ExamBox exam={item}></ExamBox></div>
+                            <div className="w-1/5 relative min-w-[345px] p-2 aspect-video" key={idx} onClick={()=>handleShowExamDetails(item)}>
+                                <ExamBox exam={item}></ExamBox>
+                            </div>
                          ))
                       }
                    </div>

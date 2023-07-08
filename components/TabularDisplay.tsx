@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react'
 import axios from 'axios';
-import { XCircleIcon } from '@heroicons/react/24/outline';
+import { ChevronUpDownIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import {baseUrl} from '../baseUrl'
 import spinner from '../public/spinner.svg'
 import Image from 'next/image';
@@ -14,6 +14,27 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
      const [arrayObjects, setArrayObjects] = useState<any>();
      const [prov, setProv] = useState(false);
      const [stage, setStage] = useState(0);
+     const [loadingExams, setLoadingExams] = useState(true);
+     const [examsList, setExamsList] = useState<any>();
+    const [selectedExam, setSelectedExam] = useState<any>();
+    useEffect(()=>{
+        if(!examsList) axios({
+          url:baseUrl+'api/examHandlers/getExamsList',
+          method:'GET'
+        }).then((res)=>{
+             setExamsList([...res.data]);
+             setSelectedExam(res.data[0]);
+             console.log(res.data[0]);
+        }).catch((err)=>{
+          console.log(err);
+        })
+
+    },[])
+    
+    useEffect(()=>{
+       setStage(0);
+    },[selectedExam])
+
     
      const [tableGenerated, setTableGenerated] = useState(false);
      
@@ -49,10 +70,11 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
      }
      
      const exportToExcel = ()=> {
+        const fileName = String(selectedExam.title.replace(/\s/g, "")+'.xlsx')
         const worksheet = utils.json_to_sheet(arrayObjects);
         const workbook = utils.book_new();
         utils.book_append_sheet(workbook, worksheet, 'Sheet 1');
-        writeFile(workbook, 'fileXls.xlsx');
+        writeFile(workbook, fileName);
       };
      
      const outputTable = async ()=>{
@@ -105,7 +127,10 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
             setUsers(res.data);
             axios({
                 method:'GET',
-               url: baseUrl+'api/completeview/getPosts'
+               url: baseUrl+'api/completeview/getPosts',
+               params:{
+                examId: selectedExam.id
+               }
            }).then(res => {
                //@ts-ignore 
               setPosts(res.data);
@@ -132,14 +157,49 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
         
      }
 
+     const [dropDownMenu, setDropDownMenu] = useState(false);
+    
+     const handleSelectExam=(item:any)=>{
+         setSelectedExam(item);
+         setDropDownMenu(false);
+     }
+ 
+     const handleDropDownMenu=()=>{
+       setDropDownMenu(prevDD=>!prevDD);
+     }
+
+     
+
      return(
         <div className="w-[90%] h-[90%] rounded-md overflow-auto bg-white px-10 flex flex-col py-16 relative">
-             <div className="absolute top-5 right-5"><XCircleIcon className="h-8 w-8" onClick={()=>props.tabularDisplayState(false)}></XCircleIcon></div>
-             {stage == 0 &&  <button onClick={()=>fetchData()} className="px-3 mb-5 text-[20px] w-full max-w-[240px] text-white flex justify-center items-center font-semibold rounded-lg py-4 bg-[#1f87d2]">
+           <div className="absolute top-5 right-5"><XCircleIcon className="h-8 w-8" onClick={()=>props.tabularDisplayState(false)}></XCircleIcon></div>
+             
+             
+             <div className="flex relative">
+                <div className='text-[20px] font-semibold font-serif'>{selectedExam && selectedExam.title}</div>
+                <ChevronUpDownIcon className="w-8 h-8 mr-10 relative cursor-pointer" onClick={()=>handleDropDownMenu()}></ChevronUpDownIcon>
+                
+               <div className={`${dropDownMenu? 'absolute' : 'hidden'}
+                  rounded-md bg-[#4d4a4a] overflow-hidden overflow-y-auto px-2 py-2 top-[30px] w-[350px] max-h-[350px] text-white z-10`}>
+                   {examsList && examsList.map((item:any, idx:number)=>(
+                     <div key={idx} onClick={()=>handleSelectExam(item)} className="text-[20px] font-medium flex 
+                     items-center truncate 
+                     h-12 w-full transion duration-200 cursor-pointer rounded-lg hover:bg-white/40 px-2">
+                        <p className='truncate'>{item && item.title}</p>
+                     </div> 
+                  ))
+                
+                  }
+                </div>
+             </div>
+
+
+
+             {selectedExam && stage == 0 &&  <button onClick={()=>fetchData()} className="px-3 mb-5 text-[20px] w-full max-w-[240px] text-white flex justify-center items-center font-semibold rounded-lg py-4 bg-[#1f87d2]">
                           {!loading ? <span>Fetch data</span> : <div className="h-8 w-8 animate-spin relative"><Image fill src={spinner} alt='spinner'></Image></div> }
                  </button>}
-             {stage == 1 && <button onClick={()=>outputTable()} className="px-3 text-[20px] w-full max-w-[240px] mb-5 text-white font-semibold rounded-lg py-4 bg-[#1f87d2]">Generate table</button>}
-             {stage == 2 && <button onClick={()=>exportToExcel()} className="px-3 text-[20px] w-full max-w-[240px] mb-5 text-white font-semibold rounded-lg py-4 bg-[#1f87d2]">Export</button>}
+             {selectedExam && stage == 1 && <button onClick={()=>outputTable()} className="px-3 text-[20px] w-full max-w-[240px] mb-5 text-white font-semibold rounded-lg py-4 bg-[#1f87d2]">Generate table</button>}
+             {selectedExam && stage == 2 && <button onClick={()=>exportToExcel()} className="px-3 text-[20px] w-full max-w-[240px] mb-5 text-white font-semibold rounded-lg py-4 bg-[#1f87d2]">Export</button>}
              {posts.length>0 && users.length>0 && recensions.length>0 && prov  && !loading && myTable()}
             {loading && <div className="w-full flex justify-center">
                         <div className="w-16 h-16 relative animate-spin"><Image src={spinner} fill alt='spinner'></Image></div>

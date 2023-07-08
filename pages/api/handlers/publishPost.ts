@@ -24,7 +24,17 @@ export default async function PublishPost(req:NextApiRequest,res:NextApiResponse
                 fileUrl:imageUrl,
                 creatorId:user.id,
                 type:type,
-                examId: examId
+                examId: examId,
+            }
+        });
+        if(record) await prisma.exam.update({
+            where:{
+                id:examId,
+            },
+            data:{
+                postsTotal:{
+                    increment:1
+                }
             }
         })
      

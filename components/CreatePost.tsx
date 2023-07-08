@@ -3,7 +3,7 @@ import {storage} from '../lib/firebase'
 import {useState, useEffect} from 'react'
 import {ref, getDownloadURL, uploadBytes, deleteObject} from 'firebase/storage'
 import {v4} from 'uuid'
-import {ArrowUpTrayIcon} from '@heroicons/react/24/outline'
+import {ArrowUpTrayIcon, ChevronUpDownIcon} from '@heroicons/react/24/outline'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
 import Swal from 'sweetalert2'
@@ -19,6 +19,22 @@ export default function CreatePost(props:{setImageDisplay:any}){
     const [currentRef, setCurrentRef] = useState<any>();
     const [pickedImage, setPickedImage] = useState<any>();
     const [loading, setLoading] = useState(false);
+
+    const [examsList, setExamsList] = useState<any>();
+    const [selectedExam, setSelectedExam] = useState<any>();
+    useEffect(()=>{
+        if(!examsList) axios({
+          url:baseUrl+'api/examHandlers/getExamsList',
+          method:'GET'
+        }).then((res)=>{
+             setExamsList([...res.data]);
+             setSelectedExam(res.data[0]);
+             console.log(res.data[0]);
+        }).catch((err)=>{
+          console.log(err);
+        })
+
+    })
    
     const uploadImage = async ()=>{
       if(loading) return;
@@ -38,7 +54,8 @@ export default function CreatePost(props:{setImageDisplay:any}){
                      imageUrl: image,
                      //@ts-ignore
                      session: JSON.stringify(session),
-                     type:'image'
+                     type:'image',
+                     examId: selectedExam.id
                     },
                     method:'POST'
                   }).then((res)=>{
@@ -69,10 +86,22 @@ export default function CreatePost(props:{setImageDisplay:any}){
      
     }
 
+    const [dropDownMenu, setDropDownMenu] = useState(false);
+
+    const handleSelectExam=(item:any)=>{
+      setSelectedExam(item);
+      setDropDownMenu(false);
+  }
+
     const selectImage= (value:any) =>{
         if(!value) return alert('You have to select picture!');
         setPickedImage(value);
     }
+
+    const handleDropDownMenu=()=>{
+      setDropDownMenu(prevDD=>!prevDD);
+    }
+    
 
     const handleClose= ()=>{
         props.setImageDisplay(false);
@@ -83,6 +112,19 @@ export default function CreatePost(props:{setImageDisplay:any}){
             <div className="absolute top-1 right-1 flex items-center justify-center cursor-pointer " onClick={()=>handleClose()}>
                 <XCircleIcon className="w-8 h-8 brightness-0"></XCircleIcon>
               </div>
+              <div id="examListImage" className={`h-full ${dropDownMenu? 'absolute' : 'hidden'} z-20 top-20 px-3 py-2 w-[80%] bg-[#eae3e3] backdrop-blur-md text-black/70`}>
+                  {
+                    examsList && examsList.map((item:any, idx:number)=>(
+                      <div key={idx} onClick={()=>handleSelectExam(item)}  className="text-[20px] font-medium flex items-center truncate 
+                     h-12 w-full transion duration-200 cursor-pointer rounded-lg hover:bg-slate-50 px-2">
+                        <p className='truncate'>{item.title}</p>
+                     </div> 
+                    ))
+                  }
+            </div>
+            {selectedExam && <div className="text-black/80 w-full mb-10 px-10 text-[21px] font-bold flex items-center">{selectedExam.title}
+               <ChevronUpDownIcon onClick={()=>handleDropDownMenu()} className="w-8 h-8 cursor-pointer"></ChevronUpDownIcon>
+             </div>}
               <label
                     //@ts-ignore 
                     htmlFor='imageUploadButton' className="w-[80%] cursor-pointer transition duration-300 flex items-center 

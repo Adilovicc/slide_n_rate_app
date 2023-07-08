@@ -12,16 +12,13 @@ export default function useLoadParticipants(currentNumber:number, examId: string
      const howManyToTakeWithEachRequest=4;
 
      useEffect(()=>{
-         setLoading(false);
          setIsMore(true);
          setParticipants([]);
          setTPL(0);
      },[examId, userQuery])
      
      useEffect(()=>{
-        console.log("PRVO SMO TU!");
         if(!isMore && currentNumber!=0) return;
-        console.log("A ONDA OVDJE SMO TU!");
         let cancel: ()=>void=()=>{};
         setLoading(true);
         

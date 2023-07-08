@@ -7,6 +7,9 @@ export default async function getExamsList(req:NextApiRequest, res:NextApiRespon
                select:{
                 id:true,
                 title:true,
+               },
+               orderBy:{
+                createdAt:'desc'
                }
            })
 

@@ -128,7 +128,7 @@
   overflow-y:overlay;
 }
 
-#examListInPDF{
+#examListInPDF, #examListImage{
   overflow:hidden;
   overflow-y:overlay;
 }

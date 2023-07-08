@@ -10,7 +10,14 @@ export default async function LoadPosts(req:NextApiRequest, res:NextApiResponse)
                 examId:String(examId)
             },
             skip: Number(startAt),
-            take: Number(take)
+            take: Number(take),
+            include:{
+                exam:{
+                    select:{
+                        offeredAnswers:true
+                    }
+                }
+            }
         })
         return res.json(records);
     } catch (error) {
