@@ -48,7 +48,6 @@ export default function AddPhoto(props:{setAPS:any}){
                             showConfirmButton: true,
                             timer: 4000
                          });
-                         console.log(JSON.parse(res.data));
                          return res.data;
                         }
                   }).catch((err)=>{
@@ -98,7 +97,7 @@ export default function AddPhoto(props:{setAPS:any}){
               <input 
                    className="hidden"
                    //@ts-ignore
-                   onChange={(e)=>{selectImage(e.target.files[0]); console.log(e.target.files[0])}}  
+                   onChange={(e)=>{selectImage(e.target.files[0]);}}  
                    type='file'
                    accept="image/*"
                    id='photoUploadBtn' />

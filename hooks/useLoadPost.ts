@@ -21,9 +21,7 @@ export default function useLoadPost(currentBatch: number, take: number, currentE
     
 
     useEffect(()=>{
-            console.log(currentExam);
-            console.log(currentExam.id);
-            console.log(isMore);
+           
             if(!isMore) return;
             let cancel: () => void = () => {};
             setLoading(true);
@@ -38,8 +36,8 @@ export default function useLoadPost(currentBatch: number, take: number, currentE
                 },
                 cancelToken: new axios.CancelToken(c=>cancel=c)
               }).then(res => {
-                console.log("EVO SAD OVDJE!")
-                console.log(res.data);
+             
+      
                 if(res.data.length<3) setIsMore(false);
                 // setStartAt(startLoadingAt+res.data.length);
                 setNumberOfPosts(numberOfPosts+res.data.length);

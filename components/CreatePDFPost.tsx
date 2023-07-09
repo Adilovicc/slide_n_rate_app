@@ -28,7 +28,7 @@ export default function CreatePDFPost(props:{setPDFDisplay:any}){
         }).then((res)=>{
              setExamsList([...res.data]);
              setSelectedExam(res.data[0]);
-             console.log(res.data[0]);
+           
         }).catch((err)=>{
           console.log(err);
         })

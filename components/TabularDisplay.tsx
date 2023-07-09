@@ -19,12 +19,12 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
     const [selectedExam, setSelectedExam] = useState<any>();
     useEffect(()=>{
         if(!examsList) axios({
-          url:baseUrl+'api/examHandlers/getExamsList',
+          url:baseUrl+'api/completeview/getExams',
           method:'GET'
         }).then((res)=>{
              setExamsList([...res.data]);
              setSelectedExam(res.data[0]);
-             console.log(res.data[0]);
+            
         }).catch((err)=>{
           console.log(err);
         })
@@ -52,17 +52,17 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
                   let counter = false;
                   let lock = false;
                   {recensions.map((recension:any, idxR:number)=>{
-                    console.log("Tu---");
+                    
                             if(counter) counter=false;
                             if(user.id == recension.userId && post.id==recension.postId) {counter=true; lock=true;};
-                            if(counter) {let objKey=`Post${idxP+1}`; obj = Object.assign(obj, { [objKey]: recension.grade } );}
-                            if(!counter && !lock && idxR==recensions.length-1) {let objKey=`Post${idxP+1}`; obj=Object.assign(obj, { [objKey]: 0})}
+                            if(counter) {let objKey=`Post${idxP+1}`; obj = Object.assign(obj, { [objKey]: selectedExam.offeredAnswers[recension.grade-1] } );}
+                            if(!counter && !lock && idxR==recensions.length-1) {let objKey=`Post${idxP+1}`; obj=Object.assign(obj, { [objKey]: 'NA'})}
                            
                             
                    })}
             
                   })
-             console.log(obj);    
+              
             arrayOfObjects.push(obj);
            }
         )
@@ -82,7 +82,7 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
            const myArray = await generateExcelTable();
            const keys = Object.keys(myArray[0]);
            setArrayObjects(myArray);
-           console.log(myArray);
+       
            setProv(true);
            setStage(2);
            setLoading(false);
@@ -97,7 +97,7 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
                 <tr className="border-[0.5px] border-black">
                   {keys.map((key, index) => (
                     index==0 ? <th className="border-[2px] bg-[#bf443bc3] text-[20px] font-serif border-black p-[2px] py-[10px] min-w-[20rem]" key={index}>{key}</th> :
-                    <th className="border-[2px] text-[20px] bg-[#3ba7bfc3] font-serif border-black p-[2px] py-[10px] min-w-[10rem]" key={index}>{key}</th> 
+                    <th className="border-[2px] text-[20px] bg-[#3ba7bfc3] font-serif border-black p-[2px] py-[10px] min-w-[10rem] max-w-[160px]" key={index}>{key}</th> 
                   ))}
                 </tr>
               </thead>
@@ -106,7 +106,7 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
                   <tr key={rowIndex}>
                     {keys.map((key:any, cellIndex:number) => (
                       cellIndex==0 ? <td className="border-[0.5px] font-semibold text-[18px] border-black p-[2px] min-w-[20rem] text-center" key={cellIndex}>{obj[key]}</td> :
-                      <td className="border-[0.5px] border-black p-[4px] min-w-[10rem] text-center" key={cellIndex}>{obj[key]}</td>
+                      <td className="border-[0.5px] border-black p-[4px] min-w-[10rem] max-w-[160px] text-center" key={cellIndex}>{obj[key]}</td>
                     ))}
                   </tr>
                 ))}

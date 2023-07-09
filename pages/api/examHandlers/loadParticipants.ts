@@ -29,8 +29,7 @@ export default async function loadParticipants(req:NextApiRequest, res:NextApiRe
               skip:Number(skip),
               take:Number(take),
         });
-        console.log("RECORDS:");
-        console.log(records);
+     
         return res.json(records);
       } catch (error) {
         return res.status(500).json({message:'Stg went wrong!'});

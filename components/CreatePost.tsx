@@ -29,7 +29,7 @@ export default function CreatePost(props:{setImageDisplay:any}){
         }).then((res)=>{
              setExamsList([...res.data]);
              setSelectedExam(res.data[0]);
-             console.log(res.data[0]);
+       
         }).catch((err)=>{
           console.log(err);
         })
@@ -140,7 +140,7 @@ export default function CreatePost(props:{setImageDisplay:any}){
               <input 
                    className="hidden"
                    //@ts-ignore
-                   onChange={(e)=>{selectImage(e.target.files[0]); console.log(e.target.files[0])}}  
+                   onChange={(e)=>{selectImage(e.target.files[0]);}}  
                    type='file'
                    accept="image/*"
                    id='imageUploadButton' />

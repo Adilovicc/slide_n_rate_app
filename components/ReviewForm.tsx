@@ -32,10 +32,6 @@ export default function ReviewForm(props:{userId:any, offeredAnswers:any, postId
      setGradeInputValue(broj);
   }
   
-  useEffect(()=>{
-    console.log("Pon odgs...")
-    console.log(props.offeredAnswers);
-  })
 
   const [trigger, setTrigger] = useState(false);
 
@@ -94,7 +90,6 @@ export default function ReviewForm(props:{userId:any, offeredAnswers:any, postId
           });
          }
        ).catch((err)=>{
-         console.log(err.response.data.message);
          props.setOpen(false);
          return Swal.fire({
             position: 'center',

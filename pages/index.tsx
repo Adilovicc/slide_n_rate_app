@@ -54,7 +54,6 @@ export default function Home({session, user, examsParticipation}:any){
               }
      }
      const handleSlideRight= ()=>{
-             console.log('currentPOST!!!!'+ currentPost);
              if(currentPost!=posts.length-1){
                setCurrentPost(prevPost=>prevPost+1)
              }
@@ -94,9 +93,6 @@ export default function Home({session, user, examsParticipation}:any){
      
     const distance = useRef(400);
     const [distanceNow, setDistanceNow] = useState('500');
-     useEffect(()=>{
-         console.log(distanceNow);
-     }, [distanceNow])
 
      useEffect(()=>{
       const object = document.getElementById('updown-icon');
@@ -104,7 +100,6 @@ export default function Home({session, user, examsParticipation}:any){
     //@ts-ignore
       setDistanceNow(String(Math.floor(windowWidth - object.getBoundingClientRect().right))+'px');
       const handleDistance = ()=>{
-        console.log("ovdje!");
         const object = document.getElementById('updown-icon');
         const windowWidth = window.innerWidth;
       //@ts-ignore

@@ -7,9 +7,7 @@ export default async function create(req:NextApiRequest, res:NextApiResponse){
        //@ts-ignore
        const valuesE = JSON.parse(values);
        const {title, answerList, createdBy} = valuesE;
-       console.log(title);
-       console.log(answerList);
-       console.log(createdBy);
+      
        try {
             const record = await prisma.exam.create({
                 data:{

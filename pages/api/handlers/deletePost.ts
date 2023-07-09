@@ -5,8 +5,7 @@ import prisma from "../../../lib/prismadb";
 
 export default async function deletePost(req:NextApiRequest,res:NextApiResponse){
     const {postId, examId} = req.body;
-    console.log("ExamId je: ");
-    console.log(examId);
+  
 
     try {
       const record= await prisma.post.delete({

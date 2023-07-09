@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useState, useRef, useLayoutEffect,useEffect } from "react";
 import ReviewForm from "./ReviewForm";
 import { userAgent } from "next/server";
-import { TrashIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { TrashIcon, XCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import Swal from "sweetalert2";
 import {useRouter} from "next/router";
@@ -105,9 +105,23 @@ export default function Slide(props:{post:any, currentPost:number, user:any, use
           setShowComplaintForm(false);
           setCIV('');
           setCCL(false);
-          return alert('Your note has been sent')
+          return  Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: 'Note handed in!',
+            showConfirmButton: false,
+            timer: 2000
+          });
       }).catch((err)=>{
-          return alert ('You have already sent your note');
+          setCCL(false);
+          setShowComplaintForm(false);
+          return Swal.fire({
+            position: 'center',
+            icon: 'error',
+            title: 'You have already sent your note!',
+            showConfirmButton: false,
+            timer: 2000
+          });
       })
     }
 
@@ -129,7 +143,7 @@ export default function Slide(props:{post:any, currentPost:number, user:any, use
                 <div className="h-full w-[86%] relative overflow-hidden overflow-x-auto">
                   <div className={`${showComplaintForm? 'absolute' : 'hidden'} w-full z-30 h-full flex flex-col justify-center items-center bg-white/40 backdrop-blur-md`}>
                        <div className="bg-black/20 relative flex flex-col p-3">
-                        <XCircleIcon className="top-1 right-1 w-6 h-6" onClick={()=>setShowComplaintForm(false)}></XCircleIcon>
+                        <div className="w-full flex justify-end mb-2"><XMarkIcon className="w-8 h-8 cursor-pointer" onClick={()=>setShowComplaintForm(false)}></XMarkIcon></div>
                         <div className="bg-white rounded-md border-black/40 resize-none border-[0.5px]">
                         <textarea value={commentInputValue} placeholder="Type your note/complaint here..." onChange={(e)=>setCIV(e.target.value)} maxLength={300} 
                         className="w-[500px] h-[200px] resize-none p-2 outline-none bg-white rounded-md">

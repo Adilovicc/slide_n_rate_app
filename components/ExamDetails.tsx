@@ -4,6 +4,8 @@ import axios from 'axios';
 import { baseUrl } from '@/baseUrl';
 import Swal from 'sweetalert2';
 import { ReceiptRefundIcon } from '@heroicons/react/24/outline';
+import { writeFile, utils} from 'xlsx';
+
 export default function ExamDetails({exam}:any){
       const [userQuery, setUserQuery] = useState<string>('');
       const [currentNumber, setCurrentNumber] = useState(0);
@@ -11,25 +13,25 @@ export default function ExamDetails({exam}:any){
       const [loadingNotes, setLoadingNotes] = useState(false);
       const [notes, setNotes] = useState([]);
        
-      useEffect(()=>{setCurrentNumber(0)},[exam])
+     
 
       const {isMore, loading, participants, totalParticipantsLoaded, setParticipants} = useLoadParticipants(currentNumber, exam.id, userQuery);
       const [currentList, setCurrentList] = useState('members'); 
          
     
+      useEffect(()=>{setCurrentNumber(0), setCurrentList('members')},[exam])
 
       const observer = useRef();
       const lastElementView = useCallback((node:any)=>{
         if(loading) return
         if(!isMore) return
-        console.log("TU!");
        //@ts-ignore
         if(observer.current) observer.current.disconnect()
         //@ts-ignore
         observer.current = new IntersectionObserver(entries => {
           if(entries[0].isIntersecting){
            setCurrentNumber(prevNumber=>prevNumber+4);
-           console.log("EVONAS!");
+          
           }
         })
         //@ts-ignore
@@ -79,12 +81,10 @@ export default function ExamDetails({exam}:any){
             examId: exam.id
           }
         }).then((res)=>{
-            console.log(res.data);
+         
             const newTracking = participants[idx].forTracking + 'x';
             const objectForChange = {...participants[idx], userExam:[{id:res.data.id}], forTracking:newTracking};
-            console.log(objectForChange);
-            const objectArray=([...participants.slice(0,idx),objectForChange, ...participants.slice(idx+1)])
-            console.log(objectArray);
+            const objectArray=([...participants.slice(0,idx),objectForChange, ...participants.slice(idx+1)]);
             setHandlingInProcess(false);
             return objectArray
         }).catch((err)=>{
@@ -114,7 +114,16 @@ export default function ExamDetails({exam}:any){
             setNotes(res.data);
         }).catch((err)=>alert('Something went wrong!')).finally(()=>setLoadingNotes(false));
      }
-
+     const [noteQuery,setNoteQuery] = useState('');
+     
+     const handleExportNotes=()=>{
+        const fileName = String(exam.title.replace(/\s/g, "")+'Notes.xlsx')
+        const worksheet = utils.json_to_sheet(notes);
+        const workbook = utils.book_new();
+        utils.book_append_sheet(workbook, worksheet, 'Sheet 1');
+        writeFile(workbook, fileName);
+     }
+     
     return(
         <div id='examDetailsForm' className="bg-[rgb(34,34,34)] text-white flex flex-col items-center rounded-lg 
           p-5 w-full max-w-[800px]">
@@ -191,19 +200,27 @@ export default function ExamDetails({exam}:any){
                           ))}
                     </div>
             </div>}
-            {currentList=='notes' && <div className="w-full h-[350px] overflow-auto p-1 border-[2px] border-white">
+            {currentList=='notes' && <div className="w-full h-[350px]">
                {loadingNotes && <div className="h-full w-full flex justify-center items-center">
                    <img className="w-12 h-12 animate-spin" src='/spinner.svg'></img>
+                </div>}
+                {!loadingNotes && notes && 
+                <div className="flex justify-between items-center">
+                    <div className="h-[42px] w-full px-4 max-w-[300px] rounded-full border-[1px] bg-white/20 flex items-center border-white">
+                       <input value={noteQuery} onChange={(e)=>setNoteQuery(e.target.value)} placeholder='Search by post or email...' className='outline-none bg-white/0'></input>
+                   </div>
+                    <div onClick={()=>handleExportNotes()} className="w-[200px] h-[40px] flex justify-center items-center
+                     bg-[#1d90d7] cursor-pointer hover:bg-[#0c72b2]">Export</div>
                 </div>}   
-                {!loadingNotes && notes && notes.map((item:any, idx:number)=>(
-                    <div key={idx}  className={`w-full px-2 mt-1 min-h-[48px] border-[0.5px]
+                {!loadingNotes && notes && <div className="h-[300px] p-1 border-[0.5px] border-white mt-2 overflow-hidden overflow-y-auto">{ notes.map((item:any, idx:number)=>(
+                    (item.postName.includes(noteQuery) || item.userEmail.includes(noteQuery)) && <div key={idx}  className={`w-full px-2 mt-1 min-h-[48px] border-[0.5px]
                       bg-white/10 border-white
                       flex items-center`}>
                          <div className="w-[20%] truncate">{item.postName}</div>
                          <div className="w-[35%] truncate">{item.userEmail}</div>
                          <div className="w-[45%]">{item.text}</div>
                       </div>
-                ))} 
+                ))}</div>}
             </div>}
         </div>
     )
