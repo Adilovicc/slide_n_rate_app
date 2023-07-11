@@ -211,7 +211,7 @@ export default function Home({session, user, examsParticipation}:any){
         </section>
         <section style={{overflow:'overlay'}} className="w-full relative bg-gray-200 h-full flex justify-center items-center">
              <div className="relative w-full  h-full bg-white flex overflow-hidden items-center justify-between">
-               {currentExam && (currentExam.postsTotal !== 0) && <div className="absolute right-[50%] z-20 top-0 p-3 bg-white/60 text-[22px] font-bold text-black">{currentPost+1}/{currentExam.postsTotal}</div>}
+               {currentExam && (currentExam.postsTotal !== 0) && <div className="absolute right-[50%] z-10 top-0 p-3 bg-white/60 text-[22px] font-bold text-black">{currentPost+1}/{currentExam.postsTotal}</div>}
               {posts && posts.length>0 && <div onClick={()=>handleSlideLeft()} className={`absolute transition ${currentPost==0 ? 'hidden' : 'flex'} flex justify-center items-center
                 duration-300 h-[45px] w-[45px] z-10 rounded-full bg-white/40 left-[14px] hover:bg-white/60`}>
                          <ChevronLeftIcon className="w-8 h-8"></ChevronLeftIcon>

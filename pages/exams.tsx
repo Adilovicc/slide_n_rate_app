@@ -1,7 +1,7 @@
 import prisma from "@/lib/prismadb";
 import { getSession } from "next-auth/react";
 import {useState, useEffect, useRef, useCallback} from 'react';
-import { PlusCircleIcon, ChevronLeftIcon, Cog8ToothIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { PlusCircleIcon, ChevronLeftIcon, Cog8ToothIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
 import ExamBox from '../components/ExamBox'
 import ExamForm from '../components/ExamForm'
@@ -17,7 +17,7 @@ export default function Exams({user, session}:any){
     const [loading,setLoading] = useState(false);
     
     const [currentExam, setCurrentExam] = useState();
-
+    const [examForDelete, setExamForDelete] = useState<any>();
     
     //REFS FOR TRACKING FIXED ELEMENTS STATES ("details" and "create" screens)
     const ref = useRef(false);
@@ -83,7 +83,9 @@ export default function Exams({user, session}:any){
     },[])
    
 
-    
+    const deleteExam=()=>{
+
+    }    
 
 
     return(
@@ -104,11 +106,11 @@ export default function Exams({user, session}:any){
                              <img src='/spinner.svg' alt='spinner' className="w-full h-full animate-spin"></img>
                         </div>
                </section> :
-               <section id='examsListSection' className="max-h-grow w-full pt-10 pb-20">
-                   <div id='examsList' className="flex w-full flex-wrap">
+               <section id='examsListSection' className="max-h-grow w-full pt-10 pb-20 flex justify-center">
+                   <div id='examsList' className="flex w-full flex-wrap max-w-[1700px]">
                       { 
                          examList.map((item:any,idx:number)=>(
-                            <div className="w-1/5 relative min-w-[345px] p-2 aspect-video" key={idx} onClick={()=>handleShowExamDetails(item)}>
+                            <div className="w-[100%] sm:w-1/2 md:w-1/3 lg:w-1/4 relative p-2 aspect-video" key={idx} onClick={()=>handleShowExamDetails(item)}>
                                 <ExamBox exam={item}></ExamBox>
                             </div>
                          ))

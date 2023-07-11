@@ -200,7 +200,8 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
                  </button>}
              {selectedExam && stage == 1 && <button onClick={()=>outputTable()} className="px-3 text-[20px] w-full max-w-[240px] mb-5 text-white font-semibold rounded-lg py-4 bg-[#1f87d2]">Generate table</button>}
              {selectedExam && stage == 2 && <button onClick={()=>exportToExcel()} className="px-3 text-[20px] w-full max-w-[240px] mb-5 text-white font-semibold rounded-lg py-4 bg-[#1f87d2]">Export</button>}
-             {posts.length>0 && users.length>0 && recensions.length>0 && prov  && !loading && myTable()}
+             {posts.length>0 && users.length>0 && recensions.length>0 && prov  && stage==2 && !loading && <div className="w-full h-[86%] 
+             overflow-auto"> {myTable()} </div>}
             {loading && <div className="w-full flex justify-center">
                         <div className="w-16 h-16 relative animate-spin"><Image src={spinner} fill alt='spinner'></Image></div>
              </div> }   

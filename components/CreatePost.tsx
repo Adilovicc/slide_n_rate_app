@@ -40,48 +40,59 @@ export default function CreatePost(props:{setImageDisplay:any}){
       if(loading) return;
       if(!pickedImage) return;
       setLoading(true);
-      let image;
-      if(currentRef) deleteObject(currentRef);
-       const lokacija = ref(storage,`images/${pickedImage.name+v4()}`);
-       setCurrentRef(lokacija);
-       const uploadImageVar = uploadBytes(lokacija, pickedImage).then((res)=>{
-           getDownloadURL(lokacija).then((downloadUrl)=>{
-                 image=downloadUrl;
-                 
-                 axios({
-                    url:baseUrl+'api/handlers/publishPost',
-                    data:{
-                     imageUrl: image,
-                     //@ts-ignore
-                     session: JSON.stringify(session),
-                     type:'image',
-                     examId: selectedExam.id
-                    },
-                    method:'POST'
-                  }).then((res)=>{
-                        if(res){
-                          Swal.fire({
-                            position: 'center',
-                            icon: 'success',
-                            title: 'New post has been added!',
-                            showConfirmButton: true,
-                            timer: 4000
-                         }).then(router.reload);  
-                        }
-                  }).catch((err)=>{
-                    Swal.fire({
-                      position: 'bottom-right',
-                      icon: 'error',
-                      title: 'Error',
-                      showConfirmButton: false,
-                      timer: 2500
-                   }).then(router.reload); ;  
-                  });
-                  
-                 
+      
+      try {
+       const uploadPromises = [];
+       const examName = selectedExam.title.replace(/\s/g, "")
+       for (let i = 0; i < pickedImage.length; i++) {
+         const pim = pickedImage[i];
 
-            }).catch((err)=>console.log(err));
-       });
+         let image;
+
+         const lokacija = ref(storage, `${examName}/images/${pim.name + v4()}`);
+         setCurrentRef(lokacija);
+
+          const uploadPromise = uploadBytes(lokacija, pim)
+          .then(() => getDownloadURL(lokacija))
+          .then((downloadUrl) => {
+            image = downloadUrl;
+
+          return axios({
+            url: baseUrl + "api/handlers/publishPost",
+            data: {
+              imageUrl: image,
+              //@ts-ignore
+              session: JSON.stringify(session),
+              type: "image",
+              examId: selectedExam.id,
+            },
+            method: "POST",
+          });
+        });
+
+      uploadPromises.push(uploadPromise);
+    }
+
+    await Promise.all(uploadPromises);
+
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "New posts have been added!",
+        showConfirmButton: true,
+        timer: 4000,
+      }).then(() => router.reload());
+     } catch (err) {
+     Swal.fire({
+        position: "bottom-right",
+        icon: "error",
+        title: "Error",
+        showConfirmButton: false,
+        timer: 2500,
+      }).then(() => router.reload());
+       } finally {
+        setLoading(false);
+      }
     
      
     }
@@ -95,7 +106,7 @@ export default function CreatePost(props:{setImageDisplay:any}){
 
     const selectImage= (value:any) =>{
         if(!value) return alert('You have to select picture!');
-        setPickedImage(value);
+        setPickedImage(Array.from(value));
     }
 
     const handleDropDownMenu=()=>{
@@ -136,14 +147,16 @@ export default function CreatePost(props:{setImageDisplay:any}){
                     :
                      <img className="h-7 w-7 animate-spin" src='spinner.svg'></img>}
               </label>
-              <span className="text-black/50">{pickedImage && pickedImage.name}</span>
+            <div className="max-h-[300px] overflow-y-auto"> { pickedImage && pickedImage.map((img:any,idx:number)=>( <div key={idx} className="text-black/50">{img.name}</div>))}</div>
               <input 
                    className="hidden"
                    //@ts-ignore
-                   onChange={(e)=>{selectImage(e.target.files[0]);}}  
+                   onChange={(e)=>{selectImage(e.target.files);}}  
                    type='file'
                    accept="image/*"
-                   id='imageUploadButton' />
+                   id='imageUploadButton'
+                   multiple
+                    />
               <button onClick={()=>uploadImage()} className={`${loading ? 'bg-black/10 cursor-default' : !pickedImage ? 'bg-black/10 cursor-default' : 'bg-black/90 cursor-pointer'} 
                  w-[40%] font-serif py-2 transition duration-300 rounded-md mt-5 flex justify-center`}>
                 {!loading ? <span>Publish</span>: <img className="h-7 w-7 animate-spin" src='spinner.svg'></img>}

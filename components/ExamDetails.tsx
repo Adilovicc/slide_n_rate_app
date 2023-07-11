@@ -3,8 +3,9 @@ import useLoadParticipants from '../hooks/useLoadParticipants'
 import axios from 'axios';
 import { baseUrl } from '@/baseUrl';
 import Swal from 'sweetalert2';
-import { ReceiptRefundIcon } from '@heroicons/react/24/outline';
+import { TrashIcon } from '@heroicons/react/24/outline';
 import { writeFile, utils} from 'xlsx';
+import { useRouter } from 'next/router';
 
 export default function ExamDetails({exam}:any){
       const [userQuery, setUserQuery] = useState<string>('');
@@ -13,13 +14,14 @@ export default function ExamDetails({exam}:any){
       const [loadingNotes, setLoadingNotes] = useState(false);
       const [notes, setNotes] = useState([]);
        
-     
+      const router = useRouter();
 
       const {isMore, loading, participants, totalParticipantsLoaded, setParticipants} = useLoadParticipants(currentNumber, exam.id, userQuery);
       const [currentList, setCurrentList] = useState('members'); 
          
-    
-      useEffect(()=>{setCurrentNumber(0), setCurrentList('members')},[exam])
+      
+      const [deleteScreen, setDeleteScreen] = useState(false);
+      useEffect(()=>{setCurrentNumber(0); console.log(exam); setDeleteScreen(false); setCurrentList('members');},[exam])
 
       const observer = useRef();
       const lastElementView = useCallback((node:any)=>{
@@ -123,10 +125,44 @@ export default function ExamDetails({exam}:any){
         utils.book_append_sheet(workbook, worksheet, 'Sheet 1');
         writeFile(workbook, fileName);
      }
+
      
+    const deleteExam = ()=>{
+        axios({
+            url:baseUrl+'api/examHandlers/deleteExam',
+            method:'POST',
+            data:{
+                examId:exam.id
+            }
+        }).then((res)=>{
+            Swal.fire({
+                title:'Exam deleted!',
+                text:'Exam deleted successfully!',
+                timer:2000,
+                icon:'success'
+            });
+            router.reload();
+
+        }).catch((err)=>{
+            Swal.fire({
+                title:'Stg went wrong!',
+                timer:2000,
+                icon:'error'
+            });
+            setDeleteScreen(false);
+        })
+    }
+
     return(
-        <div id='examDetailsForm' className="bg-[rgb(34,34,34)] text-white flex flex-col items-center rounded-lg 
+        <div id='examDetailsForm' className="bg-[rgb(34,34,34)] relative text-white flex flex-col items-center rounded-lg 
           p-5 w-full max-w-[800px]">
+              <div className="absolute top-4 right-4 h-8 p-1 w-8 rounded-full bg-white/60 z-20"><TrashIcon onClick={()=>setDeleteScreen(true)} className="w-full h-full"></TrashIcon></div>
+                                <div className={`${deleteScreen ? 'absolute' : 'hidden'} w-full h-full top-0 z-20 flex justify-center rounded-lg`}>
+                                    <div className="bg-white/30 w-full h-full backdrop-blur-md flex flex-col items-center justify-center rounded-lg">
+                                         <div onClick={()=>setDeleteScreen(false)} className=" bg-green-700 rounded-md mb-10 cursor-pointer text-white w-[80%] flex justify-center py-2 truncate font-bold">CANCEL</div>
+                                         <div onClick={()=>deleteExam()} className=" bg-red-700 rounded-md cursor-pointer text-white w-[80%] flex justify-center py-2 truncate font-bold">DELETE</div>
+                                    </div>
+                                </div>   
             <h1 className="text-[26px] font-semibold">{exam.title}</h1>
             <div className="w-full flex flex-wrap justify-center text-lg font-semibold">
                     <div className="w-full truncate max-w-[220px] m-2 h-6 px-2 bg-white text-black/80 flex items-center">
