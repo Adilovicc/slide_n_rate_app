@@ -10,7 +10,7 @@ export default async function addRecension(req:NextApiRequest,res:NextApiRespons
               data:{
                   userId:userId,
                   postId:postId,
-                  grade:Number(grade)
+                  grade:grade
               }
           }).catch(err=>console.log(err))
        

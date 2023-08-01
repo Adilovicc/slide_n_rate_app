@@ -14,6 +14,8 @@ FOR EACH ROW
 EXECUTE PROCEDURE update_average_rating(); 
 
 
+
+
 //-------------------YOU WILL NEED THIS ONE BELOW!!!!---------------------------
 
 

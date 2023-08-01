@@ -2,24 +2,44 @@ import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../lib/prismadb";
 
 export default async function LoadPosts(req:NextApiRequest, res:NextApiResponse){
-     const {startAt,take, examId} = req.query;
-     
+     const { examId, array} = req.query;
+     const array1 = JSON.parse(String(array));
      try {
         const records = await prisma.post.findMany({
             where:{
-                examId:String(examId)
+                AND:[
+                 {
+                 examId:String(examId)
+                 },
+                 {
+                   OR:[
+                    {
+                        //@ts-ignore
+                        id: String(array1[0]),
+                    } ,
+                    {
+                        //@ts-ignore
+                        id: String(array1[1]),
+                    } ,
+                    {
+                        //@ts-ignore
+                        id: String(array1[2]),
+                    } 
+                   ]
+                 }
+                ]
             },
-            skip: Number(startAt),
-            take: Number(take),
             include:{
                 exam:{
                     select:{
                         offeredAnswers:true
                     }
                 }
-            }
+            }, 
         })
-        return res.json(records);
+
+        const sortedPosts = await array1.map((postId:string) => records.find((post) => post.id === postId));
+        return res.json(sortedPosts);
     } catch (error) {
         return res.status(500).json({ message: 'An error occurred' });
     }

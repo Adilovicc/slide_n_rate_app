@@ -1,10 +1,11 @@
 import prisma from "@/lib/prismadb";
 import { getSession } from "next-auth/react";
 import {useState, useEffect, useRef, useCallback} from 'react';
-import { PlusCircleIcon, ChevronLeftIcon, Cog8ToothIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { PlusCircleIcon, ChevronLeftIcon, Cog8ToothIcon, PlusIcon, TrashIcon, UserGroupIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
 import ExamBox from '../components/ExamBox'
 import ExamForm from '../components/ExamForm'
+import UsersManagement from '../components/UsersManagement'
 import { baseUrl } from "@/baseUrl";
 import axios from "axios";
 import $ from 'jquery'
@@ -82,10 +83,10 @@ export default function Exams({user, session}:any){
         }
     },[])
    
-
-    const deleteExam=()=>{
-
-    }    
+    const [usersDisplay, setUsersDisplay] = useState(false);
+    const handleUsersDisplay= ()=>{
+          setUsersDisplay(prevDisp=>!prevDisp);
+    }
 
 
     return(
@@ -96,10 +97,17 @@ export default function Exams({user, session}:any){
                <div id='examDetailsScreen' className="fixed z-10 hidden h-full top-0 right-0 left-0 bottom-0 bg-white/30 backdrop-blur-md justify-center items-center">
                    {currentExam && <ExamDetails exam={currentExam}></ExamDetails>}
                </div>
+               <div id='usersManagement' className={`z-10 ${usersDisplay? 'fixed' : 'hidden'} h-full w-full flex top-0 right-0 left-0 bottom-0 bg-white/30 backdrop-blur-md justify-center items-center`}>
+                   {usersDisplay && <UsersManagement handleClose={handleUsersDisplay}></UsersManagement>}
+               </div>
                <div className="w-full flex items-center justify-between px-6 md:px-16 lg:px-20 min-h-[80px] h-[80px] bg-gray-800">
                      <div onClick={()=>router.push('/')} className="aspect-square h-[60%] p-1 rounded-full bg-white/40 hover:bg-white/60 cursor-pointer"><ChevronLeftIcon className="w-full h-full"></ChevronLeftIcon></div>
                      <span className="hidden sm:inline-block text-white text-[36px] font-semibold font-serif">Exam maintenance</span>
-                     <div onClick={()=>handleCreateExamDisplay()} className="aspect-square h-[60%] p-1 rounded-full bg-white/40 hover:bg-white/60 cursor-pointer"><PlusIcon className="w-full h-full"></PlusIcon></div>
+                     
+                     <div className="flex items-center h-full"> 
+                        <div onClick={()=>handleUsersDisplay()} className="aspect-square h-[60%] p-1 rounded-full bg-white/40 hover:bg-white/60 cursor-pointer mr-5"><UserGroupIcon className="w-full h-full"></UserGroupIcon></div>
+                        <div onClick={()=>handleCreateExamDisplay()} className="aspect-square h-[60%] p-1 rounded-full bg-white/40 hover:bg-white/60 cursor-pointer"><PlusIcon className="w-full h-full"></PlusIcon></div>
+                     </div>
                </div>
               {loading? <section className="max-h-grow w-full pt-10 pb-20 flex justify-center items-center">
                         <div className="h-[20%] aspect-square">

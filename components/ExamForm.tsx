@@ -30,7 +30,6 @@ export default function ExamForm({createdBy,setNewExam}:any){
             },
             method:'GET'
          }).then((res)=>{
-            console.log(res.data);
             setCrtTo(res.data);
             setAnswer('');
             setAnswerList([]);

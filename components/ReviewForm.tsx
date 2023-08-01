@@ -17,19 +17,29 @@ export default function ReviewForm(props:{userId:any, offeredAnswers:any, postId
   const stars = [1,2,3,4,5];
   const {register, setValue, handleSubmit, formState:{errors}} = useForm();
   const [answered,setAnswered] = useState(false);
-  const [myAnswer, setMyAnswer] = useState(0);
+  const [myAnswer, setMyAnswer] = useState<number[]>([]);
   const [loading,setLoading] = useState(true);
   
 
-  const [gradeInputValue, setGradeInputValue] = useState(0);
+  const [gradeInputValue, setGradeInputValue] = useState<number[]>([]);
   const [commentInputValue, setCommentInputValue] = useState('');
   const router = useRouter();
 
-  const [currentAnswerIndex, setCrtAnsIdx] = useState(-1);
+  const [currentAnswerIndex, setCrtAnsIdx] = useState<number[]>([]);
+
 
   const starsChangeColors = (broj:number) =>{
-     setCrtAnsIdx(broj-1);
-     setGradeInputValue(broj);
+    
+     if(gradeInputValue.includes(broj)){
+        let temp = gradeInputValue.filter(n=>n!==broj);
+        setGradeInputValue(temp);
+        let tempN = currentAnswerIndex.filter(n=>n!==broj-1);
+        setCrtAnsIdx(tempN);
+     }
+     else{
+        setGradeInputValue(prevValue=>[...prevValue,broj]);
+        setCrtAnsIdx(prevValue=>[...prevValue,broj-1]);
+     }
   }
   
 
@@ -65,7 +75,7 @@ export default function ReviewForm(props:{userId:any, offeredAnswers:any, postId
 },[trigger])
   
   const reviewPost = () =>{
-      if(gradeInputValue<1 || gradeInputValue>props.offeredAnswers.length){
+      if(gradeInputValue.length<1){
         return alert("You have to select the answer");
       }
        setLoading(true);
@@ -119,7 +129,7 @@ export default function ReviewForm(props:{userId:any, offeredAnswers:any, postId
                 <div key={i} className="flex flex-col items-center w-[100%] max-w-[300px] justify-start mb-2">
                   <div className='p-1'>
                     <div key={answer} className={`h-8 w-8  cursor-pointer border-[2px]
-                   border-black ${currentAnswerIndex == i ? 'bg-black/90' : ''} `} onClick={()=>starsChangeColors(i+1)}></div>
+                   border-black ${currentAnswerIndex.includes(i) ? 'bg-black/90' : ''} `} onClick={()=>starsChangeColors(i+1)}></div>
                    </div>
                   <div className='font-semibold text-[18px]'>
                   {answer}
@@ -139,10 +149,13 @@ export default function ReviewForm(props:{userId:any, offeredAnswers:any, postId
            </div>
        </form> : (answered && !loading) ? 
        <div>
-          <div className='font-bold flex flex-col justify-center items-center text-[18px]'>
+              <div className='font-bold flex flex-col justify-center items-center text-[18px]'>
                    <span className="font-normal">Your answer:</span>
-                  {props.offeredAnswers[myAnswer-1]}
-                  </div>
+                   {myAnswer.map((obj,idx)=>(
+                      <div key={idx}>-{props.offeredAnswers[obj-1]}</div>
+                   ))}
+                
+              </div>
           </div> :
         <div className="w-14 h-14 relative"><Image className="animate-spin" fill src={spinner} alt='spinner-img'></Image></div>
        }

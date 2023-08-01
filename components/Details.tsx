@@ -5,7 +5,7 @@ import Comment from './Comment';
 import axios from 'axios'
 import {baseUrl} from '../baseUrl'
 
-export default function Details(props:{post:any, userId:string, user:any, setOpen:(value:boolean)=>void}){
+export default function Details(props:{post:any, offeredAnswers:any, userId:string, user:any, setOpen:(value:boolean)=>void}){
     const [commentSectionActive, setCmtSecAct] = useState(false);
     const stars = [1,2,3,4,5];
     const threeElements = [1,2,3];
@@ -62,7 +62,7 @@ export default function Details(props:{post:any, userId:string, user:any, setOpe
 
     
     return(
-        <div className={`coverScr ${commentSectionActive ? 'coverActive' : ''}`}>
+        <div className={`coverScr ${commentSectionActive ? 'coverActive' : ''} z-20`}>
         <div className={`${commentSectionActive && 'pt-5'} w-full z-20 relative items-center flex px-3 h-[53px] justify-evenly py-2 transition-all duration-300 
          delay-700 shadow-md border-[0.5px] bg-[#faf0e670] backdrop-blur-md border-black/40`}>
         
@@ -101,8 +101,8 @@ export default function Details(props:{post:any, userId:string, user:any, setOpe
                            
                             {reviews.map((rev, i)=>(
                                 reviews.length==i+1 ?
-                                <div ref={lastElementView} key={i}><Comment review={rev}></Comment></div>
-                                :  <div key={i}><Comment review={rev}></Comment></div>
+                                <div ref={lastElementView} key={i}><Comment review={rev} offeredAnswers={props.offeredAnswers}></Comment></div>
+                                :  <div key={i}><Comment offeredAnswers={props.offeredAnswers} review={rev}></Comment></div>
                             ))}
 
                             {loading &&

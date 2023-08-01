@@ -6,8 +6,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function deleteExam(req: NextApiRequest, res:NextApiResponse){
         const {examId} = req.body;
-        
-        console.log(examId);
+  
 
         try {
              const result = await prisma.exam.delete({

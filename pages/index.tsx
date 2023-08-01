@@ -21,12 +21,13 @@ import { useRouter } from 'next/router';
 export default function Home({session, user, examsParticipation}:any){
      
      const router = useRouter();
-   
-     const [currentBatch, setCrtBatch] = useState(0);
+     
+     const [currentPoint, setCrtPoint] = useState(0);
+     const [currentBatch, setCrtBatch] = useState([]);
+     const [ids, setIds] = useState([])
      const [currentExam, setCurrentExam] = useState({title:'', id:'', postsTotal:0});
-     const [take, setTake] = useState(user.currentPost+1);
      const [currentPost,setCurrentPost] = useState<number>(0);
-     const {posts, numberOfPosts, isMore, loading, setNumberOfPosts, setIsMore, setPosts}= useLoadPost(currentBatch,take,currentExam);
+     const {posts, numberOfPosts, isMore, loading, setNumberOfPosts, setIsMore, setPosts}= useLoadPost(currentBatch,currentExam);
      const [nextPage, setNextPage] = useState(false);
        
      useEffect(()=>{
@@ -36,15 +37,38 @@ export default function Home({session, user, examsParticipation}:any){
      },[])
 
      useEffect(()=>{
-        
         if(currentPost==posts.length-1 && isMore && currentPost!==0){
-           
-           setCrtBatch(prevBatch=>prevBatch+1);
+           setCrtBatch([...ids.slice(currentPoint,currentPoint+3)]);
+           setCrtPoint(prevPoint=>prevPoint+3);
         }
      }, [currentPost])
 
      useEffect(()=>{
-        setCurrentPost(0);
+        axios({
+          method:'GET',
+          url:baseUrl+'api/completeview/getIds',
+          params:{
+            examId:currentExam.id
+          }
+        }).then((res)=>{
+          
+           let myVar = res.data;
+           let numOfPermutations = 20;
+           if(numOfPermutations>myVar.length) numOfPermutations=myVar.length;
+           for(let i=0; i<numOfPermutations; i++){
+                var number = Math.floor(Math.random()*myVar.length);
+                myVar=[...myVar.slice(number),...myVar.slice(0,number)];
+           }
+           myVar=myVar.map((obj:any)=>obj.id);
+           setIds(myVar);
+           if(myVar) {
+            //@ts-ignore
+            setCrtBatch([...myVar.slice(0,3)]);
+            setCrtPoint(3); 
+          }
+          setCurrentPost(0);
+           
+        })
      },[currentExam])
     
 
@@ -157,7 +181,7 @@ export default function Home({session, user, examsParticipation}:any){
                    <TabularDisplay tabularDisplayState={setTabularDisplay}></TabularDisplay>
              </div>
              <div id="examDropdown" style={{right:`${distanceNow}`}} className={`${examDropDown? 'fixed' : 'hidden'}
-              rounded-md bg-[#4d4a4a] px-2 py-2 top-[50px] w-[350px] max-h-[350px] text-white z-10`}>
+              rounded-md bg-[#4d4a4a] px-2 py-2 top-[50px] w-[350px] max-h-[350px] text-white z-20`}>
                   {examsParticipation && examsParticipation.map((item:any, idx:number)=>(
                      <div key={idx} onClick={()=>handleSetCurrentExam(item.exam.title, item.examId, item.exam.postsTotal)} className="text-[20px] font-medium flex 
                      items-center truncate 
@@ -210,8 +234,8 @@ export default function Home({session, user, examsParticipation}:any){
                </div>
         </section>
         <section style={{overflow:'overlay'}} className="w-full relative bg-gray-200 h-full flex justify-center items-center">
-             <div className="relative w-full  h-full bg-white flex overflow-hidden items-center justify-between">
-               {currentExam && (currentExam.postsTotal !== 0) && <div className="absolute right-[50%] z-10 top-0 p-3 bg-white/60 text-[22px] font-bold text-black">{currentPost+1}/{currentExam.postsTotal}</div>}
+             <div className="relative w-full h-full bg-white flex overflow-hidden items-center justify-between">
+             
               {posts && posts.length>0 && <div onClick={()=>handleSlideLeft()} className={`absolute transition ${currentPost==0 ? 'hidden' : 'flex'} flex justify-center items-center
                 duration-300 h-[45px] w-[45px] z-10 rounded-full bg-white/40 left-[14px] hover:bg-white/60`}>
                          <ChevronLeftIcon className="w-8 h-8"></ChevronLeftIcon>
@@ -224,7 +248,8 @@ export default function Home({session, user, examsParticipation}:any){
                     posts.map((post, id)=>(
                         <Slide key={id} post={post} currentPost={currentPost} userId={user.id} user={user} setCurrent={handleSlideRight}></Slide> 
                     ))
-                }           
+                } 
+                 {currentExam && (currentExam.postsTotal !== 0) && <div className="absolute right-[50%] z-10 top-0 p-3 bg-white/60 text-[20px] font-bold text-black">{currentPost+1}/{currentExam.postsTotal}</div>}          
              </div>
         </section>
         </div>

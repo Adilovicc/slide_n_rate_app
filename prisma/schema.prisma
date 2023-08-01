@@ -95,6 +95,7 @@ model VerificationRequest {
 model Post {
     id String @id @default(cuid())
     fileUrl String 
+    name String?
     type String?
     createdAt DateTime @default(now())
     creatorId String
@@ -127,7 +128,7 @@ model Note{
 
 model Recension {
    id String @id @default(cuid())
-   grade Int
+   grade Int[]
    createdAt DateTime @default(now())
    postId String
    userId String

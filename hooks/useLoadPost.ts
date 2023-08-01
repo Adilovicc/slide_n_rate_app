@@ -2,37 +2,37 @@ import { useEffect, useState } from "react";
 import axios from 'axios';
 import {baseUrl} from '../baseUrl'
 
-export default function useLoadPost(currentBatch: number, take: number, currentExam:any){
+export default function useLoadPost(currentBatch: any, currentExam:any){
     const [posts, setPosts] = useState([]);
     const [isMore, setIsMore] = useState(false);
     const [numberOfPosts, setNumberOfPosts] = useState(0);
     const [loading, setLoading] =useState(false);
 
     const [check, setCheck] = useState(false);
-
+   
 
     useEffect(()=>{
       setPosts([]);
       setIsMore(true);
       setNumberOfPosts(0);
       setLoading(false);
-      setCheck(prevCheck=>!prevCheck)
+      setCheck(prevCheck=>!prevCheck);
     },[currentExam])
-    
 
     useEffect(()=>{
-           
+          
             if(!isMore) return;
+            if(currentBatch.length<1) return;
             let cancel: () => void = () => {};
             setLoading(true);
+            
             try {
               axios({
                 method:'GET',
                 url: baseUrl+'api/handlers/loadPosts',
                 params: {
-                    startAt: numberOfPosts,
                     examId: currentExam.id,
-                    take: 3
+                    array: JSON.stringify(currentBatch)         
                 },
                 cancelToken: new axios.CancelToken(c=>cancel=c)
               }).then(res => {

@@ -65,6 +65,7 @@ export default function CreatePost(props:{setImageDisplay:any}){
               session: JSON.stringify(session),
               type: "image",
               examId: selectedExam.id,
+              name: pim.name
             },
             method: "POST",
           });

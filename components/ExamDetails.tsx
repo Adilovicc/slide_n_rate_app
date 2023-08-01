@@ -21,7 +21,7 @@ export default function ExamDetails({exam}:any){
          
       
       const [deleteScreen, setDeleteScreen] = useState(false);
-      useEffect(()=>{setCurrentNumber(0); console.log(exam); setDeleteScreen(false); setCurrentList('members');},[exam])
+      useEffect(()=>{setCurrentNumber(0); setDeleteScreen(false); setCurrentList('members');},[exam])
 
       const observer = useRef();
       const lastElementView = useCallback((node:any)=>{
@@ -112,7 +112,6 @@ export default function ExamDetails({exam}:any){
                 examId:exam.id,
             }
         }).then((res)=>{
-            console.log(res.data);
             setNotes(res.data);
         }).catch((err)=>alert('Something went wrong!')).finally(()=>setLoadingNotes(false));
      }

@@ -64,6 +64,7 @@ export default function CreatePDFPost(props:{setPDFDisplay:any}){
               session: JSON.stringify(session),
               type: "pdf",
               examId: selectedExam.id,
+              name: pim.name
             },
             method: "POST",
           });

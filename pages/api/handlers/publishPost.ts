@@ -5,7 +5,7 @@ import { PrismaClient } from "@prisma/client";
 
 
 export default async function PublishPost(req:NextApiRequest,res:NextApiResponse){
-    const {imageUrl, session, type, examId} = req.body;
+    const {imageUrl, session, type, examId, name} = req.body;
     const sess = JSON.parse(session);
   
     if(!sess){
@@ -25,6 +25,7 @@ export default async function PublishPost(req:NextApiRequest,res:NextApiResponse
                 creatorId:user.id,
                 type:type,
                 examId: examId,
+                name:String(name)
             }
         });
         if(record) await prisma.exam.update({

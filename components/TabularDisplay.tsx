@@ -42,21 +42,21 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
      const generateExcelTable = async () => {
         const arrayOfObjects:any = [];
          
-         users.map((user:any, idxU:number)=>{
+         posts.map((post:any, idxU:number)=>{
             let obj = {
-                name: user.name, // Example name
+                name: post.name ? post.name : `Post${idxU+1}`, // Example name
               };
            
             
-                 posts.map((post:any,idxP:number)=>{
+                 users.map((user:any,idxP:number)=>{
                   let counter = false;
                   let lock = false;
                   {recensions.map((recension:any, idxR:number)=>{
                     
                             if(counter) counter=false;
                             if(user.id == recension.userId && post.id==recension.postId) {counter=true; lock=true;};
-                            if(counter) {let objKey=`Post${idxP+1}`; obj = Object.assign(obj, { [objKey]: selectedExam.offeredAnswers[recension.grade-1] } );}
-                            if(!counter && !lock && idxR==recensions.length-1) {let objKey=`Post${idxP+1}`; obj=Object.assign(obj, { [objKey]: 'NA'})}
+                            if(counter) {let objKey=user.name; obj = Object.assign(obj, { [objKey]: recension.grade.map((itm:number, idx:number)=>{return selectedExam.offeredAnswers[itm-1]}) } );}
+                            if(!counter && !lock && idxR==recensions.length-1) {let objKey=user.name; obj=Object.assign(obj, {[objKey]: ['NA']})}
                            
                             
                    })}
@@ -70,8 +70,23 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
      }
      
      const exportToExcel = ()=> {
-        const fileName = String(selectedExam.title.replace(/\s/g, "")+'.xlsx')
-        const worksheet = utils.json_to_sheet(arrayObjects);
+        const fileName = String(selectedExam.title.replace(/\s/g, "")+'.xlsx');
+        
+        const arrayModified = arrayObjects.map((obj:any, idx:number)=>{
+          const newObj = { ...obj };
+      
+         
+          Object.keys(newObj).forEach((key) => {
+        
+            if (Array.isArray(newObj[key])) {
+              newObj[key] = newObj[key].join('\n'); 
+            }
+          });
+      
+          return newObj;
+        })
+        
+        const worksheet = utils.json_to_sheet(arrayModified);
         const workbook = utils.book_new();
         utils.book_append_sheet(workbook, worksheet, 'Sheet 1');
         writeFile(workbook, fileName);
@@ -91,6 +106,7 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
      const myTable = ()=>{
         const keys = Object.keys(arrayObjects[0]);
         const myArray = arrayObjects;
+     
         return (
             <table className=''>
               <thead>
@@ -106,7 +122,7 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
                   <tr key={rowIndex}>
                     {keys.map((key:any, cellIndex:number) => (
                       cellIndex==0 ? <td className="border-[0.5px] font-semibold text-[18px] border-black p-[2px] min-w-[20rem] text-center" key={cellIndex}>{obj[key]}</td> :
-                      <td className="border-[0.5px] border-black p-[4px] min-w-[10rem] max-w-[160px] text-center" key={cellIndex}>{obj[key]}</td>
+                      <td className="border-[0.5px] border-black p-[4px] min-w-[10rem] max-w-[160px] text-center" key={cellIndex}>{obj[key].map((itm:any,idx:number)=>(<div>{itm}</div>))}</td>
                     ))}
                   </tr>
                 ))}

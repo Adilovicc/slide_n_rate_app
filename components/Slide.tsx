@@ -169,7 +169,7 @@ export default function Slide(props:{post:any, currentPost:number, user:any, use
                   postId={props.post.id} setOpen={setOpen} setCurrent={props.setCurrent} handleOpenComplaintForm={handleOpenComplaintForm}></ReviewForm>
                 </div>
            </div>
-           {props.user.role == 'admin' && <Details userId={props.userId} user={props.user} post={props.post} setOpen={setShowRevScr}></Details>}
+           {props.user.role == 'admin' && <Details offeredAnswers={props.post.exam.offeredAnswers} userId={props.userId} user={props.user} post={props.post} setOpen={setShowRevScr}></Details>}
            <div className={`${showReviewScr ? 'fixed' : 'hidden'} flex justify-center items-center top-0 right-0 left-0 bottom-0 z-50 backdrop-blur-md`}>
             
           </div>
