@@ -122,7 +122,7 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
                   <tr key={rowIndex}>
                     {keys.map((key:any, cellIndex:number) => (
                       cellIndex==0 ? <td className="border-[0.5px] font-semibold text-[18px] border-black p-[2px] min-w-[20rem] text-center" key={cellIndex}>{obj[key]}</td> :
-                      <td className="border-[0.5px] border-black p-[4px] min-w-[10rem] max-w-[160px] text-center" key={cellIndex}>{obj[key].map((itm:any,idx:number)=>(<div>{itm}</div>))}</td>
+                      <td className="border-[0.5px] border-black p-[4px] min-w-[10rem] max-w-[160px] text-center" key={cellIndex}>{obj[key].map((itm:any,idx:number)=>(<div key={idx}>{itm}</div>))}</td>
                     ))}
                   </tr>
                 ))}
