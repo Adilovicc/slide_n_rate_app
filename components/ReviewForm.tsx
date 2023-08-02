@@ -13,6 +13,7 @@ import Image from 'next/image'
 
 
 export default function ReviewForm(props:{userId:any, offeredAnswers:any, postId:string, setOpen:(value:boolean)=>void, setCurrent:()=>void, handleOpenComplaintForm:()=>void}) {
+ 
   const gradeInput = useRef(null);
   const stars = [1,2,3,4,5];
   const {register, setValue, handleSubmit, formState:{errors}} = useForm();
