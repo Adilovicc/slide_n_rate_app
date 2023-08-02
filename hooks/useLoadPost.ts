@@ -8,7 +8,6 @@ export default function useLoadPost(currentBatch: any, currentExam:any){
     const [numberOfPosts, setNumberOfPosts] = useState(0);
     const [loading, setLoading] =useState(false);
 
-    const [check, setCheck] = useState(false);
    
 
     useEffect(()=>{
@@ -16,7 +15,6 @@ export default function useLoadPost(currentBatch: any, currentExam:any){
       setIsMore(true);
       setNumberOfPosts(0);
       setLoading(false);
-      setCheck(prevCheck=>!prevCheck);
     },[currentExam])
 
     useEffect(()=>{
@@ -55,6 +53,6 @@ export default function useLoadPost(currentBatch: any, currentExam:any){
             }
           
          return ()=> cancel(); 
-    }, [currentBatch, isMore, check])
+    }, [currentBatch, isMore])
     return {posts, loading, isMore, numberOfPosts, setNumberOfPosts, setIsMore, setPosts}
 }
