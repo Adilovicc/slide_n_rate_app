@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { writeFile, utils} from 'xlsx';
 
 export default function TabularDisplay(props:{tabularDisplayState:any}){
-     const [users, setUsers] = useState<any>([]);
+    /* const [users, setUsers] = useState<any>([]);
      const [posts, setPosts] = useState<any>([]);
      const [recensions, setRecensions] = useState<any>([]);
      const [loading, setLoading] = useState(false);
@@ -222,6 +222,9 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
                         <div className="w-16 h-16 relative animate-spin"><Image src={spinner} fill alt='spinner'></Image></div>
              </div> }   
         </div>
+     )*/
+     return(
+      <div></div>
      )
 
 }
