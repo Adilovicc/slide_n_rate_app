@@ -5,8 +5,8 @@ import axios from "axios";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 
-export default function UsersManagement(props:{handleClose:any}){
-    const [currentNumber,setCurrentNumber] = useState(0);
+export default function UsersManagement(/*props:{handleClose:any}*/){
+    /*const [currentNumber,setCurrentNumber] = useState(0);
     const [userQuery,setUserQuery] = useState('');
     const {loading, isMore, users} = useLoadUsers(currentNumber, userQuery);
     const [handlingInProcess, setHandlingInProcess] = useState(false);
@@ -88,6 +88,7 @@ export default function UsersManagement(props:{handleClose:any}){
                     </div>
                 </div>
         </div>
-     )
+     )*/
+     return(<div></div>)
    
 }
