@@ -137,7 +137,10 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
         setLoading(true);
         axios({
             method:'GET',
-            url:baseUrl+'api/completeview/getUsers'
+            url:baseUrl+'api/completeview/getUsers',
+            params:{
+              examId:selectedExam.id
+            }
           }).then(res => {
              //@ts-ignore 
             setUsers(res.data);
