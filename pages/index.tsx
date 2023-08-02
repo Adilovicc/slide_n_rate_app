@@ -36,7 +36,7 @@ export default function Home({session, user, examsParticipation}:any){
          }
      },[])
 
-     /*useEffect(()=>{
+     useEffect(()=>{
         if(currentPost==posts.length-1 && isMore && currentPost!==0){
            setCrtBatch([...ids.slice(currentPoint,currentPoint+3)]);
            setCrtPoint(prevPoint=>prevPoint+3);
@@ -69,7 +69,7 @@ export default function Home({session, user, examsParticipation}:any){
           setCurrentPost(0);
            
         })
-     },[currentExam])*/
+     },[currentExam])
     
 
      const handleSlideLeft=()=>{
