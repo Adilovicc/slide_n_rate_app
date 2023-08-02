@@ -8,7 +8,7 @@ export default async function getUsers(req:NextApiRequest, res:NextApiResponse){
                 where:{
                     userExam:{
                         some:{
-                            id:String(examId)
+                            examId:String(examId)
                         }
                     }
                 }
