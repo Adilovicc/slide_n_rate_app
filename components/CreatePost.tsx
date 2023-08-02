@@ -34,7 +34,7 @@ export default function CreatePost(props:{setImageDisplay:any}){
           console.log(err);
         })
 
-    })
+    },[])
    
     const uploadImage = async ()=>{
       if(loading) return;

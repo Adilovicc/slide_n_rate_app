@@ -33,7 +33,7 @@ export default function CreatePDFPost(props:{setPDFDisplay:any}){
           console.log(err);
         })
 
-    })
+    },[])
    
     const uploadImage = async ()=>{
       if(loading) return;

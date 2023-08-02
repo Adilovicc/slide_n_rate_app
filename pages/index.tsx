@@ -134,7 +134,7 @@ export default function Home({session, user, examsParticipation}:any){
 
       return() => removeEventListener('resize', handleDistance); 
 
-     })
+     },[])
 
     
      const handleSaveProgress = () =>{
