@@ -85,7 +85,7 @@ export default function Exams({user, session}:any){
    
     const [usersDisplay, setUsersDisplay] = useState(false);
     const handleUsersDisplay= ()=>{
-          return;
+          setUsersDisplay(prevDisp=>!prevDisp);
     }
 
 
