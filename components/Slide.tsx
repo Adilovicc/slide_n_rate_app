@@ -1,7 +1,7 @@
 import Details from "./Details";
 import Image from "next/image";
 import { useState, useRef, useLayoutEffect,useEffect } from "react";
-//import ReviewForm from "./ReviewForm";
+import ReviewForm from "./ReviewForm";
 import { userAgent } from "next/server";
 import { TrashIcon, XCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
@@ -165,8 +165,8 @@ export default function Slide(props:{post:any, currentPost:number, user:any, use
                 <div className="h-full w-[86%] relative"><Image fill src={`${props.post.fileUrl}`} alt='post_img'></Image></div>
                 }
                 <div className="grow max-w-[14%] h-full">
-                 {/* <ReviewForm offeredAnswers={props.post.exam.offeredAnswers} userId={props.userId} 
-                  postId={props.post.id} setOpen={setOpen} setCurrent={props.setCurrent} handleOpenComplaintForm={handleOpenComplaintForm}></ReviewForm> */}
+                  <ReviewForm offeredAnswers={props.post.exam.offeredAnswers} userId={props.userId} 
+                  postId={props.post.id} setOpen={setOpen} setCurrent={props.setCurrent} handleOpenComplaintForm={handleOpenComplaintForm}></ReviewForm>
                 </div>
            </div>
            {props.user.role == 'admin' && <Details offeredAnswers={props.post.exam.offeredAnswers} userId={props.userId} user={props.user} post={props.post} setOpen={setShowRevScr}></Details>}

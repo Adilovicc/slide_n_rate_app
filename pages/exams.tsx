@@ -5,7 +5,7 @@ import { PlusCircleIcon, ChevronLeftIcon, Cog8ToothIcon, PlusIcon, TrashIcon, Us
 import { useRouter } from "next/router";
 import ExamBox from '../components/ExamBox'
 import ExamForm from '../components/ExamForm'
-//import UsersManagement from '../components/UsersManagement'
+import UsersManagement from '../components/UsersManagement'
 import { baseUrl } from "@/baseUrl";
 import axios from "axios";
 import $ from 'jquery'
@@ -85,7 +85,7 @@ export default function Exams({user, session}:any){
    
     const [usersDisplay, setUsersDisplay] = useState(false);
     const handleUsersDisplay= ()=>{
-          setUsersDisplay(prevDisp=>!prevDisp);
+          return;
     }
 
 
@@ -97,9 +97,9 @@ export default function Exams({user, session}:any){
                <div id='examDetailsScreen' className="fixed z-10 hidden h-full top-0 right-0 left-0 bottom-0 bg-white/30 backdrop-blur-md justify-center items-center">
                    {currentExam && <ExamDetails exam={currentExam}></ExamDetails>}
                </div>
-               {/*<div id='usersManagement' className={`z-10 ${usersDisplay? 'fixed' : 'hidden'} h-full w-full flex top-0 right-0 left-0 bottom-0 bg-white/30 backdrop-blur-md justify-center items-center`}>
+               <div id='usersManagement' className={`z-10 ${usersDisplay? 'fixed' : 'hidden'} h-full w-full flex top-0 right-0 left-0 bottom-0 bg-white/30 backdrop-blur-md justify-center items-center`}>
                    {usersDisplay && <UsersManagement handleClose={handleUsersDisplay}></UsersManagement>}
-               </div>*/}
+               </div>
                <div className="w-full flex items-center justify-between px-6 md:px-16 lg:px-20 min-h-[80px] h-[80px] bg-gray-800">
                      <div onClick={()=>router.push('/')} className="aspect-square h-[60%] p-1 rounded-full bg-white/40 hover:bg-white/60 cursor-pointer"><ChevronLeftIcon className="w-full h-full"></ChevronLeftIcon></div>
                      <span className="hidden sm:inline-block text-white text-[36px] font-semibold font-serif">Exam maintenance</span>
