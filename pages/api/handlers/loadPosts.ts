@@ -38,8 +38,8 @@ export default async function LoadPosts(req:NextApiRequest, res:NextApiResponse)
             }, 
         })
 
-        
-        return res.json(records);
+        const sortedPosts = await array1.map((postId:string) => records.find((post) => post.id === postId));
+        return res.json(sortedPosts);
     } catch (error) {
         return res.status(500).json({ message: 'An error occurred' });
     }
