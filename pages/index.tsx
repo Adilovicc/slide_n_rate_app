@@ -44,14 +44,13 @@ export default function Home({session, user, examsParticipation}:any){
      }, [currentPost])
 
      useEffect(()=>{
-        let cancel: () => void = () => {};
+        
         axios({
           method:'GET',
           url:baseUrl+'api/completeview/getIds',
           params:{
             examId:currentExam.id
-          },
-          cancelToken: new axios.CancelToken(c=>cancel=c)
+          }
         }).then((res)=>{
           
            let myVar = res.data;
@@ -61,18 +60,16 @@ export default function Home({session, user, examsParticipation}:any){
                 var number = Math.floor(Math.random()*myVar.length);
                 myVar=[...myVar.slice(number),...myVar.slice(0,number)];
            }
-           const myVarExtracted=myVar.map((obj:any)=>obj.id);
-           setIds(myVarExtracted);
-           if(myVarExtracted) {
+           myVar=myVar.map((obj:any)=>obj.id);
+           setIds(myVar);
+           if(myVar) {
             //@ts-ignore
             setCrtBatch([...myVar.slice(0,3)]);
             setCrtPoint(3); 
           }
           setCurrentPost(0);
            
-        }).catch((err)=>{if(axios.isCancel(err)) return;});
-
-        return()=>cancel();
+        })
      },[currentExam])
     
 
