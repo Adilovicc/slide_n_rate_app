@@ -44,6 +44,7 @@ export default function useLoadPost(currentBatch: any, currentExam:any){
                 setLoading(false);
               }).catch(
                 err=> {
+                    setLoading(false);
                     if(axios.isCancel(err)) return
                 }
               )
@@ -53,6 +54,6 @@ export default function useLoadPost(currentBatch: any, currentExam:any){
             }
           
          return ()=> cancel(); 
-    }, [currentBatch, isMore])
+    }, [currentBatch])
     return {posts, loading, isMore, numberOfPosts, setNumberOfPosts, setIsMore, setPosts}
 }
