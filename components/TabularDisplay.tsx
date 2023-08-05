@@ -76,10 +76,11 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
           const newObj = { ...obj };
       
          
-          Object.keys(newObj).forEach((key) => {
+          Object.keys(newObj).forEach((key,i) => {
         
             if (Array.isArray(newObj[key])) {
-              newObj[key] = newObj[key].join('\n'); 
+              if(i==newObj.length-1){ newObj[key] = newObj[key].join('\n'); }
+              else newObj[key] = newObj[key].join(',\n');
             }
           });
       

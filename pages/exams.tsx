@@ -51,7 +51,7 @@ export default function Exams({user, session}:any){
 
     const handleShowExamDetails = (item:any) =>{
         setCurrentExam(item);
-        $('#examDetailsScreen').css('display','flex');
+        $('#examDetailsScreen').css('display','inline');
         detailsExam.current=true;
     }
     
@@ -94,7 +94,7 @@ export default function Exams({user, session}:any){
                <div id='createExamScreen' className="fixed z-10 hidden top-0 right-0 left-0 bottom-0 bg-white/30 backdrop-blur-md justify-center items-center">
                      <ExamForm createdBy={user.id} setNewExam={setExamList}></ExamForm>
                </div> 
-               <div id='examDetailsScreen' className="fixed z-10 hidden h-full top-0 right-0 left-0 bottom-0 bg-white/30 backdrop-blur-md justify-center items-center">
+               <div id='examDetailsScreen' className="fixed z-10 hidden h-full top-0 right-0 left-0 bottom-0 bg-white/30 backdrop-blur-md">
                    {currentExam && <ExamDetails exam={currentExam}></ExamDetails>}
                </div>
                <div id='usersManagement' className={`z-10 ${usersDisplay? 'fixed' : 'hidden'} h-full w-full flex top-0 right-0 left-0 bottom-0 bg-white/30 backdrop-blur-md justify-center items-center`}>

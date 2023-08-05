@@ -12,7 +12,7 @@ import Image from 'next/image'
 
 
 
-export default function ReviewForm(props:{userId:any, offeredAnswers:any, postId:string, setOpen:(value:boolean)=>void, setCurrent:()=>void, handleOpenComplaintForm:()=>void}) {
+export default function ReviewForm(props:{userId:any, multipleSelection:boolean, offeredAnswers:any, postId:string, setOpen:(value:boolean)=>void, setCurrent:()=>void, handleOpenComplaintForm:()=>void}) {
  
   const gradeInput = useRef(null);
   const stars = [1,2,3,4,5];
@@ -30,7 +30,7 @@ export default function ReviewForm(props:{userId:any, offeredAnswers:any, postId
 
 
   const starsChangeColors = (broj:number) =>{
-    
+    if(props.multipleSelection){
      if(gradeInputValue.includes(broj)){
         let temp = gradeInputValue.filter(n=>n!==broj);
         setGradeInputValue(temp);
@@ -41,6 +41,11 @@ export default function ReviewForm(props:{userId:any, offeredAnswers:any, postId
         setGradeInputValue(prevValue=>[...prevValue,broj]);
         setCrtAnsIdx(prevValue=>[...prevValue,broj-1]);
      }
+    }
+    else{
+      setGradeInputValue([broj]);
+      setCrtAnsIdx([broj-1]);
+    }
   }
   
 

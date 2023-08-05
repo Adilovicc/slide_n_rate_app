@@ -153,7 +153,7 @@ export default function ExamDetails({exam}:any){
     }
 
     return(
-        <div id='examDetailsForm' className="bg-[rgb(34,34,34)] relative text-white flex flex-col items-center rounded-lg 
+        <div id='examDetailsForm' className="bg-[rgb(34,34,34)] relative m-auto mt-5 mb-5 text-white flex flex-col items-center rounded-lg 
           p-5 w-full max-w-[800px]">
               <div className="absolute top-4 right-4 h-8 p-1 w-8 rounded-full bg-white/60 z-20"><TrashIcon onClick={()=>setDeleteScreen(true)} className="w-full h-full"></TrashIcon></div>
                                 <div className={`${deleteScreen ? 'absolute' : 'hidden'} w-full h-full top-0 z-20 flex justify-center rounded-lg`}>

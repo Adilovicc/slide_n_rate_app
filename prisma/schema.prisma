@@ -66,6 +66,7 @@ model Exam{
   userExam UserExam[]
   postsTotal Int @default(0)
   membersTotal Int @default(0)
+  multipleSelection Boolean? @default(false)
   offeredAnswers String[]
   creator User @relation(fields: [createdBy], references: [id], onDelete: Cascade)
 }

@@ -11,7 +11,7 @@ import {baseUrl} from '../baseUrl'
 import {Document, Page, pdfjs} from 'react-pdf'
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-export default function Slide(props:{post:any, currentPost:number, user:any, userId:string, setCurrent:()=>void}){
+export default function Slide(props:{post:any, currentPost:number, multipleSelection:boolean, user:any, userId:string, setCurrent:()=>void}){
     const [showReviewScr, setShowRevScr] = useState(false);
     const [deletePost,setDeletePost] = useState(false);
     const pageWidthRef = useRef(null);
@@ -141,7 +141,7 @@ export default function Slide(props:{post:any, currentPost:number, user:any, use
            <div  style={{maxWidth:`${maxWidth}px`}} ref={pageWidthRef} className={`relative w-full flex items-center h-full  ${props.post.type=='pdf' ? 'px-16' : ''}`}>
                {props.post.type=='pdf' ? 
                 <div className="h-full w-[86%] relative overflow-hidden overflow-x-auto">
-                  <div className={`${showComplaintForm? 'absolute' : 'hidden'} w-full z-30 h-full flex flex-col justify-center items-center bg-white/40 backdrop-blur-md`}>
+                  <div className={`${showComplaintForm? 'absolute' : 'hidden'} w-full z-10 h-full flex flex-col justify-center items-center bg-white/40 backdrop-blur-md`}>
                        <div className="bg-black/20 relative flex flex-col p-3">
                         <div className="w-full flex justify-end mb-2"><XMarkIcon className="w-8 h-8 cursor-pointer" onClick={()=>setShowComplaintForm(false)}></XMarkIcon></div>
                         <div className="bg-white rounded-md border-black/40 resize-none border-[0.5px]">
@@ -162,10 +162,26 @@ export default function Slide(props:{post:any, currentPost:number, user:any, use
              
             
                 : 
-                <div className="h-full w-[86%] relative"><Image fill src={`${props.post.fileUrl}`} alt='post_img'></Image></div>
+                <div className="h-full w-[86%] relative">
+                  <div className={`${showComplaintForm? 'absolute' : 'hidden'} w-full z-10 h-full 
+                  flex flex-col justify-center items-center bg-white/40 backdrop-blur-md`}>
+                     <div className="bg-black/20 relative flex flex-col p-3">
+                        <div className="w-full flex justify-end mb-2"><XMarkIcon className="w-8 h-8 cursor-pointer" onClick={()=>setShowComplaintForm(false)}></XMarkIcon></div>
+                        <div className="bg-white rounded-md border-black/40 resize-none border-[0.5px]">
+                        <textarea value={commentInputValue} placeholder="Type your note/complaint here..." onChange={(e)=>setCIV(e.target.value)} maxLength={300} 
+                        className="w-[500px] h-[200px] resize-none p-2 outline-none bg-white rounded-md">
+                             
+                        </textarea>
+                        <div className="text-black p-2">{commentInputValue.length}/300</div>
+                        </div>
+                        <button onClick={()=>handleSendComment()} className="w-[180px] h-[40px] text-white mt-2 font-bold bg-[#328ed8]">Send</button>
+                       </div>
+                  </div>
+                  <Image fill src={`${props.post.fileUrl}`} alt='post_img'></Image>
+                </div>
                 }
                 <div className="grow max-w-[14%] h-full">
-                  <ReviewForm offeredAnswers={props.post.exam.offeredAnswers} userId={props.userId} 
+                  <ReviewForm multipleSelection={props.multipleSelection} offeredAnswers={props.post.exam.offeredAnswers} userId={props.userId} 
                   postId={props.post.id} setOpen={setOpen} setCurrent={props.setCurrent} handleOpenComplaintForm={handleOpenComplaintForm}></ReviewForm>
                 </div>
            </div>

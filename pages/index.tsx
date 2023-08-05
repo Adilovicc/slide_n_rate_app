@@ -25,14 +25,14 @@ export default function Home({session, user, examsParticipation}:any){
      const [currentPoint, setCrtPoint] = useState(0);
      const [currentBatch, setCrtBatch] = useState([]);
      const [ids, setIds] = useState([])
-     const [currentExam, setCurrentExam] = useState({title:'', id:'', postsTotal:0});
+     const [currentExam, setCurrentExam] = useState({title:'', id:'', postsTotal:0, multipleSelection:false});
      const [currentPost,setCurrentPost] = useState<number>(0);
      const {posts, numberOfPosts, isMore, loading, setNumberOfPosts, setIsMore, setPosts}= useLoadPost(currentBatch,currentExam);
      const [nextPage, setNextPage] = useState(false);
        
      useEffect(()=>{
          if(examsParticipation[0]){
-           setCurrentExam({title:examsParticipation[0].exam.title, id:examsParticipation[0].examId, postsTotal:examsParticipation[0].exam.postsTotal});
+           setCurrentExam({title:examsParticipation[0].exam.title, id:examsParticipation[0].examId, postsTotal:examsParticipation[0].exam.postsTotal, multipleSelection:examsParticipation[0].exam.multipleSelection});
          }
      },[])
 
@@ -165,8 +165,8 @@ export default function Home({session, user, examsParticipation}:any){
        });  
       });
      }
-     const handleSetCurrentExam=(title:string, examId:string, postsTotal:number)=>{
-          setCurrentExam((prevExam)=>({...prevExam, title:title, id:examId, postsTotal:postsTotal}));
+     const handleSetCurrentExam=(title:string, examId:string, postsTotal:number, mSelection:boolean)=>{
+          setCurrentExam((prevExam)=>({...prevExam, title:title, id:examId, postsTotal:postsTotal, multipleSelection:mSelection}));
           setExamDropDown(false);
      }    
 
@@ -184,7 +184,7 @@ export default function Home({session, user, examsParticipation}:any){
              <div id="examDropdown" style={{right:`${distanceNow}`}} className={`${examDropDown? 'fixed' : 'hidden'}
               rounded-md bg-[#4d4a4a] px-2 py-2 top-[50px] w-[350px] max-h-[350px] text-white z-20`}>
                   {examsParticipation && examsParticipation.map((item:any, idx:number)=>(
-                     <div key={idx} onClick={()=>handleSetCurrentExam(item.exam.title, item.examId, item.exam.postsTotal)} className="text-[20px] font-medium flex 
+                     <div key={idx} onClick={()=>handleSetCurrentExam(item.exam.title, item.examId, item.exam.postsTotal, item.exam.multipleSelection)} className="text-[20px] font-medium flex 
                      items-center truncate 
                      h-12 w-full transion duration-200 cursor-pointer rounded-lg hover:bg-white/40 px-2">
                         <p className='truncate'>{item.exam.title}</p>
@@ -247,10 +247,10 @@ export default function Home({session, user, examsParticipation}:any){
                  </div> }
                 {
                     posts.map((post, id)=>(
-                        <Slide key={id} post={post} currentPost={currentPost} userId={user.id} user={user} setCurrent={handleSlideRight}></Slide> 
+                        <Slide key={id} post={post} currentPost={currentPost} multipleSelection={currentExam.multipleSelection} userId={user.id} user={user} setCurrent={handleSlideRight}></Slide> 
                     ))
                 } 
-                 {currentExam && (currentExam.postsTotal !== 0) && <div className="absolute right-[50%] z-10 top-0 p-3 bg-white/60 text-[20px] font-bold text-black">{currentPost+1}/{currentExam.postsTotal}</div>}          
+                 {currentExam && (currentExam.postsTotal !== 0) && <div className="absolute right-[50%] z-10 top-0 p-1 bg-white/60 text-[20px] font-bold text-black">{currentPost+1}/{currentExam.postsTotal}</div>}          
              </div>
         </section>
         </div>
@@ -285,6 +285,7 @@ export const getServerSideProps = async (context:any) => {
               select:{
                  title:true,
                  postsTotal:true,
+                 multipleSelection:true,
               }
              },
              examId:true
