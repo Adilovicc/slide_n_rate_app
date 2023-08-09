@@ -90,7 +90,7 @@ export default function Exams({user, session}:any){
 
 
     return(
-        <div className="relative h-screen flex flex-col w-full overflow-hidden">
+        <div className="relative h-screen flex flex-col w-full overflow-hidden bg-[#EEEEEE]">
                <div id='createExamScreen' className="fixed z-10 hidden top-0 right-0 left-0 bottom-0 bg-white/30 backdrop-blur-md justify-center items-center">
                      <ExamForm createdBy={user.id} setNewExam={setExamList}></ExamForm>
                </div> 
