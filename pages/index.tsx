@@ -17,9 +17,13 @@ import { baseUrl } from '../baseUrl';
 import Swal from 'sweetalert2';
 import { ChevronUpDownIcon } from '@heroicons/react/24/solid';
 import { useRouter } from 'next/router';
-
+import { useRecoilState } from 'recoil';
+import { dirtyFormAtom } from '@/recoilAtoms/DirtyFormAtom';
+import spinnerSvg from '../public/spinner.svg'
 export default function Home({session, user, examsParticipation}:any){
      
+     const [isFormDirty, setIsFormDirty] = useRecoilState(dirtyFormAtom);
+
      const router = useRouter();
      
      const [currentPoint, setCrtPoint] = useState(0);
@@ -68,9 +72,12 @@ export default function Home({session, user, examsParticipation}:any){
             setCrtPoint(3); 
           }
           setCurrentPost(0);
-           
+          setIsFormDirty(false);
         })
      },[currentExam])
+
+     const [showAlertV, setShowAlertV] = useState(false);
+
     
 
      const handleSlideLeft=()=>{
@@ -78,10 +85,23 @@ export default function Home({session, user, examsParticipation}:any){
                 setCurrentPost(prevPost => prevPost-1);
               }
      }
+     const handleShowAlert=()=>{
+       setShowAlertV(false);
+     }
+     
      const handleSlideRight= ()=>{
-             if(currentPost!=posts.length-1){
+             if(currentPost!=posts.length-1 && !isFormDirty){
                setCurrentPost(prevPost=>prevPost+1)
              }
+             if(isFormDirty){
+              setShowAlertV(true);
+             
+                 
+                 const showAlert = setTimeout(()=>{
+                       handleShowAlert();
+                       clearTimeout(showAlert);
+                 },5000)
+            }    
      }
 
      const [showPublishImage, setShowPublishImage] = useState(false);
@@ -236,7 +256,7 @@ export default function Home({session, user, examsParticipation}:any){
         </section>
         <section style={{overflow:'overlay'}} className="w-full relative bg-gray-200 h-full flex justify-center items-center">
              <div className="relative w-full h-full bg-white flex overflow-hidden items-center justify-between">
-             
+              {showAlertV && <div className={` transition-opacity duration-500 bg-red-700 absolute w-[320px] text-[20px] z-40 top-10 right-[calc(50%-160px)] text-white p-5`}>Click "Next" to save the answer!</div>}
               {posts && posts.length>0 && <div onClick={()=>handleSlideLeft()} className={`absolute transition ${currentPost==0 ? 'hidden' : 'flex'} flex justify-center items-center
                 duration-300 h-[45px] w-[45px] z-10 rounded-full bg-white/40 left-[14px] hover:bg-white/60`}>
                          <ChevronLeftIcon className="w-8 h-8"></ChevronLeftIcon>

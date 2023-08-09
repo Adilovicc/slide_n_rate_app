@@ -100,7 +100,7 @@ export default function Exams({user, session}:any){
                <div id='usersManagement' className={`z-10 ${usersDisplay? 'fixed' : 'hidden'} h-full w-full flex top-0 right-0 left-0 bottom-0 bg-white/30 backdrop-blur-md justify-center items-center`}>
                    {usersDisplay && <UsersManagement handleClose={handleUsersDisplay}></UsersManagement>}
                </div>
-               <div className="w-full flex items-center justify-between px-6 md:px-16 lg:px-20 min-h-[80px] h-[80px] bg-gray-800">
+               <div className="w-full flex items-center justify-between px-6 md:px-16 lg:px-20 min-h-[80px] h-[80px] bg-[#393E46]">
                      <div onClick={()=>router.push('/')} className="aspect-square h-[60%] p-1 rounded-full bg-white/40 hover:bg-white/60 cursor-pointer"><ChevronLeftIcon className="w-full h-full"></ChevronLeftIcon></div>
                      <span className="hidden sm:inline-block text-white text-[36px] font-semibold font-serif">Exam maintenance</span>
                      
@@ -114,7 +114,7 @@ export default function Exams({user, session}:any){
                              <img src='/spinner.svg' alt='spinner' className="w-full h-full animate-spin"></img>
                         </div>
                </section> :
-               <section id='examsListSection' className="max-h-grow w-full pt-10 pb-20 flex justify-center">
+               <section id='examsListSection' className="max-h-grow w-full pt-5 pb-20 flex justify-center bg-[#EEEEEE]">
                    <div id='examsList' className="flex w-full flex-wrap max-w-[1700px]">
                       { 
                          examList.map((item:any,idx:number)=>(

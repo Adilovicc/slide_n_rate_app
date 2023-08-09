@@ -29,8 +29,8 @@ export default function Signin(){
   }
 
     return(
-        <form onSubmit={handleSubmit(handleSignIn)} className="w-[95%] border-[0.5px] border-black/40 max-w-[450px] py-[5px] pb-[40px] bg-white rounded-md shadow-md flex flex-col items-center px-3 text-center">
-             <span className="text-xl font-serif my-3">Login</span>
+        <form onSubmit={handleSubmit(handleSignIn)} className="w-[95%] border-[0.5px] pt-[30px] border-black/40 max-w-[450px] py-[5px] pb-[40px] bg-[#EEEEEE] rounded-md shadow-md flex flex-col items-center px-3 text-center">
+          
              {statusError &&  <span className=" text-red-700 mb-5 font-serif border-[0.5px] border-red-700/80">Login failed! Email or password incorrect. Try again please.</span>}
              <TextField
                 className="!w-full !my-1"
@@ -67,7 +67,7 @@ export default function Signin(){
             />
            </FormControl>
            <div className="w-full hidden text-sm pl-1 text-[rgb(22,51,81)]"><label className="cursor-pointer">Forgot password?</label></div>
-           <button type="submit" className="w-[80%] mt-8 h-10 bg-[rgb(49,188,230)] text-white text-lg font-semibold rounded-md">
+           <button type="submit" className="w-[80%] mt-8 h-10 bg-[#00ADB5] text-[#EEEEEE] text-lg font-semibold rounded-md">
                 Login
            </button>
         </form>

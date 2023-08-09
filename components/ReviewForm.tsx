@@ -9,7 +9,8 @@ import Swal from 'sweetalert2'
 import {baseUrl} from '../baseUrl'
 import spinner from '../public/spinner.svg'
 import Image from 'next/image'
-
+import { useRecoilState } from 'recoil';
+import { dirtyFormAtom } from '@/recoilAtoms/DirtyFormAtom';
 
 
 export default function ReviewForm(props:{userId:any, multipleSelection:boolean, offeredAnswers:any, postId:string, setOpen:(value:boolean)=>void, setCurrent:()=>void, handleOpenComplaintForm:()=>void}) {
@@ -21,6 +22,7 @@ export default function ReviewForm(props:{userId:any, multipleSelection:boolean,
   const [myAnswer, setMyAnswer] = useState<number[]>([]);
   const [loading,setLoading] = useState(true);
   
+  const [isFormDirty, setIsFormDirty] = useRecoilState(dirtyFormAtom);
 
   const [gradeInputValue, setGradeInputValue] = useState<number[]>([]);
   const [commentInputValue, setCommentInputValue] = useState('');
@@ -28,6 +30,12 @@ export default function ReviewForm(props:{userId:any, multipleSelection:boolean,
 
   const [currentAnswerIndex, setCrtAnsIdx] = useState<number[]>([]);
 
+  useEffect(()=>{
+     if(gradeInputValue.length==0){
+      setIsFormDirty(false);
+     }
+     else if (!isFormDirty) setIsFormDirty(true);
+  },[gradeInputValue]);
 
   const starsChangeColors = (broj:number) =>{
     if(props.multipleSelection){
@@ -46,6 +54,7 @@ export default function ReviewForm(props:{userId:any, multipleSelection:boolean,
       setGradeInputValue([broj]);
       setCrtAnsIdx([broj-1]);
     }
+
   }
   
 
@@ -96,6 +105,7 @@ export default function ReviewForm(props:{userId:any, multipleSelection:boolean,
        }).then((response)=>{
          props.setOpen(false);
          setTrigger(prevTrig => !prevTrig);
+         setIsFormDirty(false);
          props.setCurrent();
          return Swal.fire({
             position: 'center',

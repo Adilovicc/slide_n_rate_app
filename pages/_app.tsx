@@ -3,9 +3,10 @@ import type { AppProps } from "next/app"
 import '../styles/globals.css'
 import { useState,useEffect } from "react";
 import { useRouter } from "next/router";
-import spinnerSvg from '../public/spinner.svg'
+import spinnerSvg from '../public/spinner1.svg'
 import Image from "next/image";
 import $ from 'jquery'
+import { RecoilRoot } from "recoil";
 
 export default function App({ Component, pageProps }: AppProps) {
 
@@ -36,15 +37,17 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <SessionProvider session={pageProps.session}>
-       <>
+      <RecoilRoot>
+          <>
           {loading && 
-          (<div className="fixed top-0 right-0 bottom-0 left-0 flex items-center justify-center bg-[#9cc0d0] z-40 ">
+          (<div className="fixed top-0 right-0 bottom-0 left-0 flex items-center justify-center bg-[#222831] z-40 ">
             <div className="fixed h-[220px] w-[220px]">
                   <Image className="animate-spin" src={spinnerSvg} fill alt="spinner"></Image>
            </div>
           </div>)}
           <Component {...pageProps} /> 
           </>
+        </RecoilRoot>
     </SessionProvider>
   )
 }
