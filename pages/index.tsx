@@ -80,14 +80,25 @@ export default function Home({session, user, examsParticipation}:any){
 
     
 
+     const handleShowAlert=()=>{
+      setShowAlertV(false);
+    }
      const handleSlideLeft=()=>{
-              if(currentPost!=0){
+              if(currentPost!=0 && !isFormDirty){
                 setCurrentPost(prevPost => prevPost-1);
               }
+              if(isFormDirty){
+                setShowAlertV(true);
+               
+                   
+                   const showAlert = setTimeout(()=>{
+                         handleShowAlert();
+                         clearTimeout(showAlert);
+                   },5000)
+              }  
      }
-     const handleShowAlert=()=>{
-       setShowAlertV(false);
-     }
+
+     
      
      const handleSlideRight= ()=>{
              if(currentPost!=posts.length-1 && !isFormDirty){
