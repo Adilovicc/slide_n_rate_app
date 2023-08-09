@@ -256,7 +256,7 @@ export default function Home({session, user, examsParticipation}:any){
         </section>
         <section style={{overflow:'overlay'}} className="w-full relative bg-gray-200 h-full flex justify-center items-center">
              <div className="relative w-full h-full bg-white flex overflow-hidden items-center justify-between">
-              {showAlertV && <div className={` transition-opacity duration-500 bg-red-700 absolute w-[320px] text-[20px] z-40 top-10 right-[calc(50%-160px)] text-white p-5`}>Click "Next" to save the answer!</div>}
+              {showAlertV && <div className=" bg-red-700 absolute w-[320px] text-[20px] z-40 top-10 right-[calc(50%-160px)] text-white p-5">Click Next to save the answer!</div>}
               {posts && posts.length>0 && <div onClick={()=>handleSlideLeft()} className={`absolute transition ${currentPost==0 ? 'hidden' : 'flex'} flex justify-center items-center
                 duration-300 h-[45px] w-[45px] z-10 rounded-full bg-white/40 left-[14px] hover:bg-white/60`}>
                          <ChevronLeftIcon className="w-8 h-8"></ChevronLeftIcon>
