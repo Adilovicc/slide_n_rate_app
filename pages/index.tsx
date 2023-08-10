@@ -17,12 +17,10 @@ import { baseUrl } from '../baseUrl';
 import Swal from 'sweetalert2';
 import { ChevronUpDownIcon } from '@heroicons/react/24/solid';
 import { useRouter } from 'next/router';
-import { useRecoilState } from 'recoil';
-import { dirtyFormAtom } from '@/recoilAtoms/DirtyFormAtom';
 import spinnerSvg from '../public/spinner.svg'
 export default function Home({session, user, examsParticipation}:any){
      
-     const [isFormDirty, setIsFormDirty] = useRecoilState(dirtyFormAtom);
+    
 
      const router = useRouter();
      
@@ -34,6 +32,7 @@ export default function Home({session, user, examsParticipation}:any){
      const {posts, numberOfPosts, isMore, loading, setNumberOfPosts, setIsMore, setPosts}= useLoadPost(currentBatch,currentExam);
      const [nextPage, setNextPage] = useState(false);
        
+     const checkup = useRef(false);
      useEffect(()=>{
          if(examsParticipation[0]){
            setCurrentExam({title:examsParticipation[0].exam.title, id:examsParticipation[0].examId, postsTotal:examsParticipation[0].exam.postsTotal, multipleSelection:examsParticipation[0].exam.multipleSelection});
@@ -72,7 +71,7 @@ export default function Home({session, user, examsParticipation}:any){
             setCrtPoint(3); 
           }
           setCurrentPost(0);
-          setIsFormDirty(false);
+          checkup.current=false;
         })
      },[currentExam])
 
@@ -84,10 +83,10 @@ export default function Home({session, user, examsParticipation}:any){
       setShowAlertV(false);
     }
      const handleSlideLeft=()=>{
-              if(currentPost!=0 && !isFormDirty){
+              if(currentPost!=0 && !checkup.current){
                 setCurrentPost(prevPost => prevPost-1);
               }
-              if(isFormDirty){
+              if(checkup.current){
                 setShowAlertV(true);
                
                    
@@ -99,12 +98,17 @@ export default function Home({session, user, examsParticipation}:any){
      }
 
      
-     
+
+     const fuja = ()=>{
+         handleSlideRight();
+     }
+
      const handleSlideRight= ()=>{
-             if(currentPost!=posts.length-1 && !isFormDirty){
+  
+             if(currentPost!=posts.length-1 && !checkup.current){
                setCurrentPost(prevPost=>prevPost+1)
              }
-             if(isFormDirty){
+             if(checkup.current){
               setShowAlertV(true);
              
                  
@@ -112,7 +116,9 @@ export default function Home({session, user, examsParticipation}:any){
                        handleShowAlert();
                        clearTimeout(showAlert);
                  },5000)
-            }    
+            }
+        
+        
      }
 
      const [showPublishImage, setShowPublishImage] = useState(false);
@@ -278,7 +284,7 @@ export default function Home({session, user, examsParticipation}:any){
                  </div> }
                 {
                     posts.map((post, id)=>(
-                        <Slide key={id} post={post} currentPost={currentPost} multipleSelection={currentExam.multipleSelection} userId={user.id} user={user} setCurrent={handleSlideRight}></Slide> 
+                        <Slide key={id} post={post} checkup={checkup} currentPost={currentPost} multipleSelection={currentExam.multipleSelection} userId={user.id} user={user} setCurrent={handleSlideRight}></Slide> 
                     ))
                 } 
                  {currentExam && (currentExam.postsTotal !== 0) && <div className="absolute right-[50%] z-10 top-0 p-1 bg-white/60 text-[20px] font-bold text-black">{currentPost+1}/{currentExam.postsTotal}</div>}          

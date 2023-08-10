@@ -11,7 +11,7 @@ import {baseUrl} from '../baseUrl'
 import {Document, Page, pdfjs} from 'react-pdf'
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-export default function Slide(props:{post:any, currentPost:number, multipleSelection:boolean, user:any, userId:string, setCurrent:()=>void}){
+export default function Slide(props:{post:any, currentPost:number, checkup:any, multipleSelection:boolean, user:any, userId:string, setCurrent:()=>void}){
     const [showReviewScr, setShowRevScr] = useState(false);
     const [deletePost,setDeletePost] = useState(false);
     const pageWidthRef = useRef(null);
@@ -181,7 +181,7 @@ export default function Slide(props:{post:any, currentPost:number, multipleSelec
                 </div>
                 }
                 <div className="grow max-w-[14%] h-full">
-                  <ReviewForm multipleSelection={props.multipleSelection} offeredAnswers={props.post.exam.offeredAnswers} userId={props.userId} 
+                  <ReviewForm multipleSelection={props.multipleSelection} checkup={props.checkup} offeredAnswers={props.post.exam.offeredAnswers} userId={props.userId} 
                   postId={props.post.id} setOpen={setOpen} setCurrent={props.setCurrent} handleOpenComplaintForm={handleOpenComplaintForm}></ReviewForm>
                 </div>
            </div>
