@@ -12,7 +12,7 @@ import Image from 'next/image'
 
 
 
-export default function ReviewForm(props:{userId:any, checkup:any, multipleSelection:boolean, offeredAnswers:any, postId:string, setOpen:(value:boolean)=>void, setCurrent:()=>void, handleOpenComplaintForm:()=>void}) {
+export default function ReviewForm(props:{userId:any, checkup:any, increaseAnswered:()=>void, multipleSelection:boolean, offeredAnswers:any, postId:string, setOpen:(value:boolean)=>void, setCurrent:()=>void, handleOpenComplaintForm:()=>void}) {
  
   const gradeInput = useRef(null);
   const stars = [1,2,3,4,5];
@@ -102,6 +102,7 @@ export default function ReviewForm(props:{userId:any, checkup:any, multipleSelec
          setTrigger(prevTrig => !prevTrig);
          props.checkup.current=false;
          props.setCurrent();
+         props.increaseAnswered();
          return Swal.fire({
             position: 'center',
             icon: 'success',

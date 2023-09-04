@@ -29,6 +29,8 @@ export default function Home({session, user, examsParticipation}:any){
      const [currentPost,setCurrentPost] = useState<number>(0);
      const {posts, numberOfPosts, isMore, loading, setNumberOfPosts, setIsMore, setPosts, toAddOn}= useLoadPost(currentBatch,currentExam);
      const [nextPage, setNextPage] = useState(false);
+
+     const [answeredOnes, setAnsweredOnes] = useState(0);
        
      const checkup = useRef(false);
      useEffect(()=>{
@@ -69,6 +71,7 @@ export default function Home({session, user, examsParticipation}:any){
                  myVar=[...myVar.slice(number),...myVar.slice(0,number)];
             }
             myVar=[...myVar, ...res.data.answered];
+            if (res.data.answered) setAnsweredOnes(res.data.answered.length);
             myVar=myVar.map((obj:any)=>obj.id);
             setIds(myVar);
             if(myVar) {
@@ -181,7 +184,10 @@ export default function Home({session, user, examsParticipation}:any){
       return() => removeEventListener('resize', handleDistance); 
 
      },[])
-
+      
+     const increaseAnswered = () => {
+       setAnsweredOnes(prevAnswered=>prevAnswered+1);
+     }
     
      const handleSaveProgress = () =>{
       axios({
@@ -282,7 +288,7 @@ export default function Home({session, user, examsParticipation}:any){
         <section style={{overflow:'overlay'}} className="w-full relative bg-gray-200 h-full flex justify-center items-center">
              <div className="relative w-full h-full bg-white flex overflow-hidden items-center justify-between">
               {showAlertV && <div className=" bg-red-700 absolute w-[320px] text-[20px] z-40 top-10 right-[calc(50%-160px)] text-white p-5">Click Next to save the answer!</div>}
-              {posts && posts.length>0 && !loading && <div onClick={()=>handleSlideLeft()} className={`absolute transition ${currentPost==0 ? 'hidden' : 'flex'} flex justify-center items-center
+              {posts && currentPost-toAddOn>0 && !loading && <div onClick={()=>handleSlideLeft()} className={`absolute transition ${currentPost==0 ? 'hidden' : 'flex'} flex justify-center items-center
                 duration-300 h-[45px] w-[45px] z-10 rounded-full bg-white/40 left-[14px] hover:bg-white/60`}>
                          <ChevronLeftIcon className="w-8 h-8"></ChevronLeftIcon>
                 </div>}
@@ -290,14 +296,13 @@ export default function Home({session, user, examsParticipation}:any){
                  h-[45px] w-[45px] z-10 rounded-full bg-white/40 right-[14px] hover:bg-white/60`}>
                          <ChevronRightIcon className="w-8 h-8"></ChevronRightIcon>
                  </div> }
-                 <div className={`w-[${currentPost>=10 ? currentPost-10 : 0}*100%]`}></div>
                 {
                     posts.map((post)=>(
                         //@ts-ignore
-                        <Slide key={post.id} post={post} toAddOn={toAddOn} checkup={checkup} currentPost={currentPost} multipleSelection={currentExam.multipleSelection} userId={user.id} user={user} setCurrent={handleSlideRight}></Slide> 
+                        <Slide key={post.id} post={post} increaseAnswered={increaseAnswered} toAddOn={toAddOn} checkup={checkup} currentPost={currentPost} multipleSelection={currentExam.multipleSelection} userId={user.id} user={user} setCurrent={handleSlideRight}></Slide> 
                     ))
                 } 
-                 {currentExam && (currentExam.postsTotal !== 0) && <div className="absolute right-[50%] z-10 top-0 p-1 bg-white/60 text-[20px] font-bold text-black">{currentPost+1}/{currentExam.postsTotal}</div>}          
+                 {currentExam && (currentExam.postsTotal !== 0) && <div className="absolute right-[50%] z-10 top-0 p-1 bg-white/60 text-[20px] font-bold text-black">{answeredOnes}/{currentExam.postsTotal}</div>}          
              </div>
         </section>
         </div>
