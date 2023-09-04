@@ -7,6 +7,7 @@ export default function useLoadPost(currentBatch: any, currentExam:any){
     const [isMore, setIsMore] = useState(false);
     const [numberOfPosts, setNumberOfPosts] = useState(0);
     const [loading, setLoading] =useState(false);
+    const [toAddOn, setToAddOn] = useState(0);
 
    
 
@@ -14,6 +15,7 @@ export default function useLoadPost(currentBatch: any, currentExam:any){
       setPosts([]);
       setIsMore(true);
       setNumberOfPosts(0);
+      setToAddOn(0);
       setLoading(false);
     },[currentExam])
 
@@ -36,11 +38,16 @@ export default function useLoadPost(currentBatch: any, currentExam:any){
               }).then(res => {
              
       
-                if(res.data.length<3) setIsMore(false);
+                if(res.data.length<3) {
+                  setIsMore(false);
+                }
                 // setStartAt(startLoadingAt+res.data.length);
                 setNumberOfPosts(numberOfPosts+res.data.length);
                 //@ts-ignore 
-                setPosts(prevData=>[...prevData,...res.data]);
+                setPosts(prevData=>[...prevData,...res.data].slice(-10));
+                if ([...posts, ...res.data].length>10 && toAddOn==0) {setToAddOn([...posts, ...res.data].length-10);}
+                else if ([...posts, ...res.data].length>10 && toAddOn!=0) {setToAddOn(prevAddOn=>prevAddOn+res.data.length)}
+                
                 setLoading(false);
               }).catch(
                 err=> {
@@ -55,5 +62,5 @@ export default function useLoadPost(currentBatch: any, currentExam:any){
           
          return ()=> cancel(); 
     }, [currentBatch])
-    return {posts, loading, isMore, numberOfPosts, setNumberOfPosts, setIsMore, setPosts}
+    return {posts, loading, isMore, numberOfPosts, setNumberOfPosts, setIsMore, setPosts, toAddOn}
 }

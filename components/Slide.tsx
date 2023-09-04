@@ -11,7 +11,7 @@ import {baseUrl} from '../baseUrl'
 import {Document, Page, pdfjs} from 'react-pdf'
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-export default function Slide(props:{post:any, currentPost:number, checkup:any, multipleSelection:boolean, user:any, userId:string, setCurrent:()=>void}){
+export default function Slide(props:{post:any, toAddOn:number, currentPost:number, checkup:any, multipleSelection:boolean, user:any, userId:string, setCurrent:()=>void}){
     const [showReviewScr, setShowRevScr] = useState(false);
     const [deletePost,setDeletePost] = useState(false);
     const pageWidthRef = useRef(null);
@@ -130,7 +130,7 @@ export default function Slide(props:{post:any, currentPost:number, checkup:any, 
     }
 
     return(
-      <div style={{transform:`translateX(-${props.currentPost*100}%)`}} 
+      <div style={{transform:`translateX(-${(props.currentPost-props.toAddOn)*100}%)`}} 
         className={`relative w-full transition-transform overflow-hidden flex justify-center overflow-x-auto 
         duration-1000 ease-out h-full bg-black/50 flex-shrink-0 `}>
 

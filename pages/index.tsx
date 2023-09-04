@@ -20,8 +20,6 @@ import { useRouter } from 'next/router';
 import spinnerSvg from '../public/spinner.svg'
 export default function Home({session, user, examsParticipation}:any){
      
-    
-
      const router = useRouter();
      
      const [currentPoint, setCrtPoint] = useState(0);
@@ -29,7 +27,7 @@ export default function Home({session, user, examsParticipation}:any){
      const [ids, setIds] = useState([])
      const [currentExam, setCurrentExam] = useState({title:'', id:'', postsTotal:0, multipleSelection:false});
      const [currentPost,setCurrentPost] = useState<number>(0);
-     const {posts, numberOfPosts, isMore, loading, setNumberOfPosts, setIsMore, setPosts}= useLoadPost(currentBatch,currentExam);
+     const {posts, numberOfPosts, isMore, loading, setNumberOfPosts, setIsMore, setPosts, toAddOn}= useLoadPost(currentBatch,currentExam);
      const [nextPage, setNextPage] = useState(false);
        
      const checkup = useRef(false);
@@ -40,7 +38,7 @@ export default function Home({session, user, examsParticipation}:any){
      },[])
 
      useEffect(()=>{
-        if(currentPost==posts.length-1 && isMore && currentPost!==0){
+        if(currentPost==posts.length-1+toAddOn && isMore && currentPost!==0){
            setCrtBatch([...ids.slice(currentPoint,currentPoint+3)]);
            setCrtPoint(prevPoint=>prevPoint+3);
         }
@@ -55,21 +53,31 @@ export default function Home({session, user, examsParticipation}:any){
             examId:currentExam.id
           }
         }).then((res)=>{
-          
-           let myVar = res.data;
-           let numOfPermutations = 20;
-           if(numOfPermutations>myVar.length) numOfPermutations=myVar.length;
-           for(let i=0; i<numOfPermutations; i++){
-                var number = Math.floor(Math.random()*myVar.length);
-                myVar=[...myVar.slice(number),...myVar.slice(0,number)];
+           if(res.data.length>0) axios({
+              method:'GET',
+              url:baseUrl+'api/handlers/separateAnswered',
+              params:{
+                questionsArray: JSON.stringify(res.data),
+                userId: user.id
+              }
+           }).then((res)=>{
+            let myVar = res.data.unanswered;
+            let numOfPermutations = 20;
+            if(numOfPermutations>myVar.length) numOfPermutations=myVar.length;
+            for(let i=0; i<numOfPermutations; i++){
+                 var number = Math.floor(Math.random()*myVar.length);
+                 myVar=[...myVar.slice(number),...myVar.slice(0,number)];
+            }
+            myVar=[...myVar, ...res.data.answered];
+            myVar=myVar.map((obj:any)=>obj.id);
+            setIds(myVar);
+            if(myVar) {
+             //@ts-ignore
+             setCrtBatch([...myVar.slice(0,3)]);
+             setCrtPoint(3); 
            }
-           myVar=myVar.map((obj:any)=>obj.id);
-           setIds(myVar);
-           if(myVar) {
-            //@ts-ignore
-            setCrtBatch([...myVar.slice(0,3)]);
-            setCrtPoint(3); 
-          }
+           });
+          
           setCurrentPost(0);
           checkup.current=false;
         })
@@ -105,7 +113,7 @@ export default function Home({session, user, examsParticipation}:any){
 
      const handleSlideRight= ()=>{
   
-             if(currentPost!=posts.length-1 && !checkup.current){
+             if(currentPost!=currentExam.postsTotal-1 && !checkup.current){
                setCurrentPost(prevPost=>prevPost+1)
              }
              if(checkup.current){
@@ -274,17 +282,19 @@ export default function Home({session, user, examsParticipation}:any){
         <section style={{overflow:'overlay'}} className="w-full relative bg-gray-200 h-full flex justify-center items-center">
              <div className="relative w-full h-full bg-white flex overflow-hidden items-center justify-between">
               {showAlertV && <div className=" bg-red-700 absolute w-[320px] text-[20px] z-40 top-10 right-[calc(50%-160px)] text-white p-5">Click Next to save the answer!</div>}
-              {posts && posts.length>0 && <div onClick={()=>handleSlideLeft()} className={`absolute transition ${currentPost==0 ? 'hidden' : 'flex'} flex justify-center items-center
+              {posts && posts.length>0 && !loading && <div onClick={()=>handleSlideLeft()} className={`absolute transition ${currentPost==0 ? 'hidden' : 'flex'} flex justify-center items-center
                 duration-300 h-[45px] w-[45px] z-10 rounded-full bg-white/40 left-[14px] hover:bg-white/60`}>
                          <ChevronLeftIcon className="w-8 h-8"></ChevronLeftIcon>
                 </div>}
-               { posts && posts.length>0 &&  <div onClick={()=>handleSlideRight()} className={`${currentPost==posts.length-1 ? 'hidden' : 'flex' } absolute transition duration-300 justify-center items-center
+               { posts && posts.length>0 && !loading && <div onClick={()=>handleSlideRight()} className={`${currentPost==currentExam.postsTotal-1 ? 'hidden' : 'flex' } absolute transition duration-300 justify-center items-center
                  h-[45px] w-[45px] z-10 rounded-full bg-white/40 right-[14px] hover:bg-white/60`}>
                          <ChevronRightIcon className="w-8 h-8"></ChevronRightIcon>
                  </div> }
+                 <div className={`w-[${currentPost>=10 ? currentPost-10 : 0}*100%]`}></div>
                 {
-                    posts.map((post, id)=>(
-                        <Slide key={id} post={post} checkup={checkup} currentPost={currentPost} multipleSelection={currentExam.multipleSelection} userId={user.id} user={user} setCurrent={handleSlideRight}></Slide> 
+                    posts.map((post)=>(
+                        //@ts-ignore
+                        <Slide key={post.id} post={post} toAddOn={toAddOn} checkup={checkup} currentPost={currentPost} multipleSelection={currentExam.multipleSelection} userId={user.id} user={user} setCurrent={handleSlideRight}></Slide> 
                     ))
                 } 
                  {currentExam && (currentExam.postsTotal !== 0) && <div className="absolute right-[50%] z-10 top-0 p-1 bg-white/60 text-[20px] font-bold text-black">{currentPost+1}/{currentExam.postsTotal}</div>}          
