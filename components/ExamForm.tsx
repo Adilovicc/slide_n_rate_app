@@ -15,6 +15,7 @@ export default function ExamForm({createdBy,setNewExam}:any){
     const [answerList,setAnswerList] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const [multipleSelection,setMultipleSelection] = useState(false);
+    const [examDescription, setExamDes] = useState<string>('');
 
     const [crtTo, setCrtTo] = useState();
     useEffect(()=>{
@@ -22,7 +23,7 @@ export default function ExamForm({createdBy,setNewExam}:any){
     },[crtTo])
 
     const handleForm = (values:any)=>{
-        values= {...values, answerList, createdBy, multipleSelection};
+        values= {...values, answerList, createdBy, multipleSelection, examDescription};
         setLoading(true);
         axios({
             url:baseUrl+'api/examHandlers/create',
@@ -116,6 +117,14 @@ export default function ExamForm({createdBy,setNewExam}:any){
                            inputProps={{ 'aria-label': 'controlled' }}
                           />
                 </div>
+               <label className="text-[18px] font-serif">Comment/Description</label>
+               <div className="bg-white rounded-md border-black/40 resize-none border-[0.5px] text-black">
+                   <textarea value={examDescription} placeholder="Type your note/complaint here..." onChange={(e) => setExamDes(e.target.value)} maxLength={600}
+                       className="w-full h-[120px] resize-none p-2 outline-none bg-white rounded-md">
+
+                   </textarea>
+                   <div className="text-black p-2">{examDescription.length}/600</div>
+               </div>
                 <button className="w-full max-w-[400px] px-5 mt-5 py-3 cursor-pointer
                  text-white border-[1px] border-white bg-[#17537a] text-[22px]
                  font-bold flex justify-center items-center" disabled={answerList.length<2 || loading}>

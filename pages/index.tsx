@@ -64,12 +64,12 @@ export default function Home({session, user, examsParticipation}:any){
               }
            }).then((res)=>{
             let myVar = res.data.unanswered;
-            let numOfPermutations = 20;
+            /*let numOfPermutations = 20;
             if(numOfPermutations>myVar.length) numOfPermutations=myVar.length;
             for(let i=0; i<numOfPermutations; i++){
                  var number = Math.floor(Math.random()*myVar.length);
                  myVar=[...myVar.slice(number),...myVar.slice(0,number)];
-            }
+            }*/
             myVar=[...myVar, ...res.data.answered];
             if (res.data.answered) setAnsweredOnes(res.data.answered.length);
             myVar=myVar.map((obj:any)=>obj.id);
@@ -302,7 +302,7 @@ export default function Home({session, user, examsParticipation}:any){
                         <Slide key={post.id} post={post} increaseAnswered={increaseAnswered} toAddOn={toAddOn} checkup={checkup} currentPost={currentPost} multipleSelection={currentExam.multipleSelection} userId={user.id} user={user} setCurrent={handleSlideRight}></Slide> 
                     ))
                 } 
-                 {currentExam && (currentExam.postsTotal !== 0) && <div className="absolute right-[50%] z-10 top-0 p-1 bg-white/60 text-[20px] font-bold text-black">{answeredOnes}/{currentExam.postsTotal}</div>}          
+                 {currentExam && (currentExam.postsTotal !== 0) && <div className="absolute right-[50%] z-10 top-0 p-1 bg-white/60 text-[14px] font-bold text-black">Done: {answeredOnes}/{currentExam.postsTotal}</div>}          
              </div>
         </section>
         </div>

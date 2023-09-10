@@ -6,7 +6,7 @@ export default async function create(req:NextApiRequest, res:NextApiResponse){
        const {values} = req.query;
        //@ts-ignore
        const valuesE = JSON.parse(values);
-       const {title, answerList, createdBy,multipleSelection} = valuesE;
+       const {title, answerList, createdBy, multipleSelection, examDescription} = valuesE;
       
        try {
             const record = await prisma.exam.create({
@@ -14,7 +14,8 @@ export default async function create(req:NextApiRequest, res:NextApiResponse){
                     createdBy:createdBy,
                     offeredAnswers:answerList,
                     title,
-                    multipleSelection: multipleSelection
+                    multipleSelection: multipleSelection,
+                    description: examDescription
                 },
                 include:{
                     creator:true

@@ -11,7 +11,7 @@ export default async function getPosts(req:NextApiRequest, res:NextApiResponse){
                   examId:String(examId)
                 },
                 orderBy:{
-                    createdAt:'asc'
+                    name:'asc'
                 }
         })
         return res.json(records);

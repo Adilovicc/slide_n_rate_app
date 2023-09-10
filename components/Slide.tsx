@@ -118,7 +118,7 @@ export default function Slide(props:{post:any, toAddOn:number, currentPost:numbe
           return Swal.fire({
             position: 'center',
             icon: 'error',
-            title: 'You have already sent your note!',
+            title: 'Stg went wrong!',
             showConfirmButton: false,
             timer: 2000
           });
@@ -165,8 +165,8 @@ export default function Slide(props:{post:any, toAddOn:number, currentPost:numbe
                 <div className="h-full w-[86%] relative">
                   <div className={`${showComplaintForm? 'absolute' : 'hidden'} w-full z-10 h-full 
                   flex flex-col justify-center items-center bg-white/40 backdrop-blur-md`}>
-                     <div className="bg-black/20 relative flex flex-col p-3">
-                        <div className="w-full flex justify-end mb-2"><XMarkIcon className="w-8 h-8 cursor-pointer" onClick={()=>setShowComplaintForm(false)}></XMarkIcon></div>
+                     <div className="bg-[#393E46] rounded-lg relative flex flex-col p-3">
+                        <div className="w-full flex justify-end mb-2"><XMarkIcon className="w-8 h-8 cursor-pointer text-white" onClick={()=>setShowComplaintForm(false)}></XMarkIcon></div>
                         <div className="bg-white rounded-md border-black/40 resize-none border-[0.5px]">
                         <textarea value={commentInputValue} placeholder="Type your note/complaint here..." onChange={(e)=>setCIV(e.target.value)} maxLength={300} 
                         className="w-[500px] h-[200px] resize-none p-2 outline-none bg-white rounded-md">
@@ -187,7 +187,7 @@ export default function Slide(props:{post:any, toAddOn:number, currentPost:numbe
            </div>
            {props.user.role == 'admin' && <Details offeredAnswers={props.post.exam.offeredAnswers} userId={props.userId} user={props.user} post={props.post} setOpen={setShowRevScr}></Details>}
            <div className={`${showReviewScr ? 'fixed' : 'hidden'} flex justify-center items-center top-0 right-0 left-0 bottom-0 z-50 backdrop-blur-md`}>
-            
+                    
           </div>
           <div className={`${deletePost ? 'fixed' : 'hidden'} flex justify-center items-center top-0 right-0 left-0 bottom-0 z-50 backdrop-blur-md`}>
              <div className="h-[30%] w-[80%] min-h-[40px] min-w-[140px] flex items-center justify-center">

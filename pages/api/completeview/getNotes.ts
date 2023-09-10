@@ -4,24 +4,18 @@ import prisma from "../../../lib/prismadb";
 export default async function getRecensions(req:NextApiRequest, res:NextApiResponse){
      const {examId} = req.query;
      try {
-        const records = await prisma.recension.findMany({
+        const records = await prisma.note.findMany({
             where:{
-               forPost:{
-                 exam:{
-                    id: String(examId)
-                 }
-               }
+              examId:String(examId)
             },
-            select:{
-               postId:true,
-               userId:true,
-               grade:true
-            }
+           select:{
+              text:true,
+              postId:true,
+              userId:true,
+           }
         })
         return res.json(records);
     } catch (error) {
         return res.status(500).json({ message: 'An error occurred' });
     }
 }
-
-

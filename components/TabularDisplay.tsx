@@ -17,6 +17,8 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
      const [loadingExams, setLoadingExams] = useState(true);
      const [examsList, setExamsList] = useState<any>();
     const [selectedExam, setSelectedExam] = useState<any>();
+    const [notes, setNotes] = useState<any>();
+
     useEffect(()=>{
         if(!examsList) axios({
           url:baseUrl+'api/completeview/getExams',
@@ -49,30 +51,46 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
            
             
                  users.map((user:any,idxP:number)=>{
-                  let counter = false;
-                  let lock = false;
-                  {recensions.map((recension:any, idxR:number)=>{
+                
+                  let rec = recensions.filter((re:any)=>{if(re.userId == user.id && re.postId==post.id) return re;});
+                  let not = notes.filter((note:any)=>{if(note.userId == user.id && note.postId == post.id) return note})
+                  console.log(rec);
+                  if(rec.length>0) {
                     
-                            if(counter) counter=false;
-                            if(user.id == recension.userId && post.id==recension.postId) {counter=true; lock=true;};
-                            if(counter) {let objKey=user.name; obj = Object.assign(obj, { [objKey]: recension.grade.map((itm:number, idx:number)=>{return selectedExam.offeredAnswers[itm-1]}) } );}
-                            if(!counter && !lock && idxR==recensions.length-1) {let objKey=user.name; obj=Object.assign(obj, {[objKey]: ['NA']})}
-                           
-                            
-                   })}
+                    let objKey=user.name; 
+                    obj = Object.assign(obj, { [objKey]: {grade:rec.at(0).grade.map((itm:number, idx:number)=>
+                    {return selectedExam.offeredAnswers[itm-1]}), note: not.length>0 ? not.at(0).text : '-' }} );
+                  }
+                  else {
+                    let objKey=user.name; obj=Object.assign(obj, {[objKey]: {grade:['NA'], note: not.length>0 ? not.at(0).text : '-'}})
+                  }
+             
             
                   })
               
             arrayOfObjects.push(obj);
            }
         )
+       
         return arrayOfObjects;
      }
      
      const exportToExcel = ()=> {
         const fileName = String(selectedExam.title.replace(/\s/g, "")+'.xlsx');
-        
-        const arrayModified = arrayObjects.map((obj:any, idx:number)=>{
+        const reconstructedArray = arrayObjects.map((obj:any, idx:number)=>{
+          const newObj = { ...obj };
+          let recObj = { name: obj.name }
+          Object.keys(newObj).forEach((key,i) => {
+            if(key!=='name'){
+              const key1 = String(key+'_ANSWER');
+              const key2 = String(key+'_NOTE');
+              //@ts-ignore
+              recObj = {...recObj, [key1]: obj[key].grade, [key2]:obj[key].note}
+            }
+          })
+          return recObj;
+        })
+        const arrayModified = reconstructedArray.map((obj:any, idx:number)=>{
           const newObj = { ...obj };
       
          
@@ -86,7 +104,7 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
       
           return newObj;
         })
-        
+        console.log(arrayModified);
         const worksheet = utils.json_to_sheet(arrayModified);
         const workbook = utils.book_new();
         utils.book_append_sheet(workbook, worksheet, 'Sheet 1');
@@ -106,10 +124,13 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
 
      const myTable = ()=>{
         const keys = Object.keys(arrayObjects[0]);
+        console.log(keys)
+        const subkeys= Object.keys(arrayObjects[0][keys[1]]);
+        console.log(subkeys);
         const myArray = arrayObjects;
-     
+        console.log(arrayObjects);
         return (
-            <table className=''>
+           <table className=''>
               <thead>
                 <tr className="border-[0.5px] border-black">
                   {keys.map((key, index) => (
@@ -123,7 +144,7 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
                   <tr key={rowIndex}>
                     {keys.map((key:any, cellIndex:number) => (
                       cellIndex==0 ? <td className="border-[0.5px] font-semibold text-[18px] border-black p-[2px] min-w-[20rem] text-center" key={cellIndex}>{obj[key]}</td> :
-                      <td className="border-[0.5px] border-black p-[4px] min-w-[10rem] max-w-[160px] text-center" key={cellIndex}>{obj[key].map((itm:any,idx:number)=>(<div key={idx}>{itm}</div>))}</td>
+                      <td className="border-[0.5px] border-black p-[4px] min-w-[10rem] max-w-[160px] text-center" key={cellIndex}>{obj[key].grade.map((itm:any,idx:number)=>(<div key={idx}>{itm}</div>))}</td>
                     ))}
                   </tr>
                 ))}
@@ -136,6 +157,15 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
      const fetchData = async () => {
         if(loading) return;
         setLoading(true);
+        axios({
+          method:'GET',
+          url:baseUrl+'api/completeview/getNotes',
+          params:{
+            examId:selectedExam.id
+          }
+        }).then(res=>{
+          setNotes(res.data);
+        })
         axios({
             method:'GET',
             url:baseUrl+'api/completeview/getUsers',
@@ -157,7 +187,10 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
               
               axios({
                 method:'GET',
-                url: baseUrl+'api/completeview/getRecensions'
+                url: baseUrl+'api/completeview/getRecensions',
+                params:{
+                  examId: selectedExam.id
+                }
               }).then(res => {
                  //@ts-ignore 
                 setRecensions(res.data);

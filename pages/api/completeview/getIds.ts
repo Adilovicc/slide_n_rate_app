@@ -13,6 +13,9 @@ export default async function getIds(req:NextApiRequest, res:NextApiResponse){
             },
             where:{
                 examId:String(examId)
+            },
+            orderBy:{
+              name: 'asc'
             }
         }
         )

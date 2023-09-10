@@ -5,6 +5,7 @@ import axios from "axios";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 
+
 export default function UsersManagement(props:{handleClose:any}){
     const [currentNumber,setCurrentNumber] = useState(0);
     const [userQuery,setUserQuery] = useState('');
@@ -56,24 +57,24 @@ export default function UsersManagement(props:{handleClose:any}){
                    <div className="h-[42px] w-full px-4 max-w-[300px] rounded-full border-[1px] bg-white/20 flex items-center border-white">
                        <input value={userQuery} onChange={(e)=>setUserQuery(e.target.value)} placeholder='Search email' className='outline-none bg-white/0'></input>
                    </div>
-                    <div className="w-full mt-3 p-1 h-[400px] border-[1px] border-white overflow-y-auto">
+                    <div className="w-full mt-3 p-1 h-[400px] border-[1px] border-white overflow-y-auto font-semibold">
                           {users.map((item:any, idx:number)=>(
                                idx==users.length-1 ? 
-                               <div ref={lastElementView} key={idx} className={`w-full ${hiddenArray.includes(idx) ? 'hidden' : ''} px-2 mt-1 h-12 border-[0.5px] bg-green-700/40 border-white flex items-center`}>
+                               <div ref={lastElementView} key={idx} className={`w-full ${hiddenArray.includes(idx) ? 'hidden' : ''} px-2 mt-1 h-12 border-[0.5px] bg-[#F9F7F7] border-white flex items-center`}>
                                     <div className="w-[35%] truncate flex items-center">{item.name}</div>
                                     <div className="w-[40%] truncate flex items-center">{item.email}</div>
                                     <div className="w-[25%] h-[80%] truncate flex items-center justify-end">
                                         
                                         <button disabled={handlingInProcess} onClick={()=>handleDeleteUser(item, idx)} className="rounded-full h-[80%] w-[100%] max-w-[85px] items-center 
-                                        flex justify-center font-semibold bg-red-600/80">Delete</button> 
+                                        flex justify-center font-semibold text-white bg-red-600/80">Delete</button> 
                                     </div>
                                 </div> : 
-                                <div key={idx} className={`w-full ${hiddenArray.includes(idx) ? 'hidden' : ''} px-2 mt-1 h-12 border-[0.5px] bg-green-700/40 border-white flex items-center`}>
+                                <div key={idx} className={`w-full ${hiddenArray.includes(idx) ? 'hidden' : ''} px-2 mt-1 h-12 border-[0.5px] bg-[#F9F7F7] border-white flex items-center`}>
                                 <div className="w-[35%] truncate flex items-center">{item.name}</div>
                                 <div className="w-[40%] truncate flex items-center">{item.email}</div>
                                 <div className="w-[25%] h-[80%] truncate flex items-center justify-end">
                                     <button disabled={handlingInProcess} onClick={()=>handleDeleteUser(item, idx)} className="rounded-full h-[80%] w-[100%] max-w-[85px] items-center 
-                                    flex justify-center font-semibold bg-red-600/80">Delete</button> 
+                                    flex justify-center font-semibold bg-red-600/80 text-white">Delete</button> 
                                 </div>
                             </div>
                           ))}
