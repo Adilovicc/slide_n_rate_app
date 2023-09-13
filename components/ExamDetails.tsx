@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import { writeFile, utils} from 'xlsx';
 import { useRouter } from 'next/router';
-import Accordion from './Accordion';
+import BasicAccordion from './Accordion';
 
 export default function ExamDetails({exam}:any){
       const [userQuery, setUserQuery] = useState<string>('');
@@ -164,28 +164,12 @@ export default function ExamDetails({exam}:any){
                 </div>
             </div>
             <h1 className="text-[26px] font-semibold mb-5">{exam.title}</h1>
-            <Accordion description={exam.description? exam.description : 'No description'}
+            <BasicAccordion description={exam.description? exam.description : 'No description'}
                 creator={exam.creator.name}
                 posts={exam.postsTotal}
                 participants={exam.membersTotal}
                 offeredAnswers={exam.offeredAnswers}
-            ></Accordion>
-            
-            {/*<div className="mt-4 w-full text-[18px]">
-                <span className="font-serif ml-10">{exam.offeredAnswers.length} offered answers:</span>
-                 <div className="w-full flex flex-wrap">
-                {
-                    exam.offeredAnswers && exam.offeredAnswers.map((item:String, index:number)=>(
-                        <div key={index} className="w-[50%] min-w-[330px] p-1">
-                            <div className="w-full h-full px-2 border-[1px] border-white rounded-md">
-                             <span>{index+1}.</span><span>{item}</span>
-                            </div>
-                        </div>
-                    ))
-                    
-                }
-                </div>
-            </div>*/}
+            ></BasicAccordion>
             <div className="w-full my-2">
                <div className="flex bg-[#222831] w-[350px] space-x-2 py-1 rounded-xl justify-center">
                 <div onClick={() => setCurrentList('members')} className={`px-2 py-1 transition duration-300   text-[18px] cursor-pointer 

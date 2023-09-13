@@ -16,13 +16,13 @@ interface Props {
 export default function BasicAccordion({description, creator, participants, posts, offeredAnswers}:Props) {
   return (
     <div className="w-full">
-      <Accordion>
+      <Accordion className="!bg-[#EEEEEE]">
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography className="font-bold">Description</Typography>
+          <Typography className="!font-bold">Description</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography>
@@ -30,13 +30,13 @@ export default function BasicAccordion({description, creator, participants, post
           </Typography>
         </AccordionDetails>
       </Accordion>
-      <Accordion>
+      <Accordion className="!bg-[#EEEEEE]">
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel2a-content"
           id="panel2a-header"
         >
-          <Typography className="font-bold">Info</Typography>
+          <Typography className="!font-bold">Info</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography>
@@ -46,13 +46,13 @@ export default function BasicAccordion({description, creator, participants, post
           </Typography>
         </AccordionDetails>
       </Accordion>
-      <Accordion >
+      <Accordion className="!bg-[#EEEEEE]">
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel2a-content"
           id="panel2a-header"
         >
-          <Typography className="font-bold">Offered answers</Typography>
+          <Typography className="!font-bold">Offered answers</Typography>
         </AccordionSummary>
         <AccordionDetails >
           <Typography >
