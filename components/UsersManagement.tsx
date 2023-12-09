@@ -3,6 +3,7 @@ import useLoadUsers from "../hooks/useLoadUsers";
 import {useState, useEffect, useCallback, useRef} from 'react';
 import axios from "axios";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useSession } from "next-auth/react";
 
 interface User {
   id:string,
@@ -15,6 +16,8 @@ export default function UsersManagement(props:{handleClose:any}){
     const [userQuery,setUserQuery] = useState('');
     const {loading, isMore, users} = useLoadUsers(currentNumber, userQuery);
     const [handlingInProcess, setHandlingInProcess] = useState(false);
+
+    const session = useSession();
 
     const observerr = useRef();
       const lastElementView = useCallback((node:any)=>{
@@ -48,6 +51,7 @@ export default function UsersManagement(props:{handleClose:any}){
              method:'POST',
              data:{
                 id:itmForDeletion.id,
+                session: JSON.stringify(session)
              }
           }).then(()=>{
             setHiddenArray(prevHA=>[...prevHA, idxForDeletion]); 

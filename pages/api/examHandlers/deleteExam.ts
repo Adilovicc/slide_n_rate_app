@@ -6,8 +6,19 @@ import { decode } from "next-auth/jwt";
 
 
 export default async function deleteExam(req: NextApiRequest, res:NextApiResponse){
-     const { examId } = req.body;
-
+     const { examId, session } = req.body;
+     const sess = JSON.parse(session);
+  
+    if(!sess){
+        return res.status(500).json({message:'Something went wrong'});
+    }
+    const user = await prisma.user.findUnique({
+        where:{
+            email: sess.data.user.email
+        }
+    })
+    if(user?.role!='admin') return res.status(500);
+     /*
      const token = req.cookies['next-auth.session-token']
 
 
@@ -32,7 +43,8 @@ export default async function deleteExam(req: NextApiRequest, res:NextApiRespons
      else {
           return res.status(500).json({ message: 'You should login first!' });
      }
-
+     */
+    
      try {
           const result = await prisma.exam.delete({
                where: {

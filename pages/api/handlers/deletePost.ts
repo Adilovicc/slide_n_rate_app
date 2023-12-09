@@ -9,10 +9,21 @@ import { decode } from "next-auth/jwt";
 
 
 export default async function deletePost(req:NextApiRequest,res:NextApiResponse){
-    const {postId, examId} = req.body;
-    const token = req.cookies['next-auth.session-token']
-
+    const {postId, examId, session} = req.body;
+    const sess = JSON.parse(session);
+  
+    if(!sess){
+        return res.status(500).json({message:'Something went wrong'});
+    }
+    const user = await prisma.user.findUnique({
+        where:{
+            email: sess.data.user.email
+        }
+    })
+    if(user?.role!='admin') return res.status(500);
+    /*const token = req.cookies['next-auth.session-token']
    
+    
     if(token){
       try { 
        const decoded = await decode({
@@ -35,7 +46,7 @@ export default async function deletePost(req:NextApiRequest,res:NextApiResponse)
         return res.status(500).json({message:'You should login first!'});
     }
     
-     
+    */
     try {
       const record= await prisma.post.delete({
             where:{

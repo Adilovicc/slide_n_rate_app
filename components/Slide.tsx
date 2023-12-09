@@ -9,6 +9,8 @@ import Swal from "sweetalert2";
 import {useRouter} from "next/router";
 import {baseUrl} from '../baseUrl'
 import {Document, Page, pdfjs} from 'react-pdf'
+import { useSession } from "next-auth/react";
+
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 export default function Slide(props:{post:any, toAddOn:number, currentPost:number, increaseAnswered:()=>void, checkup:any, multipleSelection:boolean, user:any, userId:string, setCurrent:()=>void}){
@@ -27,6 +29,8 @@ export default function Slide(props:{post:any, toAddOn:number, currentPost:numbe
     const [checker, setChecker] = useState(false);
     
     const [commentInputValue, setCIV] = useState('');
+    
+    const session = useSession();
 
     const handleDeletePost =()=>{
        setDeletePost(prevPost=>!prevPost);
@@ -36,7 +40,8 @@ export default function Slide(props:{post:any, toAddOn:number, currentPost:numbe
             url:baseUrl+'api/handlers/deletePost',
             data:{
                 postId:props.post.id,
-                examId:props.post.examId
+                examId:props.post.examId,
+                session: JSON.stringify(session)
              },
              method:'POST'
            }).then((response)=>{

@@ -5,6 +5,7 @@ import { decode } from "next-auth/jwt";
 export default async function getUsers(req:NextApiRequest, res:NextApiResponse){
     const {examId} = req.query;
 
+    /*
     const token = req.cookies['next-auth.session-token']
 
 
@@ -29,7 +30,8 @@ export default async function getUsers(req:NextApiRequest, res:NextApiResponse){
     else {
         return res.status(500).json({ message: 'You should login first!' });
     }
-    
+    */
+
      try {
         const records = await prisma.user.findMany({
                 where:{
@@ -38,7 +40,8 @@ export default async function getUsers(req:NextApiRequest, res:NextApiResponse){
                             examId:String(examId)
                         }
                     }
-                }
+                },
+                
         })
         return res.json(records);
     } catch (error) {
