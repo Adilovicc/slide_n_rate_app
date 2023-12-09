@@ -6,18 +6,7 @@ import { decode } from "next-auth/jwt";
 
 
 export default async function deleteExam(req: NextApiRequest, res:NextApiResponse){
-     const { examId, session } = req.body;
-     const sess = JSON.parse(session);
-  
-    if(!sess){
-        return res.status(500).json({message:'Something went wrong'});
-    }
-    const user = await prisma.user.findUnique({
-        where:{
-            email: sess.data.user.email
-        }
-    })
-    if(user?.role!='admin') return res.status(500);
+     const { examId } = req.body;
      /*
      const token = req.cookies['next-auth.session-token']
 

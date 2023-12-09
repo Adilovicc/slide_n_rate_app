@@ -11,8 +11,6 @@ import { Exam } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 
 export default function ExamDetails(props:{exam:any, handleDeleteItem:()=>void}){
-      const session = useSession();
-
       const [userQuery, setUserQuery] = useState<string>('');
       const [currentNumber, setCurrentNumber] = useState(0);
       const [loadingEls] = useState([1,2,3]);
@@ -60,7 +58,6 @@ export default function ExamDetails(props:{exam:any, handleDeleteItem:()=>void})
                    data:{
                     id:item.userExam[0].id,
                     examId:props.exam.id,
-                    session: JSON.stringify(session)
                    }
                 }).then((res)=>{
                     const newTracking = item.forTracking+'x';

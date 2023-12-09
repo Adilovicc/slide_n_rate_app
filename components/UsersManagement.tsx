@@ -17,8 +17,6 @@ export default function UsersManagement(props:{handleClose:any}){
     const {loading, isMore, users} = useLoadUsers(currentNumber, userQuery);
     const [handlingInProcess, setHandlingInProcess] = useState(false);
 
-    const session = useSession();
-
     const observerr = useRef();
       const lastElementView = useCallback((node:any)=>{
         if(loading) return
@@ -51,7 +49,6 @@ export default function UsersManagement(props:{handleClose:any}){
              method:'POST',
              data:{
                 id:itmForDeletion.id,
-                session: JSON.stringify(session)
              }
           }).then(()=>{
             setHiddenArray(prevHA=>[...prevHA, idxForDeletion]); 
@@ -69,6 +66,7 @@ export default function UsersManagement(props:{handleClose:any}){
     const functionForDelete = (usr: User, idx: number) => {
         setItmForDeletion(usr);
         setIdxForDeletion(idx);
+        console.log(usr);
     }
 
     useEffect(()=>{

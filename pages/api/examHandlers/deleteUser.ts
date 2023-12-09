@@ -5,18 +5,9 @@ import { decode } from "next-auth/jwt";
 
 
 export default async function deleteUser(req:NextApiRequest,res:NextApiResponse){
-    const { id, session } = req.body;
-    const sess = JSON.parse(session);
+    const { id } = req.body;
   
-    if(!sess){
-        return res.status(500).json({message:'Something went wrong'});
-    }
-    const user = await prisma.user.findUnique({
-        where:{
-            email: sess.data.user.email
-        }
-    })
-    if(user?.role!='admin') return res.status(500);
+   
     /*
     const token = req.cookies['next-auth.session-token']
 
