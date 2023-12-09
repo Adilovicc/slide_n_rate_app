@@ -3,12 +3,13 @@ import useLoadParticipants from '../hooks/useLoadParticipants'
 import axios from 'axios';
 import { baseUrl } from '@/baseUrl';
 import Swal from 'sweetalert2';
-import { TrashIcon } from '@heroicons/react/24/outline';
+import { TrashIcon, ArchiveBoxArrowDownIcon, ArchiveBoxXMarkIcon } from '@heroicons/react/24/outline';
 import { writeFile, utils} from 'xlsx';
 import { useRouter } from 'next/router';
 import BasicAccordion from './Accordion';
+import { Exam } from '@prisma/client';
 
-export default function ExamDetails({exam}:any){
+export default function ExamDetails(props:{exam:any, handleDeleteItem:()=>void}){
       const [userQuery, setUserQuery] = useState<string>('');
       const [currentNumber, setCurrentNumber] = useState(0);
       const [loadingEls] = useState([1,2,3]);
@@ -17,12 +18,12 @@ export default function ExamDetails({exam}:any){
        
       const router = useRouter();
 
-      const {isMore, loading, participants, totalParticipantsLoaded, setParticipants} = useLoadParticipants(currentNumber, exam.id, userQuery);
+      const {isMore, loading, participants, totalParticipantsLoaded, setParticipants} = useLoadParticipants(currentNumber, props.exam.id, userQuery);
       const [currentList, setCurrentList] = useState('members'); 
          
       
       const [deleteScreen, setDeleteScreen] = useState(false);
-      useEffect(()=>{setCurrentNumber(0); setDeleteScreen(false); setCurrentList('members');},[exam])
+      useEffect(()=>{setCurrentNumber(0); setDeleteScreen(false); setCurrentList('members');},[props.exam])
 
       const observer = useRef();
       const lastElementView = useCallback((node:any)=>{
@@ -55,7 +56,7 @@ export default function ExamDetails({exam}:any){
                    method:'POST',
                    data:{
                     id:item.userExam[0].id,
-                    examId:exam.id
+                    examId:props.exam.id
                    }
                 }).then((res)=>{
                     const newTracking = item.forTracking+'x';
@@ -81,7 +82,7 @@ export default function ExamDetails({exam}:any){
           method:'GET',
           params:{
             userId: item.id,
-            examId: exam.id
+            examId: props.exam.id
           }
         }).then((res)=>{
          
@@ -110,7 +111,7 @@ export default function ExamDetails({exam}:any){
             url:baseUrl+'api/examHandlers/getNotes',
             method:'GET',
             params:{
-                examId:exam.id,
+                examId:props.exam.id,
             }
         }).then((res)=>{
             setNotes(res.data);
@@ -119,7 +120,7 @@ export default function ExamDetails({exam}:any){
      const [noteQuery,setNoteQuery] = useState('');
      
      const handleExportNotes=()=>{
-        const fileName = String(exam.title.replace(/\s/g, "")+'Notes.xlsx')
+        const fileName = String(props.exam.title.replace(/\s/g, "")+'Notes.xlsx')
         const worksheet = utils.json_to_sheet(notes);
         const workbook = utils.book_new();
         utils.book_append_sheet(workbook, worksheet, 'Sheet 1');
@@ -132,7 +133,7 @@ export default function ExamDetails({exam}:any){
             url:baseUrl+'api/examHandlers/deleteExam',
             method:'POST',
             data:{
-                examId:exam.id
+                examId:props.exam.id
             }
         }).then((res)=>{
             Swal.fire({
@@ -153,30 +154,102 @@ export default function ExamDetails({exam}:any){
         })
     }
 
+    const sendToArchive = ()=>{
+        axios({
+            url: baseUrl+'api/examHandlers/regulateArchive',
+            method:'POST',
+            data:{
+                examId:props.exam.id,
+                archive:true,
+            }
+        }).then((res)=>{
+            Swal.fire({
+                title:'Exam archived!',
+                timer:2000,
+                icon:'success'
+            });
+            props.handleDeleteItem();
+        }).catch((err)=>{
+            Swal.fire({
+                title:'Stg went wrong!',
+                timer:2000,
+                icon:'error'
+            });
+        })
+    }
+
+    const sendToActive = ()=>{
+        axios({
+            url: baseUrl+'api/examHandlers/regulateArchive',
+            method:'POST',
+            data:{
+                examId:props.exam.id,
+                archive:false,
+            }
+        }).then((res)=>{
+            Swal.fire({
+                title:'Exam activated!',
+                timer:2000,
+                icon:'success'
+            })
+            props.handleDeleteItem();
+        }).catch((err)=>{
+            Swal.fire({
+                title:'Stg went wrong!',
+                timer:2000,
+                icon:'error'
+            });
+        })  
+    }
+
     return(
         <div id='examDetailsForm' className="bg-[rgb(34,34,34)] relative m-auto mt-5 mb-5 text-white flex flex-col items-center rounded-lg 
           p-5 w-full max-w-[800px]">
-            <div className="absolute top-4 right-4 h-8 p-1 w-8 rounded-full bg-white/60 z-20"><TrashIcon onClick={() => setDeleteScreen(true)} className="w-full h-full"></TrashIcon></div>
-            <div className={`${deleteScreen ? 'absolute' : 'hidden'} w-full h-full top-0 z-20 flex justify-center rounded-lg`}>
-                <div className="bg-white/30 w-full h-full backdrop-blur-md flex flex-col items-center justify-center rounded-lg">
-                    <div onClick={() => setDeleteScreen(false)} className=" bg-green-700 rounded-md mb-10 cursor-pointer text-white w-[80%] flex justify-center py-2 truncate font-bold">CANCEL</div>
-                    <div onClick={() => deleteExam()} className=" bg-red-700 rounded-md cursor-pointer text-white w-[80%] flex justify-center py-2 truncate font-bold">DELETE</div>
+            <div className="absolute top-4 right-4 h-8 p-1 w-8 rounded-full bg-white/60 z-20 cursor-pointer">
+                {props.exam.archived ? <div className="relative group">
+                    <ArchiveBoxArrowDownIcon onClick={() => sendToActive()} className="w-full h-full"></ArchiveBoxArrowDownIcon>
+                    <div className="absolute hidden w-[135px] group-hover:inline text-center bottom-[-40px] right-[-54px]
+                     rounded-md py-[4px] z-30 bg-white text-black">Back to active</div>
+                    </div> :
+                    <div className="relative group">
+                        <ArchiveBoxXMarkIcon onClick={() => sendToArchive()} className="w-full h-full"></ArchiveBoxXMarkIcon>
+                        <div className="absolute hidden w-[135px] group-hover:inline text-center bottom-[-40px] right-[-54px] 
+                        rounded-md py-[4px] z-30 bg-white text-black">Send to archive</div>
+                    </div>}
+            </div>
+            <div className="absolute top-4 cursor-pointer right-[60px] h-8 p-1 w-8 rounded-full bg-white/60 z-20">
+                <div className="relative group">
+                    <TrashIcon onClick={() => setDeleteScreen(true)} className="w-full h-full"></TrashIcon>
+                    <div className="absolute hidden w-[65px] group-hover:inline text-center bottom-[-40px] 
+                    right-[-20px] rounded-md py-[4px] z-30 bg-white text-black">Delete</div>
                 </div>
             </div>
-            <h1 className="text-[26px] font-semibold mb-5">{exam.title}</h1>
-            <BasicAccordion description={exam.description? exam.description : 'No description'}
-                creator={exam.creator.name}
-                posts={exam.postsTotal}
-                participants={exam.membersTotal}
-                offeredAnswers={exam.offeredAnswers}
+            <div className={`${deleteScreen ? 'absolute' : 'hidden'} w-full h-full top-0 z-20 flex items-center justify-center rounded-lg`}>
+                <div className="bg-white w-[600px] h-[180px] rounded-lg p-5 text-black">
+                    <div className="flex justify-center text-center mb-2"><p><b>Are you sure you want to proceed with this action?</b><br></br>
+                        This will result in the permanent deletion of the test and all its questions.<br></br>
+                        Images/PDF files will still remain in the storage, and you will need to delete them separately there.</p>
+                    </div>
+                    <div className="w-full flex items-center justify-center space-x-2">
+                        <div onClick={() => setDeleteScreen(false)} className=" bg-green-700 rounded-full cursor-pointer text-white w-[100px] flex justify-center py-2 truncate font-bold">CANCEL</div>
+                        <div onClick={() => deleteExam()} className=" bg-black rounded-full cursor-pointer text-white w-[100px] flex justify-center py-2 truncate font-bold">DELETE</div>
+                    </div>
+                </div>
+            </div>
+            <h1 className="text-[26px] font-semibold mb-5">{props.exam.title}</h1>
+            <BasicAccordion description={props.exam.description ? props.exam.description : 'No description'}
+                creator={props.exam.creator.name}
+                posts={props.exam.postsTotal}
+                participants={props.exam.membersTotal}
+                offeredAnswers={props.exam.offeredAnswers}
             ></BasicAccordion>
             <div className="w-full my-2">
-               <div className="flex bg-[#222831] w-[350px] space-x-2 py-1 rounded-xl justify-center">
-                <div onClick={() => setCurrentList('members')} className={`px-2 py-1 transition duration-300   text-[18px] cursor-pointer 
+                <div className="flex bg-[#222831] w-[350px] space-x-2 py-1 rounded-xl justify-center">
+                    <div onClick={() => setCurrentList('members')} className={`px-2 py-1 transition duration-300   text-[18px] cursor-pointer 
                  w-40 font-semibold text-center rounded-xl ${currentList == 'members' ? 'bg-[#00ADB5]  border-white text-white' : ''}`}>Examinees list</div>
-                <div onClick={() => handleClickNotes()} className={`px-2 py-1 transition duration-300  text-[18px]  cursor-pointer 
+                    <div onClick={() => handleClickNotes()} className={`px-2 py-1 transition duration-300  text-[18px]  cursor-pointer 
                  w-40 font-semibold text-center rounded-xl ${currentList !== 'members' ? 'bg-[#00ADB5]  border-white text-white' : ''}`}>Examinees notes</div>
-               </div>
+                </div>
             </div>
             {currentList == 'members' &&
                 <div className="w-full h-[350px] rounded-b-sm">

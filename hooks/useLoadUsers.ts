@@ -2,11 +2,16 @@ import {useState, useEffect, useRef} from 'react'
 import axios from 'axios'
 import { baseUrl } from '@/baseUrl';
 
+interface User {
+    id:string,
+    name: string,
+    email:string,
+}
 
 export default function useLoadUsers(currentNumber:number, userQuery:string){
      const [loading,setLoading] = useState(false);
      const [isMore, setIsMore] = useState(true);
-     const [users, setUsers] = useState<any>([]);
+     const [users, setUsers] = useState<User[]>([]);
      const [totalUsersLoaded, setTPL] = useState(0);
      
      const howManyToTakeWithEachRequest=10;

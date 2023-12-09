@@ -8,6 +8,9 @@ export default async function getExamsList(req:NextApiRequest, res:NextApiRespon
                 id:true,
                 title:true,
                },
+               where:{
+                OR: [{ archived: false }, { archived: null }] 
+               },
                orderBy:{
                 createdAt:'desc'
                }

@@ -104,7 +104,7 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
       
           return newObj;
         })
-        console.log(arrayModified);
+        
         const worksheet = utils.json_to_sheet(arrayModified);
         const workbook = utils.book_new();
         utils.book_append_sheet(workbook, worksheet, 'Sheet 1');
@@ -124,11 +124,9 @@ export default function TabularDisplay(props:{tabularDisplayState:any}){
 
      const myTable = ()=>{
         const keys = Object.keys(arrayObjects[0]);
-        console.log(keys)
-        const subkeys= Object.keys(arrayObjects[0][keys[1]]);
-        console.log(subkeys);
+        const subkeys= Object.keys(arrayObjects[0][keys[1]]); 
         const myArray = arrayObjects;
-        console.log(arrayObjects);
+    
         return (
            <table className=''>
               <thead>

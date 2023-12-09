@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from 'axios';
 import {baseUrl} from '../baseUrl'
 
+
 export default function useLoadPost(currentBatch: any, currentExam:any){
     const [posts, setPosts] = useState([]);
     const [isMore, setIsMore] = useState(false);

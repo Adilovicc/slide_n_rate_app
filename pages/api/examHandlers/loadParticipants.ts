@@ -5,7 +5,7 @@ import { contains } from "jquery";
 
 export default async function loadParticipants(req:NextApiRequest, res:NextApiResponse){
       const {examId, skip, take, query} = req.query;
-
+      
       try {
         const records = await prisma.user.findMany({
             select: {

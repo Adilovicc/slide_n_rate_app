@@ -146,10 +146,13 @@ export default function Home({session, user, examsParticipation}:any){
      
      const handleShowDropdown = ()=>{
          setShowDDM(prev=>!prev)
+         if(!showDropdownMenu && examDropDown){setExamDropDown(false)}
+         
      }
 
      const handleExamDropDown = ()=>{
          setExamDropDown(prev=>!prev)
+         if(showDropdownMenu && !examDropDown){setShowDDM(false)}
      }
 
      const handleAddPhoto = () =>{
@@ -244,25 +247,22 @@ export default function Home({session, user, examsParticipation}:any){
                 
                   }
               </div>
-            <div className={`${showDropdownMenu ? 'absolute' : 'hidden'} top-[55px] right-[32px] md:right-[80px] ${user.role=='admin' ? 'h-[240px]' : 'h-[90px]'} w-[160px] z-10
-                   bg-white rounded-md border-[0.5px] border-black text-sm font-serif px-1`}>
-                  <button onClick={()=>signOut()} className="w-full flex items-center py-2 hover:scale-105 rounded-t-md">
-                   <ArrowLeftOnRectangleIcon className="h-6 w-6"></ArrowLeftOnRectangleIcon> Log out
+            <div className={`${showDropdownMenu ? 'absolute' : 'hidden'} top-[55px] px-2 right-[32px] md:right-[80px] py-2 w-[190px] z-10
+                   bg-[#4d4a4a] rounded-md text-white text-sm px-1`}>
+                  <button onClick={()=>signOut()} className="w-full pl-2 flex items-center py-2 hover:bg-white/40  rounded-md">
+                   <ArrowLeftOnRectangleIcon className="h-6 w-6 mr-1"></ArrowLeftOnRectangleIcon> Log out
                   </button>    
-                 { <button onClick={()=>handleSaveProgress()} className="w-full flex items-center py-2 hover:scale-105 rounded-t-md truncate">
-                   <BookmarkSquareIcon className="h-6 w-6"></BookmarkSquareIcon> Save progress
-                  </button>}
-                 {user.role == 'admin' && <button  onClick={()=>handleGenUserScr()}  className="w-full flex items-center py-2 hover:scale-105  rounded-t-md truncate">
-                   <UserPlusIcon className="h-6 w-6"></UserPlusIcon> Generate user
+                 {user.role == 'admin' && <button  onClick={()=>handleGenUserScr()}  className="w-full pl-2  flex items-center py-2 hover:bg-white/40 rounded-md truncate">
+                   <UserPlusIcon className="h-6 w-6 mr-1"></UserPlusIcon> Generate user
                    </button> }   
-                  {user.role == 'admin' && <button onClick={()=>handleAddPhoto()} className="w-full flex items-center py-2 hover:scale-105 rounded-t-md truncate">
-                   <CameraIcon className="h-6 w-6"></CameraIcon> Add photo
+                  {user.role == 'admin' && <button onClick={()=>handleAddPhoto()} className="w-full pl-2  flex items-center py-2 hover:bg-white/40  rounded-md truncate">
+                   <CameraIcon className="h-6 w-6 mr-1"></CameraIcon> Add photo
                   </button>}  
-                 {user.role == 'admin' && <button onClick={()=>handleTabularDisplay()} className="w-full flex items-center py-2 hover:scale-105 rounded-t-md truncate">
-                   <TableCellsIcon className="h-6 w-6"></TableCellsIcon> Tabular display
+                 {user.role == 'admin' && <button onClick={()=>handleTabularDisplay()} className="w-full pl-2 flex items-center py-2 hover:bg-white/40  rounded-md truncate">
+                   <TableCellsIcon className="h-6 w-6 mr-1"></TableCellsIcon> Tabular display
                   </button>  }
-                  {user.role == 'admin' && <button onClick={()=>router.push('/exams')} className="w-full flex items-center py-2 hover:scale-105 rounded-t-md truncate">
-                  <WrenchIcon className="w-6 h-6"></WrenchIcon> Exam maintenance
+                  {user.role == 'admin' && <button onClick={()=>router.push('/exams')} className="w-full pl-2 flex items-center py-2 hover:bg-white/40  rounded-md truncate">
+                  <WrenchIcon className="w-6 h-6 mr-1"></WrenchIcon> Exam maintenance
                   </button>  }
             </div>
             <div className={`${showPublishImage ? 'fixed flex' : 'hidden'} top-0 right-0 left-0 bottom-0 justify-center items-center bg-black/20 backdrop-blur-lg z-20`}>
@@ -299,7 +299,9 @@ export default function Home({session, user, examsParticipation}:any){
                 {
                     posts.map((post)=>(
                         //@ts-ignore
-                        <Slide key={post.id} post={post} increaseAnswered={increaseAnswered} toAddOn={toAddOn} checkup={checkup} currentPost={currentPost} multipleSelection={currentExam.multipleSelection} userId={user.id} user={user} setCurrent={handleSlideRight}></Slide> 
+                        <Slide key={post.id} post={post} increaseAnswered={increaseAnswered} toAddOn={toAddOn} checkup={checkup} 
+                        currentPost={currentPost} multipleSelection={currentExam.multipleSelection} userId={user.id} 
+                        user={user} setCurrent={handleSlideRight}></Slide> 
                     ))
                 } 
                  {currentExam && (currentExam.postsTotal !== 0) && <div className="absolute right-[50%] z-10 top-0 p-1 bg-white/60 text-[14px] font-bold text-black">Done: {answeredOnes}/{currentExam.postsTotal}</div>}          
@@ -343,7 +345,8 @@ export const getServerSideProps = async (context:any) => {
              examId:true
          },
          where:{
-           userId:user?.id
+           userId:user?.id,
+           exam: { OR: [{ archived: false }, { archived: null }] }
          },
          orderBy:{
           userAddedTime:'desc'

@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../lib/prismadb";
 
 export default async function getExams(req:NextApiRequest, res:NextApiResponse){
+
        try {
            const results = await prisma.exam.findMany({
                select:{
@@ -11,7 +12,7 @@ export default async function getExams(req:NextApiRequest, res:NextApiResponse){
                },
                orderBy:{
                 createdAt:'desc'
-               }
+               },
            })
 
            if(results) return res.json(results);
