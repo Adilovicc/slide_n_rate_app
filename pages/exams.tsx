@@ -107,30 +107,44 @@ export default function Exams({user, session}:any){
         }
     }
 
+    const handleGoBack = () =>{
+        if(archiveActive){
+            handleShowArchive();
+        }
+        else{
+            router.push('/');
+        }
+    }
+
     return(
         <div className="relative h-screen flex flex-col w-full overflow-hidden bg-[#EEEEEE]">
-               <div id='createExamScreen' className="fixed z-10 hidden top-0 right-0 left-0 bottom-0 bg-white/30 backdrop-blur-md justify-center items-center">
+               <div id='createExamScreen' className="fixed z-10 hidden top-0 right-0 left-0 bottom-0 bg-white/30
+                backdrop-blur-md justify-center items-center">
                      <ExamForm createdBy={user.id} setNewExam={setExamList}></ExamForm>
                </div> 
                <div id='examDetailsScreen' className="fixed z-10 hidden h-full top-0 right-0 left-0 bottom-0 bg-white/30 backdrop-blur-md">
                    {currentExam && <ExamDetails exam={currentExam} handleDeleteItem={handleDeleteItem}></ExamDetails>}
                </div>
-               <div id='usersManagement' className={`z-10 ${usersDisplay? 'fixed' : 'hidden'} h-full w-full flex top-0 right-0 left-0 bottom-0 bg-white/30 backdrop-blur-md justify-center items-center`}>
+               <div id='usersManagement' className={`z-10 ${usersDisplay? 'fixed' : 'hidden'} h-full w-full flex top-0 right-0 left-0 bottom-0
+                bg-white/30 backdrop-blur-md justify-center items-center`}>
                    {usersDisplay && <UsersManagement handleClose={handleUsersDisplay}></UsersManagement>}
                </div>
                <div className="w-full flex items-center justify-between px-6 md:px-16 lg:px-20 h-[60px] bg-[#393E46]">
-                     <div onClick={()=>router.push('/')} className="aspect-square h-[60%] p-1 rounded-full bg-white/40 hover:bg-white/60 cursor-pointer"><ChevronLeftIcon className="w-full h-full"></ChevronLeftIcon></div>
-                     <span className="hidden sm:inline-block text-white text-[32px] font-semibold font-serif">Exam maintenance</span>
+                     <div onClick={()=>handleGoBack()} className="aspect-square h-[60%] p-1 rounded-full bg-white/40 hover:bg-white/60 
+                     cursor-pointer"><ChevronLeftIcon className="w-full h-full"></ChevronLeftIcon></div>
+                     <span className="hidden sm:inline-block text-white text-[32px] font-semibold font-serif">Exam maintenance {archiveActive && '- ARCHIVE'}</span>
                      
                      <div className="flex items-center h-full"> 
-                        <div onClick={()=>handleShowArchive()} className="relative group aspect-square h-[60%] p-1 rounded-full
+                        {!archiveActive && <div onClick={()=>handleShowArchive()} className="relative group aspect-square h-[60%] p-1 rounded-full
                          bg-white/40 hover:bg-white/60 cursor-pointer mr-3">
                             <ArchiveBoxIcon className="w-full h-full"></ArchiveBoxIcon> 
-                            <div className="hidden absolute z-50 top-10 py-[2px] group-hover:inline rounded-md right-[-20px] px-3 bg-black/90 text-white">Archive</div>
-                        </div>
+                            <div className="hidden absolute z-50 top-10 py-[2px] group-hover:inline rounded-md right-[-20px] px-3 bg-black/90
+                             text-white">Archive</div>
+                        </div>}
                         <div onClick={()=>handleUsersDisplay()} className="relative group aspect-square h-[60%] p-1 rounded-full
                          bg-white/40 hover:bg-white/60 cursor-pointer mr-3"><UserGroupIcon className="w-full h-full"></UserGroupIcon>
-                         <div className="absolute hidden z-50 group-hover:inline top-10 py-[2px] rounded-md right-[-15px] px-3 bg-black/90 text-white">Users</div>
+                         <div className="absolute hidden z-50 group-hover:inline top-10 py-[2px] rounded-md right-[-15px] px-3 bg-black/90
+                          text-white">Users</div>
                          </div>
                         <div onClick={()=>handleCreateExamDisplay()} className="relative group aspect-square h-[60%] p-1 rounded-full bg-white/40
                          hover:bg-white/60 cursor-pointer"><PlusIcon className="w-full h-full"></PlusIcon>
