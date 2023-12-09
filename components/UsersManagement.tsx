@@ -42,7 +42,7 @@ export default function UsersManagement(props:{handleClose:any}){
          setCurrentNumber(0);
      },[userQuery])
     const handleDeleteUser = ()=>{
-          if(!itmForDeletion || !idxForDeletion) return;
+          if(!itmForDeletion) return;
           setHandlingInProcess(true);
           axios({
              url:baseUrl+'api/examHandlers/deleteUser',
@@ -66,14 +66,10 @@ export default function UsersManagement(props:{handleClose:any}){
     const functionForDelete = (usr: User, idx: number) => {
         setItmForDeletion(usr);
         setIdxForDeletion(idx);
-        console.log(usr);
+        setDeleteScreen(true);
     }
 
-    useEffect(()=>{
-      if(itmForDeletion){
-        setDeleteScreen(true);
-      }
-    },[itmForDeletion])
+   
 
      return(
         <div className="w-[60%] relative rounded-md min-w-[400px] bg-[#33302f] border-md flex justify-center items-center p-10">
